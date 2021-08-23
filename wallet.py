@@ -91,9 +91,8 @@ node_socket_env = {
 }
 
 def write_to_file(filename, data):
-    f = open(filename, 'w')
-    f.write(data)
-    f.close()
+    with open(filename, 'w') as file:
+        file.write(data)
 
 def print_command(command):
     print('Command: ', end='')
@@ -111,7 +110,7 @@ def run_command(command, network, input=None):
     print_command(command)
     completed = subprocess.run(command, check=True, capture_output=True, text=True, input=input, env=envvars)
 
-    print("Command Output: {}".format(completed.stdout))
+    # print("Command stdout: {}".format(completed.stdout.strip('\r\n')))
     return completed.stdout.strip('\r\n')
 
 class Wallet:
@@ -247,14 +246,10 @@ class Wallet:
 class Cardano:
     def __init__(self, network):
         self.network = network
-        self.network_params = networks[network]
         self.protocol_parameters = {}
 
     def get_network(self):
         return self.network
-
-    def get_network_params(self):
-        return self.network_params
 
     def query_tip(self):
         command = ['cardano-cli', 'query', 'tip']
@@ -291,6 +286,23 @@ class Cardano:
         output = run_command(command, None)
         return output
 
+    def create_transaction_file(self, utxo_inputs, address_outputs, fee_amount, transaction_file):
+        command = ['cardano-cli', 'transaction', 'build-raw']
+
+        for utxo in utxo_inputs:
+            command.append('--tx-in')
+            command.append('{}#{}'.format(utxo['tx-hash'], utxo['tx-ix']))
+
+        for address in address_outputs:
+            command.append('--tx-out')
+            command.append('{}+{}'.format(address['address'], address['amount']))
+
+        command.extend(['--fee', '{}'.format(fee_amount),
+                        '--out-file', transaction_file])
+
+        output = run_command(command, None)
+        return output
+
     def calculate_min_fee(self, transaction_file, tx_in_count, tx_out_count, witness_count, protocol_parameters_file):
         command = ['cardano-cli', 'transaction', 'calculate-min-fee', '--tx-body-file', transaction_file, 
                    '--tx-in-count', str(tx_in_count), '--tx-out-count', str(tx_out_count),
@@ -312,12 +324,68 @@ class Cardano:
         output = run_command(command, self.network)
         return output
 
+    def create_new_policy_id(self, before_slot, name):
+        # create new keys for the policy
+        command = ['cardano-cli', 'address', 'key-gen', 
+                   '--verification-key-file', 'policy/{}.vkey'.format(name), 
+                   '--signing-key-file', 'policy/{}.skey'.format(name)]
+        run_command(command, None)
+
+        # create signature hash from keys
+        command = ['cardano-cli', 'address', 'key-hash', 
+                   '--payment-verification-key-file', 'policy/{}.vkey'.format(name)]
+        sig_key_hash = run_command(command, None)
+
+        # create script file requires sign by policy keys and only valid until specified slot
+        with open('policy/{}.script'.format(name), 'w') as file:
+            file.write('{\r\n')
+            file.write('    \"type\":\"all\",\r\n')
+            file.write('    \"scripts\":\r\n')
+            file.write('    [\r\n')
+            file.write('        {\r\n')
+            file.write('            \"type\": \"before\",\r\n')
+            file.write('            \"slot\": {}\r\n'.format(before_slot))
+            file.write('        },\r\n')
+            file.write('        {\r\n')
+            file.write('            \"type\": \"sig\",\r\n')
+            file.write('            \"keyHash\": \"{}\"\r\n'.format(sig_key_hash))
+            file.write('        }\r\n')
+            file.write('    ]\r\n')
+            file.write('}\r\n')
+
+        # generate the policy id
+        command = ['cardano-cli', 'transaction', 'policyid', 
+                   '--script-file', 'policy/{}.script'.format(name)]
+        output = run_command(command, None)
+        with open('policy/{}_id'.format(name), 'w') as file:
+            file.write(output)
+        return output
+
+    
+
 cardano = Cardano('testnet')
-cardano.query_tip()
+tip = cardano.query_tip()
+tip_slot = tip['slot']
+print("tip slot = {}".format(tip_slot))
+
 cardano.query_protocol_parameters('protocol_parameters.json')
 
+# Lets mint an nft on testnet
+testnet1 = Wallet("testnet1", cardano)
+
+print("testnet1 UTXOS:")
+(p2utxos, total_lovelace) = testnet1.query_utxo()
+for utxo in p2utxos:
+    print("tx-hash = {}, tx-ix = {}, amount = {}".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
+print("Total: {}".format(total_lovelace))
+
+# don't want to create a new policy keys &id every time so comment this out
+# cardano.create_new_policy_id(tip_slot+10000, 'tcr_policy')
+
+
+"""
 payment1 = Wallet("payment1", cardano)
-payment2 = Wallet("payment2", cardano)
+testnet1 = Wallet("testnet1", cardano)
 
 print("")
 print("payment1 UTXOS:")
@@ -326,12 +394,15 @@ for utxo in p1utxos:
     print("tx-hash = {}, tx-ix = {}, amount = {}".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
 print("Total: {}".format(total_lovelace))
 print("")
+p1_total = total_lovelace
 
-print("payment2 UTXOS:")
-(p2utxos, total_lovelace) = payment2.query_utxo()
+print("testnet1 UTXOS:")
+(p2utxos, total_lovelace) = testnet1.query_utxo()
 for utxo in p2utxos:
     print("tx-hash = {}, tx-ix = {}, amount = {}".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
 print("Total: {}".format(total_lovelace))
+
+"""
 
 # an output must be greater than some minimum amount.  
 """ # draft transaction used to calculate fee
@@ -367,3 +438,21 @@ cardano.create_transaction_file_1out(p2utxos[0]['tx-hash'], p2utxos[0]['tx-ix'],
 cardano.sign_transaction('p2_to_p1_tx_unsigned', payment2.get_signing_key_file(), 'p2_to_p1_tx_signed')
 cardano.submit_transaction('p2_to_p1_tx_signed')
 """
+
+"""
+# send all from payment1 to testnet1
+outputs = [{'address': testnet1.get_payment_address(), 'amount': 0}]
+
+cardano.create_transaction_file(p1utxos, outputs, 0, 'p1_to_t1_draft_tx')
+fee = cardano.calculate_min_fee('p1_to_t1_draft_tx', 3, 1, 1, 'protocol_parameters.json')
+print("Fee = {} lovelace".format(fee))
+
+outputs[0]['amount'] = p1_total - fee
+cardano.create_transaction_file(p1utxos, outputs, fee, 'p1_to_t1_tx_unsigned')
+
+cardano.sign_transaction('p1_to_t1_tx_unsigned', payment1.get_signing_key_file(), 'p1_to_t1_tx_signed')
+cardano.submit_transaction('p1_to_t1_tx_signed')
+"""
+
+
+
