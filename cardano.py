@@ -25,9 +25,7 @@ File: cardano.py
 Author: Kris Henderson
 """
 
-import subprocess
 import json
-import os
 from command import Command
 import copy
 
@@ -61,6 +59,32 @@ class Cardano:
 
     def get_protocol_parameters(self):
         return self.protocol_parameters
+
+    def query_utxos(self, wallet):
+        payment_address = wallet.get_payment_address()
+
+        command = ['cardano-cli', 'query', 'utxo', '--address', payment_address]
+        output = Command.run(command, self.network)
+
+        # Calculate total lovelace of the UTXO(s) inside the wallet address
+        utxo_table = output.splitlines()
+        total_lovelace = 0
+
+        utxos = []
+        for x in range(2, len(utxo_table)):
+            cells = utxo_table[x].split()
+            assets = {}
+            for x in range(4, len(cells), 3):
+                if cells[x] == '+':
+                    asset_amount = int(cells[x+1])
+                    asset_name = cells[x+2]
+                    assets[asset_name] = asset_amount
+ 
+            utxos.append({'tx-hash':cells[0], 'tx-ix':int(cells[1]), 'amount': int(cells[2]), 'assets': assets})
+            total_lovelace +=  int(cells[2])
+
+        return (utxos, total_lovelace)
+
 
     def create_transfer_transaction_file(self, utxo_inputs, address_outputs, fee_amount, transaction_file):
         command = ['cardano-cli', 'transaction', 'build-raw']

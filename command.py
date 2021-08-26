@@ -40,13 +40,29 @@ node_socket_env = {
 }
 
 class Command:
+    """
+    Utility methods to run cardano commands.
+
+    Sets the environment variables based on which network is being used.
+    Valid networks are 'testnet' and 'mainnet' defined in the networks 
+    dictionary object above.
+    """
+
     @staticmethod
     def write_to_file(filename, data):
+        """
+        Write a string of data to the given filename.
+        """
+
         with open(filename, 'w') as file:
             file.write(data)
 
     @staticmethod
     def print_command(command):
+        """
+        Prints a command list.
+        """
+        
         print('Command: ', end='')
         for c in command:
             if ' ' not in c:
@@ -57,13 +73,22 @@ class Command:
 
     @staticmethod
     def run(command, network, input=None):
+        """
+        Run the specified command.
+
+        @param command A list.  The command followed by command line parameters.  Each
+                       should be a string.
+        @param network One of the values defined in the networks dictionary object above.
+        @param input A string of input to pass to the command process if needed.
+        """
+
         envvars = os.environ
 
         if network != None:
             envvars[node_socket_env['active']] = os.environ[node_socket_env[network]]
             command.extend(networks[network])
 
-        Command.print_command(command)
+        #Command.print_command(command)
         try:
             completed = subprocess.run(command, check=True, capture_output=True, text=True, input=input, env=envvars)
         except subprocess.CalledProcessError as e:

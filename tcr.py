@@ -25,11 +25,7 @@ File: tcr.py
 Author: Kris Henderson
 """
 
-import subprocess
-import json
-import os
 from nft import Nft
-
 from cardano import Cardano
 from wallet import Wallet
 from wallet import WalletExternal
@@ -46,7 +42,11 @@ SECONDS_PER_MONTH = int((DAYS_PER_YEAR / MONTHS_PER_YEAR) * SECONDS_PER_DAY)
 SECONDS_PER_YEAR = int(MONTHS_PER_YEAR * SECONDS_PER_MONTH)
 
 def transfer_all_assets(cardano, from_wallet, to_wallet):
-    (from_utxos, from_total_lovelace) = from_wallet.query_utxo()
+    """
+    Transfer all assets (lovelace and other tokens) from one wallet to another.
+    """
+    
+    (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
     # get all incoming assets from utxos
     incoming_assets = {}
     for utxo in from_utxos:
@@ -78,7 +78,11 @@ def transfer_all_assets(cardano, from_wallet, to_wallet):
     cardano.submit_transaction('transaction/transfer_all_assets_signed_tx')
 
 def transfer_ada(cardano, from_wallet, lovelace_amount, to_wallet):
-    (from_utxos, from_total_lovelace) = from_wallet.query_utxo()
+    """
+    Transfer lovelace from one wallet to another.
+    """
+    
+    (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
     # get all incoming assets from utxos
     incoming_assets = {}
     for utxo in from_utxos:
@@ -111,7 +115,14 @@ def transfer_ada(cardano, from_wallet, lovelace_amount, to_wallet):
     cardano.submit_transaction('transaction/transfer_ada_signed_tx')
 
 def transfer_nft(cardano, from_wallet, nft_assets, to_wallet):
-    (from_utxos, from_total_lovelace) = from_wallet.query_utxo()
+    """
+    Transfer an NFT from one wallet to another.
+
+    Also transfers the minimum lovelace amount defined by the network parameters
+    plus 1000000.  As of today, that is 2 ADA.
+    """
+    
+    (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
     # get all incoming assets from utxos
     incoming_assets = {}
     for utxo in from_utxos:
@@ -158,7 +169,11 @@ def transfer_nft(cardano, from_wallet, nft_assets, to_wallet):
     cardano.submit_transaction('transaction/transfer_nft_signed_tx')
 
 def burn_nft_internal(cardano, burning_wallet, policy_name, nft_token_name):
-    (burning_utxos, burning_total_lovelace) = burning_wallet.query_utxo()
+    """
+    Burn one NFT.
+    """
+    
+    (burning_utxos, burning_total_lovelace) = cardano.query_utxos(burning_wallet)
 
     incoming_assets = {}
     for utxo in burning_utxos:
@@ -185,7 +200,11 @@ def burn_nft_internal(cardano, burning_wallet, policy_name, nft_token_name):
     cardano.submit_transaction('transaction/burn_nft_internal_signed_tx')
 
 def mint_nft_internal(cardano, minting_wallet, policy_name, nft_token_name):
-    (minting_utxos, minting_total_lovelace) = minting_wallet.query_utxo()
+    """
+    Mint an NFT to the wallet that is minting it.
+    """
+    
+    (minting_utxos, minting_total_lovelace) = cardano.query_utxos(minting_wallet)
 
     incoming_assets = {}
     for utxo in minting_utxos:
@@ -212,7 +231,14 @@ def mint_nft_internal(cardano, minting_wallet, policy_name, nft_token_name):
     cardano.submit_transaction('transaction/mint_nft_internal_signed_tx')
 
 def mint_nft_external(cardano, minting_wallet, policy_name, nft_token_name, destination_wallet):
-    (minting_utxos, minting_total_lovelace) = minting_wallet.query_utxo()
+    """
+    Mint an NFT to a different wallet.
+
+    Also transfers the minimum lovelace amount as defined by the network protocol
+    parameters plus 1000000.  Currently 2 ADA.
+    """
+    
+    (minting_utxos, minting_total_lovelace) = cardano.query_utxos(minting_wallet)
 
     incoming_assets = {}
     for utxo in minting_utxos:
@@ -248,4 +274,3 @@ def mint_nft_external(cardano, minting_wallet, policy_name, nft_token_name, dest
     cardano.sign_transaction('transaction/mint_nft_external_unsigned_tx', minting_wallet.get_signing_key_file(), 'transaction/mint_nft_external_signed_tx')
     #submit
     cardano.submit_transaction('transaction/mint_nft_external_signed_tx')
-

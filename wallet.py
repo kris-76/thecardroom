@@ -22,28 +22,39 @@
 
 """
 File: wallet.py
-Description: Utility functions for interacting with cardano-wallet and cardano-cli
 Author: Kris Henderson
 """
 
-# https://github.com/input-output-hk/cardano-addresses
-# https://docs.cardano.org/introduction
-
-import json
 import os
 from command import Command
 
 class Wallet:
-    def __init__(self, name, cardano):
+    """ 
+    The Wallet class is used to create a new wallet and all operations
+    associated with creating wallets.
+    """
+
+    def __init__(self, name, network):
+        """
+        Construct a new instance of Wallet.
+
+        @param name An arbitrary name for the wallet.  Mainly used to store wallet
+                    data / keys in various files.
+        @param network The network this wallet exists on.  Valid values are 'testnet'
+                       and 'mainnet'.  This parameter should use Cardano.get_network().
+                       This value is also used by some methods that run a cardano-cli
+                       command to pass correct parameters into it.
+        """
+
         self.name = name
-        self.cardano = cardano
-        self.mnemonic_phrase_file = 'wallet/{}/{}.mnemonic'.format(cardano.get_network(), name)
-        self.root_extended_private_key_file = 'wallet/{}/{}_root.xprv'.format(cardano.get_network(), name)
-        self.extended_private_key_file = 'wallet/{}/{}_key.xsk'.format(cardano.get_network(), name)
-        self.signing_key_file = 'wallet/{}/{}_key.skey'.format(cardano.get_network(), name)
-        self.verification_key_file = 'wallet/{}/{}_key.vkey'.format(cardano.get_network(), name)
+        self.network = network
+        self.mnemonic_phrase_file = 'wallet/{}/{}.mnemonic'.format(self.network, name)
+        self.root_extended_private_key_file = 'wallet/{}/{}_root.xprv'.format(self.network, name)
+        self.extended_private_key_file = 'wallet/{}/{}_key.xsk'.format(self.network, name)
+        self.signing_key_file = 'wallet/{}/{}_key.skey'.format(self.network, name)
+        self.verification_key_file = 'wallet/{}/{}_key.vkey'.format(self.network, name)
         self.payment_address = None
-        self.payment_address_file = 'wallet/{}/{}_payment.addr'.format(cardano.get_network(), name)
+        self.payment_address_file = 'wallet/{}/{}_payment.addr'.format(self.network, name)
 
     def get_name(self):
         return self.name
@@ -52,6 +63,9 @@ class Wallet:
         return os.path.exists(self.signing_key_file) and os.path.exists(self.verification_key_file) and os.path.exists(self.payment_address_file)
 
     def create_new_wallet(self):
+        if self.exists():
+            raise Exception("Wallet already exists.")
+
         mnemonic = Wallet.create_mnemonic_phrase()
         Command.write_to_file(self.mnemonic_phrase_file, mnemonic)
         self.generate_key_files(mnemonic)
@@ -145,38 +159,27 @@ class Wallet:
         command = ['cardano-cli', 'address', 'build', 
                    '--payment-verification-key-file', self.verification_key_file,
                    '--out-file', self.payment_address_file]
-        output = Command.run(command, self.cardano.get_network())
+        output = Command.run(command, self.network)
         return output
 
-    def query_utxo(self):
-        payment_address = self.get_payment_address()
-
-        command = ['cardano-cli', 'query', 'utxo', '--address', payment_address]
-        output = Command.run(command, self.cardano.get_network())
-
-        # Calculate total lovelace of the UTXO(s) inside the wallet address
-        utxo_table = output.splitlines()
-        total_lovelace = 0
-
-        utxos = []
-        for x in range(2, len(utxo_table)):
-            cells = utxo_table[x].split()
-            assets = {}
-            for x in range(4, len(cells), 3):
-                if cells[x] == '+':
-                    asset_amount = int(cells[x+1])
-                    asset_name = cells[x+2]
-                    assets[asset_name] = asset_amount
- 
-            utxos.append({'tx-hash':cells[0], 'tx-ix':int(cells[1]), 'amount': int(cells[2]), 'assets': assets})
-            total_lovelace +=  int(cells[2])
-
-        return (utxos, total_lovelace)
-
 class WalletExternal(Wallet):
-    def __init__(self, name, payment_address, cardano):
+    """
+    Create an instance of Wallet where only a public payment address is known.
+    This is used when transfering lovelace or other assets from our wallet to
+    another users wallet.
+    """
+
+    def __init__(self, name, network, payment_address):
+        """
+        Create an instance of WalletExternal.
+
+        @param name @see Wallet.__init__
+        @param network @see Wallet.__init__
+        @param payment_address The public payment address to receive assets
+        """
+
         self.name = name
-        self.cardano = cardano
+        self.network = network
         self.payment_address = payment_address
 
         self.mnemonic_phrase_file = None
