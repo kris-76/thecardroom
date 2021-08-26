@@ -1,0 +1,9 @@
+nft/*
+wallet/*
+transaction/*
+policy/*
+__pycache__/*
+mainnet.py
+mainnet_protocol_parameters.json
+testnet.py
+testnet_protocol_parameters.json
