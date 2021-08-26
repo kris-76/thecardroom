@@ -97,10 +97,12 @@ class Cardano:
         for address in address_outputs:
             assets_string = ''
             for asset in address['assets']:
-                assets_string += '+{} {}'.format(address['assets'][asset], asset)
+                if address['assets'][asset] > 0:
+                    assets_string += '+{} {}'.format(address['assets'][asset], asset)
 
-            command.append('--tx-out')
-            command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
+            if address['amount'] > 0:
+                command.append('--tx-out')
+                command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
 
         command.extend(['--fee', '{}'.format(fee_amount),
                         '--out-file', transaction_file])
@@ -119,7 +121,7 @@ class Cardano:
         address_outputs[len(address_outputs)-1]['assets'][full_name] = nft_token_amount
 
         invalid_hereafter = 0
-        with open('policy/{}.script'.format(policy_name), "r") as file:
+        with open('policy/{}/{}.script'.format(self.network, policy_name), "r") as file:
             script = json.loads(file.read())
             for s in script['scripts']:
                 if s['type'] == 'before':
@@ -140,8 +142,8 @@ class Cardano:
             command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
 
         command.extend(['--mint={}'.format(mint),
-                        '--minting-script-file', 'policy/{}.script'.format(policy_name),
-                        '--metadata-json-file', 'nft/{}_metadata.json'.format(nft_token_name),
+                        '--minting-script-file', 'policy/{}/{}.script'.format(self.network, policy_name),
+                        '--metadata-json-file', 'nft/{}/{}_metadata.json'.format(self.network, nft_token_name),
                         '--invalid-hereafter', '{}'.format(invalid_hereafter),
                         '--out-file', transaction_file])
 
@@ -165,7 +167,7 @@ class Cardano:
         address_outputs_cp[len(address_outputs_cp)-1]['assets'][full_name] -= nft_token_amount
 
         invalid_hereafter = 0
-        with open('policy/{}.script'.format(policy_name), "r") as file:
+        with open('policy/{}/{}.script'.format(self.network, policy_name), "r") as file:
             script = json.loads(file.read())
             for s in script['scripts']:
                 if s['type'] == 'before':
@@ -187,7 +189,7 @@ class Cardano:
             command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
 
         command.extend(['--mint={}'.format(burn),
-                        '--minting-script-file', 'policy/{}.script'.format(policy_name),
+                        '--minting-script-file', 'policy/{}/{}.script'.format(self.network, policy_name),
                         '--invalid-hereafter', '{}'.format(invalid_hereafter),
                         '--out-file', transaction_file])
 
@@ -218,8 +220,8 @@ class Cardano:
     def create_new_policy_id(self, before_slot, policy_wallet, policy_name):
         # create new keys for the policy
         command = ['cardano-cli', 'address', 'key-gen', 
-                   '--verification-key-file', 'policy/{}.vkey'.format(policy_name), 
-                   '--signing-key-file', 'policy/{}.skey'.format(policy_name)]
+                   '--verification-key-file', 'policy/{}/{}.vkey'.format(self.network, policy_name), 
+                   '--signing-key-file', 'policy/{}/{}.skey'.format(self.network, policy_name)]
         Command.run(command, None)
 
         # create signature hash from keys
@@ -228,7 +230,7 @@ class Cardano:
         sig_key_hash = Command.run(command, None)
 
         # create script file requires sign by policy keys and only valid until specified slot
-        with open('policy/{}.script'.format(policy_name), 'w') as file:
+        with open('policy/{}/{}.script'.format(self.network, policy_name), 'w') as file:
             file.write('{\r\n')
             file.write('    \"type\":\"all\",\r\n')
             file.write('    \"scripts\":\r\n')
@@ -246,9 +248,9 @@ class Cardano:
 
         # generate the policy id
         command = ['cardano-cli', 'transaction', 'policyid', 
-                   '--script-file', 'policy/{}.script'.format(policy_name)]
+                   '--script-file', 'policy/{}/{}.script'.format(self.network, policy_name)]
         output = Command.run(command, None)
-        with open('policy/{}.id'.format(policy_name), 'w') as file:
+        with open('policy/{}/{}.id'.format(self.network, policy_name), 'w') as file:
             file.write(output)
 
         return output
@@ -256,7 +258,7 @@ class Cardano:
     def get_policy_id(self, policy_name):
         policy_id = None
 
-        with open('policy/{}.id'.format(policy_name), 'r') as file:
+        with open('policy/{}/{}.id'.format(self.network, policy_name), 'r') as file:
             policy_id = file.read()
 
         return policy_id

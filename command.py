@@ -88,7 +88,7 @@ class Command:
             envvars[node_socket_env['active']] = os.environ[node_socket_env[network]]
             command.extend(networks[network])
 
-        #Command.print_command(command)
+        Command.print_command(command)
         try:
             completed = subprocess.run(command, check=True, capture_output=True, text=True, input=input, env=envvars)
         except subprocess.CalledProcessError as e:

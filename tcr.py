@@ -58,7 +58,7 @@ def transfer_all_assets(cardano, from_wallet, to_wallet):
 
     print("From Total Lovelace: {}".format(from_total_lovelace))
     # Draft transaction for fee calculation
-    outputs = [{'address': to_wallet.get_payment_address(), 'amount': 0, 'assets': incoming_assets}]
+    outputs = [{'address': to_wallet.get_payment_address(), 'amount': 1, 'assets': incoming_assets}]
     fee = 0
     cardano.create_transfer_transaction_file(from_utxos, outputs, fee, 'transaction/transfer_all_assets_draft_tx')
 
@@ -94,8 +94,8 @@ def transfer_ada(cardano, from_wallet, lovelace_amount, to_wallet):
 
     print("From Total Lovelace: {}".format(from_total_lovelace))
     # Draft transaction for fee calculation
-    outputs = [{'address': from_wallet.get_payment_address(), 'amount': 0, 'assets': incoming_assets},
-               {'address': to_wallet.get_payment_address(), 'amount': 0, 'assets': {}}]
+    outputs = [{'address': from_wallet.get_payment_address(), 'amount': 1, 'assets': incoming_assets},
+               {'address': to_wallet.get_payment_address(), 'amount': 1, 'assets': {}}]
     fee = 0
     cardano.create_transfer_transaction_file(from_utxos, outputs, fee, 'transaction/transfer_ada_draft_tx')
 
@@ -125,7 +125,9 @@ def transfer_nft(cardano, from_wallet, nft_assets, to_wallet):
     (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
     # get all incoming assets from utxos
     incoming_assets = {}
+    incoming_lovelace = 0
     for utxo in from_utxos:
+        incoming_lovelace += utxo['amount']
         for a in utxo['assets']:
             if a in incoming_assets:
                 incoming_assets[a] += utxo['assets'][a]
@@ -140,8 +142,8 @@ def transfer_nft(cardano, from_wallet, nft_assets, to_wallet):
 
     print("From Total Lovelace: {}".format(from_total_lovelace))
     # Draft transaction for fee calculation
-    outputs = [{'address': from_wallet.get_payment_address(), 'amount': 0, 'assets': incoming_assets},
-               {'address': to_wallet.get_payment_address(), 'amount': 0, 'assets': nft_assets}]
+    outputs = [{'address': from_wallet.get_payment_address(), 'amount': 1, 'assets': incoming_assets},
+               {'address': to_wallet.get_payment_address(), 'amount': 1, 'assets': nft_assets}]
 
     #draft
     fee = 0
@@ -155,6 +157,10 @@ def transfer_nft(cardano, from_wallet, nft_assets, to_wallet):
 
     # Calculate fee & update values 
     fee = cardano.calculate_min_fee('transaction/transfer_nft_draft_tx', len(from_utxos), len(outputs), 1)
+    if (incoming_lovelace - fee) < min_utxo_value:
+        # hopefully still enough
+        min_utxo_value = incoming_lovelace - fee
+
     print("Fee = {} lovelace".format(fee))
     outputs[0]['amount'] = from_total_lovelace - min_utxo_value - fee
     outputs[1]['amount'] = min_utxo_value
@@ -184,7 +190,7 @@ def burn_nft_internal(cardano, burning_wallet, policy_name, nft_token_name):
                 incoming_assets[a] = utxo['assets'][a]
 
     # The NFT burned will be removed from the output when the transaction is created
-    address_outputs = [{'address': burning_wallet.get_payment_address(), 'amount': 0, 'assets': incoming_assets}]
+    address_outputs = [{'address': burning_wallet.get_payment_address(), 'amount': 1, 'assets': incoming_assets}]
     fee = 0
     # draft
     cardano.create_burn_nft_transaction_file(burning_utxos, address_outputs, fee, policy_name, nft_token_name, 1, 'transaction/burn_nft_internal_draft_tx')
@@ -215,7 +221,7 @@ def mint_nft_internal(cardano, minting_wallet, policy_name, nft_token_name):
                 incoming_assets[a] = utxo['assets'][a]
 
     # The NFT minted will be added to the output when the transaction is created
-    address_outputs = [{'address': minting_wallet.get_payment_address(), 'amount': 0, 'assets': incoming_assets}]
+    address_outputs = [{'address': minting_wallet.get_payment_address(), 'amount': 1, 'assets': incoming_assets}]
     fee = 0
     # draft
     cardano.create_mint_nft_transaction_file(minting_utxos, address_outputs, fee, policy_name, nft_token_name, 1, 'transaction/mint_nft_internal_draft_tx')
@@ -249,8 +255,8 @@ def mint_nft_external(cardano, minting_wallet, policy_name, nft_token_name, dest
                 incoming_assets[a] = utxo['assets'][a]
 
     # The NFT minted will be added to the output when the transaction is created
-    address_outputs = [{'address': minting_wallet.get_payment_address(), 'amount': 0, 'assets': incoming_assets},
-                      {'address': destination_wallet.get_payment_address(), 'amount': 0, 'assets': {}}]
+    address_outputs = [{'address': minting_wallet.get_payment_address(), 'amount': 1, 'assets': incoming_assets},
+                      {'address': destination_wallet.get_payment_address(), 'amount': 1, 'assets': {}}]
 
     # draft
     fee = 0

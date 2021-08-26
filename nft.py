@@ -29,14 +29,14 @@ import json
 
 class Nft:
     @staticmethod
-    def create_metadata(policy_id, token_name, nft_name, image, description, properties):
+    def create_metadata(network, policy_id, token_name, nft_name, image, description, properties):
         """
         Write JSON metadata according to the Cardano NFT metadata format proposal.
 
         Test the output at https://pool.pm/test/metadata
         """
         
-        metadata_file = 'nft/{}_metadata.json'.format(token_name)
+        metadata_file = 'nft/{}/{}_metadata.json'.format(network, token_name)
         metadata = {}
         metadata["721"] = {}
         metadata["721"][policy_id] = {}
