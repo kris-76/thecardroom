@@ -98,5 +98,4 @@ class Command:
             print('stderr: {}'.format(e.stderr))
             raise e
 
-        # print("Command stdout: {}".format(completed.stdout.strip('\r\n')))
         return completed.stdout.strip('\r\n')

@@ -5,17 +5,17 @@
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-# copies of the Software, and to permit persons to whom the Software is furnished 
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is furnished
 # to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all 
+# The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
@@ -25,12 +25,16 @@ File: cardano.py
 Author: Kris Henderson
 """
 
+from typing import Dict
+
 import json
 from command import Command
 import copy
+from nft import Nft
+from wallet import Wallet
 
 class Cardano:
-    def __init__(self, network, protocol_parameters_file):
+    def __init__(self, network:str, protocol_parameters_file:str):
         self.network = network
         self.protocol_parameters_file = protocol_parameters_file
         self.protocol_parameters = {}
@@ -48,7 +52,7 @@ class Cardano:
         self.protocol_parameters = {}
 
         command = ['cardano-cli', 'query', 'protocol-parameters', '--out-file', self.protocol_parameters_file]
-        output = Command.run(command, self.network)
+        Command.run(command, self.network)
 
         with open(self.protocol_parameters_file, "r") as file:
             self.protocol_parameters = json.loads(file.read())
@@ -59,6 +63,13 @@ class Cardano:
 
     def get_protocol_parameters(self):
         return self.protocol_parameters
+
+    def get_min_utxo_value(self):
+        min_utxo_value = 1000000
+        if self.get_protocol_parameters()['minUTxOValue'] != None:
+            min_utxo_value = self.get_protocol_parameters()['minUTxOValue']
+
+        return min_utxo_value
 
     def query_utxos(self, wallet):
         payment_address = wallet.get_payment_address()
@@ -76,15 +87,45 @@ class Cardano:
             assets = {}
             for x in range(4, len(cells), 3):
                 if cells[x] == '+':
-                    asset_amount = int(cells[x+1])
-                    asset_name = cells[x+2]
-                    assets[asset_name] = asset_amount
- 
-            utxos.append({'tx-hash':cells[0], 'tx-ix':int(cells[1]), 'amount': int(cells[2]), 'assets': assets})
+                    if cells[x+1].isnumeric():
+                        asset_amount = int(cells[x+1])
+                        asset_name = cells[x+2]
+                        assets[asset_name] = asset_amount
+
+            tx_out_datum_hash = cells[len(cells) - 1]
+            utxos.append({'tx-hash':cells[0], 'tx-ix':int(cells[1]), 'amount': int(cells[2]), 'assets': assets, 'tx-out-datum-hash': tx_out_datum_hash})
             total_lovelace +=  int(cells[2])
 
         return (utxos, total_lovelace)
 
+    def dump_utxos(self, wallet: Wallet) -> None:
+        print('{} UTXOS:'.format(wallet.get_name()))
+        (utxos, lovelace) = self.query_utxos(wallet)
+        for utxo in utxos:
+            print("tx-hash = {}, tx-ix = {}, amount = {} lovelace".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
+            for a in utxo['assets']:
+                print('\t\t\t\t {} {}'.format(utxo['assets'][a], a))
+            print("tx-out-datum-hash: {}".format(utxo['tx-out-datum-hash']))
+
+        print("Total: {}".format(lovelace))
+
+
+    def contains_txhash(self, wallet, txhash):
+        (utxos, lovelace) = self.query_utxos(wallet)
+        for utxo in utxos:
+            if utxo['tx-hash'] == txhash:
+                return True
+
+        return False
+
+    def contains_token(self, wallet, full_token_name):
+        (utxos, lovelace) = self.query_utxos(wallet)
+        for utxo in utxos:
+            for a in utxo['assets']:
+                if a == full_token_name:
+                    return True
+
+        return False
 
     def create_transfer_transaction_file(self, utxo_inputs, address_outputs, fee_amount, transaction_file):
         command = ['cardano-cli', 'transaction', 'build-raw']
@@ -93,7 +134,7 @@ class Cardano:
             command.append('--tx-in')
             command.append('{}#{}'.format(utxo['tx-hash'], utxo['tx-ix']))
 
-        
+
         for address in address_outputs:
             assets_string = ''
             for asset in address['assets']:
@@ -110,15 +151,23 @@ class Cardano:
         output = Command.run(command, None)
         return output
 
-    def create_mint_nft_transaction_file(self, utxo_inputs, address_outputs, fee_amount, 
-                                         policy_name, nft_token_name, nft_token_amount, 
+    def create_mint_nft_transaction_file(self, utxo_inputs, address_outputs, fee_amount,
+                                         policy_name, nft_metadata_file, nft_token_amount,
                                          transaction_file):
-        policy_id = self.get_policy_id(policy_name)
-        mint = '{} {}.{}'.format(nft_token_amount, policy_id, nft_token_name)
-        
-        # add the nft being minted to the output
-        full_name = '{}.{}'.format(policy_id, nft_token_name)
-        address_outputs[len(address_outputs)-1]['assets'][full_name] = nft_token_amount
+        nft_metadata = Nft.parse_metadata_file(nft_metadata_file)
+        print('nft metadata = {}'.format(json.dumps(nft_metadata, indent=4)))
+        policy_id = nft_metadata['policy-id']
+        token_names = nft_metadata['token-names']
+
+        mint = ''
+        for token_name in token_names:
+            if len(mint) > 0:
+                mint += '+'
+
+            mint += '{} {}.{}'.format(nft_token_amount, policy_id, token_name)
+            # add the nft being minted to the output
+            full_name = '{}.{}'.format(policy_id, token_name)
+            address_outputs[len(address_outputs)-1]['assets'][full_name] = nft_token_amount
 
         invalid_hereafter = 0
         with open('policy/{}/{}.script'.format(self.network, policy_name), "r") as file:
@@ -143,7 +192,7 @@ class Cardano:
 
         command.extend(['--mint={}'.format(mint),
                         '--minting-script-file', 'policy/{}/{}.script'.format(self.network, policy_name),
-                        '--metadata-json-file', 'nft/{}/{}_metadata.json'.format(self.network, nft_token_name),
+                        '--metadata-json-file', nft_metadata_file,
                         '--invalid-hereafter', '{}'.format(invalid_hereafter),
                         '--out-file', transaction_file])
 
@@ -151,19 +200,19 @@ class Cardano:
         return output
 
     # burning is just like minting except the value is negative
-    def create_burn_nft_transaction_file(self, utxo_inputs, address_outputs, fee_amount, 
-                                         policy_name, nft_token_name, nft_token_amount, 
+    def create_burn_nft_transaction_file(self, utxo_inputs, address_outputs, fee_amount,
+                                         policy_name, token_name, nft_token_amount,
                                          transaction_file):
         # copy some stuff so it doesn't get modified to the caller
         address_outputs_cp = copy.deepcopy(address_outputs)
 
         policy_id = self.get_policy_id(policy_name)
-        burn = '{} {}.{}'.format(-1*nft_token_amount, policy_id, nft_token_name)
+        burn = '{} {}.{}'.format(-1*nft_token_amount, policy_id, token_name)
 
         # remove the nft being burned from the output
-        full_name = '{}.{}'.format(policy_id, nft_token_name)
+        full_name = '{}.{}'.format(policy_id, token_name)
 
-        
+
         address_outputs_cp[len(address_outputs_cp)-1]['assets'][full_name] -= nft_token_amount
 
         invalid_hereafter = 0
@@ -197,7 +246,7 @@ class Cardano:
         return output
 
     def calculate_min_fee(self, transaction_file, tx_in_count, tx_out_count, witness_count):
-        command = ['cardano-cli', 'transaction', 'calculate-min-fee', '--tx-body-file', transaction_file, 
+        command = ['cardano-cli', 'transaction', 'calculate-min-fee', '--tx-body-file', transaction_file,
                    '--tx-in-count', str(tx_in_count), '--tx-out-count', str(tx_out_count),
                    '--witness-count', str(witness_count),
                    '--protocol-params-file', self.protocol_parameters_file]
@@ -206,7 +255,7 @@ class Cardano:
         return int(cells[0])
 
     def sign_transaction(self, unsigned_transaction_file, signing_key_file, signed_transaction_file):
-        command = ['cardano-cli', 'transaction', 'sign', '--tx-body-file', unsigned_transaction_file, 
+        command = ['cardano-cli', 'transaction', 'sign', '--tx-body-file', unsigned_transaction_file,
                    '--signing-key-file', signing_key_file,
                    '--out-file', signed_transaction_file]
         output = Command.run(command, self.network)
@@ -219,13 +268,13 @@ class Cardano:
 
     def create_new_policy_id(self, before_slot, policy_wallet, policy_name):
         # create new keys for the policy
-        command = ['cardano-cli', 'address', 'key-gen', 
-                   '--verification-key-file', 'policy/{}/{}.vkey'.format(self.network, policy_name), 
+        command = ['cardano-cli', 'address', 'key-gen',
+                   '--verification-key-file', 'policy/{}/{}.vkey'.format(self.network, policy_name),
                    '--signing-key-file', 'policy/{}/{}.skey'.format(self.network, policy_name)]
         Command.run(command, None)
 
         # create signature hash from keys
-        command = ['cardano-cli', 'address', 'key-hash', 
+        command = ['cardano-cli', 'address', 'key-hash',
                    '--payment-verification-key-file', policy_wallet.get_verification_key_file()]
         sig_key_hash = Command.run(command, None)
 
@@ -247,7 +296,7 @@ class Cardano:
             file.write('}\r\n')
 
         # generate the policy id
-        command = ['cardano-cli', 'transaction', 'policyid', 
+        command = ['cardano-cli', 'transaction', 'policyid',
                    '--script-file', 'policy/{}/{}.script'.format(self.network, policy_name)]
         output = Command.run(command, None)
         with open('policy/{}/{}.id'.format(self.network, policy_name), 'w') as file:
@@ -258,7 +307,10 @@ class Cardano:
     def get_policy_id(self, policy_name):
         policy_id = None
 
-        with open('policy/{}/{}.id'.format(self.network, policy_name), 'r') as file:
-            policy_id = file.read()
+        try:
+            with open('policy/{}/{}.id'.format(self.network, policy_name), 'r') as file:
+                policy_id = file.read()
+        except FileNotFoundError as e:
+            policy_id = None
 
         return policy_id
