@@ -127,6 +127,15 @@ class Cardano:
 
         return False
 
+    def get_utxo(self, wallet, full_token_name):
+        (utxos, lovelace) = self.query_utxos(wallet)
+        for utxo in utxos:
+            for a in utxo['assets']:
+                if a == full_token_name:
+                    return utxo
+
+        return None
+
     def create_transfer_transaction_file(self, utxo_inputs, address_outputs, fee_amount, transaction_file):
         command = ['cardano-cli', 'transaction', 'build-raw']
 
@@ -155,7 +164,6 @@ class Cardano:
                                          policy_name, nft_metadata_file, nft_token_amount,
                                          transaction_file):
         nft_metadata = Nft.parse_metadata_file(nft_metadata_file)
-        print('nft metadata = {}'.format(json.dumps(nft_metadata, indent=4)))
         policy_id = nft_metadata['policy-id']
         token_names = nft_metadata['token-names']
 

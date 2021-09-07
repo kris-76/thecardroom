@@ -14,29 +14,55 @@ from database import Database
 import random
 import json
 import os
+import logging
+import time
+
+# Setup logging INFO and higher goes to the console.  DEBUG and higher goes to file
+logger = logging.getLogger('testnet')
+logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
+console_handler.setFormatter(console_format)
+
+file_handler = logging.FileHandler('log/testnet_payments_{}'.format(round(time.time())))
+file_handler.setLevel(logging.DEBUG)
+file_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
+file_handler.setFormatter(file_format)
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
+logger_names = ['nft', 'cardano', 'command', 'database', 'tcr']
+for logger_name in logger_names:
+    other_logger = logging.getLogger(logger_name)
+    other_logger.setLevel(logging.DEBUG)
+    other_logger.addHandler(console_handler)
+    other_logger.addHandler(file_handler)
+
+logger.info("Testnet Payment Processor / NFT Minter")
 
 # Setup connection to cardano node, cardano wallet, and cardano db sync
-
 cardano = Cardano('testnet', 'testnet_protocol_parameters.json')
 tip = cardano.query_tip()
 tip_slot = tip['slot']
-print('Cardano Node Tip Slot: {}'.format(tip_slot))
+logger.info('Cardano Node Tip Slot: {}'.format(tip_slot))
 
 cardano.query_protocol_parameters()
 
 database = Database('testnet.ini')
 meta = database.query_chain_metadata()
-print('{} / {}'.format(meta[1], meta[2]))
+logger.debug('Database Chain Metadata: {} / {}'.format(meta[1], meta[2]))
 
 db_size = database.query_database_size()
-print('Database Size: {}'.format(db_size))
+logger.debug('Database Size: {}'.format(db_size))
 
 latest_slot = database.query_latest_slot()
-print('Database Latest Slot: {}'.format(latest_slot))
+logger.info('Database Latest Slot: {}'.format(latest_slot))
 
 sync_progress = database.query_sync_progress()
-print('Sync Progress: {}'.format(sync_progress))
-
+logger.info('Sync Progress: {}'.format(sync_progress))
 
 # Define some metadata that can be used to generate a series
 series_metadata = {
@@ -113,14 +139,16 @@ prices = {
     85000000: 4
 }
 
-print("Processing NFT Payments under policy: {}".format(policy_name))
-# Listen for incoming payments and mint NFTs when a UTXO matching a payment
-# value is found
-tcr.process_incoming_payments(cardano,
-                              database,
-                              testnet1,
-                              policy_name,
-                              metadata_set_file,
-                              prices)
+try:
+    # Listen for incoming payments and mint NFTs when a UTXO matching a payment
+    # value is found
+    tcr.process_incoming_payments(cardano,
+                                  database,
+                                  testnet1,
+                                  policy_name,
+                                  metadata_set_file,
+                                  prices)
+except Exception as e:
+    logger.exception("Caught Exception")
 
 database.close()

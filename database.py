@@ -27,6 +27,9 @@ Author: Kris Henderson
 
 from configparser import ConfigParser
 import psycopg2
+import logging
+
+logger = logging.getLogger('database')
 
 # https://github.com/input-output-hk/cardano-db-sync/blob/master/doc/interesting-queries.md
 class Database:
@@ -38,7 +41,7 @@ class Database:
         cursor.execute('SELECT version()')
         db_version = cursor.fetchone()
         cursor.close()
-        print('Postgres SQL Database Version: {}'.format(db_version))
+        logger.debug('Postgres SQL Database Version: {}'.format(db_version))
 
     def close(self):
         self.connection.close()
@@ -61,6 +64,7 @@ class Database:
 
     def query_chain_metadata(self):
         sql = 'select * from meta;'
+        logger.debug('query_chain_metadata(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
         cursor.execute(sql)
@@ -75,6 +79,8 @@ class Database:
                              on tx_out.tx_id = tx_in.tx_out_id and tx_out.index = tx_in.tx_out_index
                              where tx_outer.id = tx_out.id
                          );'''
+        logger.debug('query_total_supply(), sql = {}'.format(sql))
+
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
@@ -83,6 +89,8 @@ class Database:
 
     def query_database_size(self):
         sql = 'select pg_size_pretty (pg_database_size (\'{}\'));'.format(self.config_params['database'])
+        logger.debug('query_database_size(), sql = {}'.format(sql))
+
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
@@ -91,6 +99,8 @@ class Database:
 
     def query_latest_slot(self):
         sql = 'select slot_no from block where block_no is not null order by block_no desc limit 1 ;'
+        logger.debug('query_latest_slot(), sql = {}'.format(sql))
+
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
@@ -102,6 +112,8 @@ class Database:
                      100 * (extract (epoch from (max (time) at time zone 'UTC')) - extract (epoch from (min (time) at time zone 'UTC')))
                          / (extract (epoch from (now () at time zone 'UTC')) - extract (epoch from (min (time) at time zone 'UTC')))
                      as sync_percent from block ;'''
+        logger.debug('query_sync_progress(), sql = {}'.format(sql))
+
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
@@ -110,6 +122,8 @@ class Database:
 
     def query_tx_fee(self, txid):
         sql = 'select tx.id, tx.fee from tx where tx.hash = \'\\x{}\';'.format(txid)
+        logger.debug('query_tx_fee(), sql = {}'.format(sql))
+
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
@@ -118,7 +132,8 @@ class Database:
 
     def query_utxo_outputs(self, txid):
         sql = 'select tx_out.* from tx_out inner join tx on tx_out.tx_id = tx.id where tx.hash = \'\\x{}\' ;'.format(txid)
-        #print('sql = {}'.format(sql))
+        logger.debug('query_utxo_outputs(), sql = {}'.format(sql))
+
         cursor = self.connection.cursor()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -130,6 +145,8 @@ class Database:
 
     def query_utxo_inputs(self, txid):
         sql = 'select tx_out.* from tx_out inner join tx_in on tx_out.tx_id = tx_in.tx_out_id inner join tx on tx.id = tx_in.tx_in_id and tx_in.tx_out_index = tx_out.index where tx.hash = \'\\x{}\' ;'.format(txid)
+        logger.debug('query_utxo_inputs(), sql = {}'.format(sql))
+
         cursor = self.connection.cursor()
         cursor.execute(sql)
         rows = cursor.fetchall()

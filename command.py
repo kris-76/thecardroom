@@ -5,17 +5,17 @@
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-# copies of the Software, and to permit persons to whom the Software is furnished 
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is furnished
 # to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all 
+# The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
@@ -25,8 +25,10 @@ File: command.py
 Author: Kris Henderson
 """
 
+from typing import List
 import subprocess
 import os
+import logging
 
 networks = {
     'testnet': ['--testnet-magic', '1097911063'],
@@ -39,12 +41,14 @@ node_socket_env = {
     'active': 'CARDANO_NODE_SOCKET_PATH'
 }
 
+logger = logging.getLogger('command')
+
 class Command:
     """
     Utility methods to run cardano commands.
 
     Sets the environment variables based on which network is being used.
-    Valid networks are 'testnet' and 'mainnet' defined in the networks 
+    Valid networks are 'testnet' and 'mainnet' defined in the networks
     dictionary object above.
     """
 
@@ -62,17 +66,18 @@ class Command:
         """
         Prints a command list.
         """
-        
-        print('Command: ', end='')
+        cmdstr = 'Command: '
+
         for c in command:
             if ' ' not in c:
-                print('{} '.format(c), end='')
+                cmdstr += '{} '.format(c)
             else:
-                print('\"{}\" '.format(c), end='')
-        print('')
+                cmdstr += '\"{}\" '.format(c)
+
+        logger.debug(cmdstr)
 
     @staticmethod
-    def run(command, network, input=None):
+    def run(command: List[str], network: str, input: str = None):
         """
         Run the specified command.
 
@@ -92,10 +97,10 @@ class Command:
         try:
             completed = subprocess.run(command, check=True, capture_output=True, text=True, input=input, env=envvars)
         except subprocess.CalledProcessError as e:
-            print('{} ERROR {}'.format(command[0], e.returncode))
-            print('output: {}'.format(e.output))
-            print('stdout: {}'.format(e.stdout))
-            print('stderr: {}'.format(e.stderr))
+            logger.error('{}, return code: {}'.format(command[0], e.returncode))
+            logger.error('output: {}'.format(e.output))
+            logger.error('stdout: {}'.format(e.stdout))
+            logger.error('stderr: {}'.format(e.stderr))
             raise e
 
         return completed.stdout.strip('\r\n')

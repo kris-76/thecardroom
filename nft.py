@@ -28,6 +28,7 @@ Author: Kris Henderson
 from typing import Dict, List
 import json
 import os
+import time
 
 class Nft:
     @staticmethod
@@ -64,6 +65,9 @@ class Nft:
 
     @staticmethod
     def merge_metadata_files(policy_id: str, nft_metadata_files: List[str]) -> str:
+        directory = os.path.dirname(nft_metadata_files[0])
+        merged_file = os.path.join(directory, 'nft_merged_metadata_{}.json'.format(round(time.time())))
+
         nft_merged_metadata = {}
         nft_merged_metadata['721'] = {}
         nft_merged_metadata['721'][policy_id] = {}
@@ -72,10 +76,10 @@ class Nft:
             token_name = nftmd['token-names'][0]
             nft_merged_metadata['721'][policy_id][token_name] = nftmd['properties'][token_name]
 
-        with open('merged_nft_metadata.json', 'w') as file:
+        with open(merged_file, 'w') as file:
             file.write(json.dumps(nft_merged_metadata, indent=4))
 
-        return 'merged_nft_metadata.json'
+        return merged_file
 
     @staticmethod
     def create_metadata(network: str,
