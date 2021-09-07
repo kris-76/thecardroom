@@ -240,7 +240,8 @@ def transfer_nft(cardano: Cardano,
 def burn_nft_internal(cardano: Cardano,
                       burning_wallet: Wallet,
                       policy_name: str,
-                      token_name: str) -> None:
+                      token_name: str,
+                      token_amount: int = 1) -> None:
     """
     Burn one NFT.
     """
@@ -265,7 +266,7 @@ def burn_nft_internal(cardano: Cardano,
                                              fee,
                                              policy_name,
                                              token_name,
-                                             1,
+                                             token_amount,
                                              'transaction/burn_nft_internal_draft_tx')
     #fee
     fee = cardano.calculate_min_fee('transaction/burn_nft_internal_draft_tx',
@@ -278,7 +279,7 @@ def burn_nft_internal(cardano: Cardano,
                                              fee,
                                              policy_name,
                                              token_name,
-                                             1,
+                                             token_amount,
                                              'transaction/burn_nft_internal_unsigned_tx')
     #sign
     cardano.sign_transaction('transaction/burn_nft_internal_unsigned_tx',
