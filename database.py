@@ -33,7 +33,7 @@ logger = logging.getLogger('database')
 
 # https://github.com/input-output-hk/cardano-db-sync/blob/master/doc/interesting-queries.md
 class Database:
-    def __init__(self, config_file):
+    def __init__(self, config_file: str):
         self.config_file = config_file
         self.config_params = Database.read_config_params(self.config_file)
         self.connection = psycopg2.connect(**self.config_params)
@@ -47,7 +47,7 @@ class Database:
         self.connection.close()
 
     @staticmethod
-    def read_config_params(filename):
+    def read_config_params(filename: str):
         section='postgresql'
         parser = ConfigParser()
         parser.read(filename)
@@ -69,6 +69,7 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
+        logger.debug('query_chain_metadata(), response:\r\n{}'.format(row))
         cursor.close()
         return row
 
@@ -84,6 +85,7 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
+        logger.debug('query_total_supply(), response:\r\n{}'.format(row))
         cursor.close()
         return row[0]
 
@@ -94,6 +96,7 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
+        logger.debug('query_database_size(), response:\r\n{}'.format(row))
         cursor.close()
         return row[0]
 
@@ -104,6 +107,7 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
+        logger.debug('query_latest_slot(), response:\r\n{}'.format(row))
         cursor.close()
         return int(row[0])
 
@@ -117,39 +121,43 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
+        logger.debug('query_sync_progress(), response:\r\n{}'.format(row))
         cursor.close()
         return float(row[0])
 
-    def query_tx_fee(self, txid):
+    def query_tx_fee(self, txid: str):
         sql = 'select tx.id, tx.fee from tx where tx.hash = \'\\x{}\';'.format(txid)
         logger.debug('query_tx_fee(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
+        logger.debug('query_tx_fee(), response:\r\n{}'.format(row))
         cursor.close()
         return (row[0], int(row[1]))
 
-    def query_utxo_outputs(self, txid):
+    def query_utxo_outputs(self, txid: str):
         sql = 'select tx_out.* from tx_out inner join tx on tx_out.tx_id = tx.id where tx.hash = \'\\x{}\' ;'.format(txid)
         logger.debug('query_utxo_outputs(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
         cursor.execute(sql)
         rows = cursor.fetchall()
+        logger.debug('query_utxo_outputs(), response:\r\n{}'.format(rows))
         outputs = []
         for row in rows:
             outputs.append({'address': row[3], 'value': int(row[7])})
         cursor.close()
         return outputs
 
-    def query_utxo_inputs(self, txid):
+    def query_utxo_inputs(self, txid: str):
         sql = 'select tx_out.* from tx_out inner join tx_in on tx_out.tx_id = tx_in.tx_out_id inner join tx on tx.id = tx_in.tx_in_id and tx_in.tx_out_index = tx_out.index where tx.hash = \'\\x{}\' ;'.format(txid)
         logger.debug('query_utxo_inputs(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
         cursor.execute(sql)
         rows = cursor.fetchall()
+        logger.debug('query_utxo_inputs(), response:\r\n{}'.format(rows))
         inputs = []
         for row in rows:
             inputs.append({'address': row[3], 'value': int(row[7])})

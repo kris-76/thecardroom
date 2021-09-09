@@ -94,6 +94,10 @@ class Command:
             command.extend(networks[network])
 
         Command.print_command(command)
+        if input != None:
+            logger.debug('\tinput: {}'.format(input))
+        else:
+            logger.debug('\tinput: None')
         try:
             completed = subprocess.run(command, check=True, capture_output=True, text=True, input=input, env=envvars)
         except subprocess.CalledProcessError as e:

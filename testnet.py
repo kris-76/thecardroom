@@ -26,7 +26,7 @@ console_handler.setLevel(logging.INFO)
 console_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
 console_handler.setFormatter(console_format)
 
-file_handler = logging.FileHandler('log/testnet_payments_{}'.format(round(time.time())))
+file_handler = logging.FileHandler('log/testnet_payments_{}.log'.format(round(time.time())))
 file_handler.setLevel(logging.DEBUG)
 file_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
 file_handler.setFormatter(file_format)

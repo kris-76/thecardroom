@@ -57,7 +57,7 @@ def transfer_all_assets(cardano: Cardano,
     Transfer all assets (lovelace and other tokens) from one wallet to another.
     """
 
-    logger.debug('Transfer All Assets, from: {}, to: {}'.format(from_wallet.get_name(), to_wallet.get_name()))
+    logger.debug('Transfer All Assets, from: {}, to: {}'.format(from_wallet.get_name(), to_wallet.get_payment_address()))
 
     (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
     # get all incoming assets from utxos
@@ -103,6 +103,53 @@ def transfer_all_assets(cardano: Cardano,
     #submit
     cardano.submit_transaction('transaction/transfer_all_assets_signed_tx')
 
+def transfer_utxo_ada(cardano: Cardano,
+                      from_wallet: Wallet,
+                      utxo: Dict,
+                      to_wallet: Wallet) -> None:
+    """
+    Transfer all ADA in the specified UTXO.  Gas fee comes from UTXO.
+    """
+
+    logger.debug('Transfer UTXO ADA, from: {}, to: {}'.format(from_wallet.get_name(), to_wallet.get_payment_address()))
+    if len(utxo['assets']) > 0:
+        logger.warning("Transfer UTXO ADA, UTXO contains other assets.  Skipping TX.")
+        return
+    logger.debug('Transfer UTXO ADA, UTXO: {}, lovelace: {}'.format(utxo['tx-hash'], utxo['amount']))
+
+    # Draft transaction for fee calculation
+    outputs = [{'address': to_wallet.get_payment_address(),
+                'amount': 1,
+                'assets': {}}]
+    fee = 0
+    cardano.create_transfer_transaction_file([utxo],
+                                             outputs,
+                                             fee,
+                                             'transaction/transfer_utxo_ada_draft_tx')
+
+    # Calculate fee & update values
+    fee = cardano.calculate_min_fee('transaction/transfer_utxo_ada_draft_tx',
+                                    1,
+                                    len(outputs),
+                                    1)
+    outputs[0]['amount'] = utxo['amount'] - fee
+    logger.debug('Transfer UTXO ADA, Fee = {} lovelace'.format(fee))
+    logger.debug('Transfer UTXO ADA, Lovelace = {} lovelace'.format(outputs[0]['amount']))
+
+    # Final unsigned transaction
+    cardano.create_transfer_transaction_file([utxo],
+                                             outputs,
+                                             fee,
+                                             'transaction/transfer_utxo_ada_unsigned_tx')
+
+    # Sign the transaction
+    cardano.sign_transaction('transaction/transfer_utxo_ada_unsigned_tx',
+                             from_wallet.get_signing_key_file(),
+                             'transaction/transfer_utxo_ada_signed_tx')
+
+    # submit
+    cardano.submit_transaction('transaction/transfer_utxo_ada_signed_tx')
+
 def transfer_ada(cardano: Cardano,
                  from_wallet: Wallet,
                  lovelace_amount: int,
@@ -111,7 +158,7 @@ def transfer_ada(cardano: Cardano,
     Transfer lovelace from one wallet to another.
     """
 
-    logger.debug('Transfer ADA, lovelace: {} from: {}, to: {}'.format(lovelace_amount, from_wallet.get_name(), to_wallet.get_name()))
+    logger.debug('Transfer ADA, lovelace: {} from: {}, to: {}'.format(lovelace_amount, from_wallet.get_name(), to_wallet.get_payment_address()))
 
     (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
     # get all incoming assets from utxos
@@ -168,7 +215,7 @@ def transfer_nft(cardano: Cardano,
     plus 1000000.  As of today, that is 2 ADA.
     """
 
-    logger.debug('Transfer NFT, from: {}, to: {}'.format(from_wallet.get_name(), to_wallet.get_name()))
+    logger.debug('Transfer NFT, from: {}, to: {}'.format(from_wallet.get_name(), to_wallet.get_payment_address()))
 
     (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
     # get all incoming assets from utxos
@@ -446,14 +493,9 @@ def mint_next_nft_in_series(cardano: Cardano,
         logger.warning('Mint Next Series NFT, No UTXO Inputs - Waiting for DB SYNC.  Skip for now.')
         return False
 
+    # There can be different addresses in the inputs.  Arbitrarily pick the
+    # first one.
     input_address = inputs[0]['address']
-    for inp in inputs:
-        if inp['address'] != input_address:
-            logger.warning("Mint Next Series NFT, Received multiple inputs with different address.")
-            logger.warning("Mint Next Series NFT, Don't know what to do.  Skipping.")
-            logger.warning('Mint Next Series NFT, inputs: {}'.format(inputs))
-            return False
-
     logger.info('Mint Next Series NFT, RX Payment From: {}'.format(input_address))
 
     destination = WalletExternal('customer',
@@ -502,6 +544,35 @@ def mint_next_nft_in_series(cardano: Cardano,
 
     return True
 
+def refund_payment(cardano: Cardano, database: Database, wallet: Wallet, utxo: Dict) -> None:
+    logger.debug('Refund Payment, from: {} / UTXO: {}'.format(wallet.get_name(), utxo['tx-hash']))
+    logger.debug('Refund Payment, amount: {} lovelace'.format(wallet.get_name(), utxo['amount']))
+
+    inputs = database.query_utxo_inputs(utxo['tx-hash'])
+    if len(inputs) == 0:
+        logger.warning('Refund Payment, No UTXO Inputs - Waiting for DB SYNC.  Skip for now.')
+        return False
+
+    # There can be different addresses in the inputs.  Arbitrarily pick the
+    # first one.
+    input_address = inputs[0]['address']
+    destination = WalletExternal('customer',
+                                 cardano.get_network(),
+                                 input_address)
+
+    transfer_utxo_ada(cardano, wallet, utxo, destination)
+
+    logger.debug('Refund Payment, Wait for transaction to complete')
+    iterations = 0
+    while cardano.contains_txhash(wallet, utxo['tx-hash']):
+        iterations += 1
+        if iterations >= 100:
+            logger.warning('Refund Payment, Timeout waiting for transaction to complete')
+            break
+        time.sleep(6)
+
+    return True
+
 def process_incoming_payments(cardano: Cardano,
                               database: Database,
                               minting_wallet: Wallet,
@@ -516,34 +587,32 @@ def process_incoming_payments(cardano: Cardano,
     @param prices A dictionary to define the price for a single item or a bundle.
     """
 
-    logger = logging.getLogger('tcr')
-
-    logger.info('Processing Payments')
+    logger.info('Monitor Incoming Payments on: {}'.format(minting_wallet.get_payment_address()))
 
     metadata_set = {}
     with open(metadata_set_file, "r") as file:
         metadata_set = json.loads(file.read())
 
     if metadata_set == None:
-        logger.warning('Series Metadata Set is None')
+        logger.warning('process_incoming_payments, Series Metadata Set is None')
         return
 
-    if len(metadata_set['files']) == 0:
-        logger.warning('Series Metadata Set File List is Empty')
-        return
-
-    while len(metadata_set['files']) > 0:
+    while True:
         (utxos, total_lovelace) = cardano.query_utxos(minting_wallet)
         for utxo in utxos:
+            logger.debug('process_incoming_payments, UTXO {}: {} lovelace'.format(utxo['tx-hash'], utxo['amount']))
             if utxo['amount'] in prices:
                 num_nfts = prices[utxo['amount']]
-                logger.info('Processing Payments, RX {} lovelace for {} NFTS'.format(utxo['amount'], num_nfts))
+                logger.info('RX {} lovelace for {} NFTS'.format(utxo['amount'], num_nfts))
                 if len(metadata_set['files']) < num_nfts:
-                    logger.error('Processing Payments, Not enough NFTs remaining')
-                    logger.error('Processing Payments, Requested: {}, Have: {}.  Need to refund UTXO: {}'.format(num_nfts,
-                                                                                                                 len(metadata_set['files']),
-                                                                                                                 utxo['tx-hash']))
-                    return
+                    logger.error('process_incoming_payments, NFT Requested: {}, Have: {}.  Refund UTXO: {}'.format(num_nfts,
+                                                                                                            len(metadata_set['files']),
+                                                                                                            utxo['tx-hash']))
+                    if not refund_payment(cardano, database, minting_wallet, utxo):
+                        logger.error('processing_incoming_payments, Fail to refund')
+                    else:
+                        logger.info('processing_incoming_payments, Refund complete.')
+                    continue
 
                 policy_id = cardano.get_policy_id(policy_name)
                 input_utxo_hash = utxo['tx-hash']
@@ -551,7 +620,7 @@ def process_incoming_payments(cardano: Cardano,
                 for i in range(0, num_nfts):
                     mdfile = metadata_set['files'].pop()
                     nft_metadata_files.append(mdfile)
-                    logger.debug('Processing Payments, merging NFT metadata: {}'.format(mdfile))
+                    logger.debug('process_incoming_payments, merging NFT metadata: {}'.format(mdfile))
 
                 merged_metadata_file = Nft.merge_metadata_files(policy_id,
                                                                 nft_metadata_files)
@@ -562,20 +631,22 @@ def process_incoming_payments(cardano: Cardano,
                                                policy_name,
                                                input_utxo_hash,
                                                merged_metadata_file):
-                    logger.error('Processing Payments, Minting Failed')
+                    logger.error('process_incoming_payments, Fail to mint')
                     for f in nft_metadata_files:
                         metadata_set['files'].append(f)
+                else:
+                    logger.info('Mint complete')
+                    logger.info('Monitor Incoming Payments on: {}'.format(minting_wallet.get_payment_address()))
 
                 with open(metadata_set_file, 'w') as file:
                     file.write(json.dumps(metadata_set, indent=4))
 
         if len(metadata_set['files']) == 0:
-            logger.info('Processing Payments, ALL NFTs MINTED!!!!!')
-            break
+            logger.info('ALL NFTs MINTED!!!!!')
 
-        logger.debug('Processing Payments, Waiting for matching UTXO')
+        logger.debug('process_incoming_payments, Waiting for matching UTXO')
         time.sleep(30)
 
-    logger.info('Processing Payments, !!!!!!!!!!!!!!!!!!!!!!!!')
-    logger.info('Processing Payments, !!! MINTING COMPLETE !!!')
-    logger.info('Processing Payments, !!!!!!!!!!!!!!!!!!!!!!!!')
+    logger.info('!!!!!!!!!!!!!!!!!!!!!!!!')
+    logger.info('!!! MINTING COMPLETE !!!')
+    logger.info('!!!!!!!!!!!!!!!!!!!!!!!!')

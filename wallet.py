@@ -5,17 +5,17 @@
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-# copies of the Software, and to permit persons to whom the Software is furnished 
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is furnished
 # to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all 
+# The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
@@ -25,16 +25,23 @@ File: wallet.py
 Author: Kris Henderson
 """
 
+from typing import Tuple
+
 import os
 from command import Command
+import logging
+
+logger = logging.getLogger('wallet')
 
 class Wallet:
-    """ 
+    """
     The Wallet class is used to create a new wallet and all operations
     associated with creating wallets.
+
+    Commands based on https://github.com/input-output-hk/cardano-addresses
     """
 
-    def __init__(self, name, network):
+    def __init__(self, name: str, network: str):
         """
         Construct a new instance of Wallet.
 
@@ -48,13 +55,20 @@ class Wallet:
 
         self.name = name
         self.network = network
+        self.payment_address = None
+        self.delegated_payment_address = None
+        self.stake_address = None
+        self.save_extra_files = False
+
         self.mnemonic_phrase_file = 'wallet/{}/{}.mnemonic'.format(self.network, name)
-        self.root_extended_private_key_file = 'wallet/{}/{}_root.xprv'.format(self.network, name)
-        self.extended_private_key_file = 'wallet/{}/{}_key.xsk'.format(self.network, name)
+        self.root_private_key_file = 'wallet/{}/{}_root.xprv'.format(self.network, name)
+        self.payment_private_key_file = 'wallet/{}/{}_key.xsk'.format(self.network, name)
+        self.stake_private_key_file = 'wallet/{}/{}_stake_key.xsk'.format(self.network, name)
+        self.payment_address_file = 'wallet/{}/{}_payment.addr'.format(self.network, name)
+        self.delegated_payment_address_file = 'wallet/{}/{}_delegated_payment.addr'.format(self.network, name)
+        self.stake_address_file = 'wallet/{}/{}_stake.addr'.format(self.network, name)
         self.signing_key_file = 'wallet/{}/{}_key.skey'.format(self.network, name)
         self.verification_key_file = 'wallet/{}/{}_key.vkey'.format(self.network, name)
-        self.payment_address = None
-        self.payment_address_file = 'wallet/{}/{}_payment.addr'.format(self.network, name)
 
     def get_name(self):
         return self.name
@@ -62,23 +76,71 @@ class Wallet:
     def exists(self):
         return os.path.exists(self.signing_key_file) and os.path.exists(self.verification_key_file) and os.path.exists(self.payment_address_file)
 
-    def create_new_wallet(self):
+    def setup_wallet(self, mnemonic: str=None, save_extra_files: bool=False):
+        """"
+        Create a new wallet or recover a wallet if the mnemonic is given.
+        """
+
+        logger.debug('Create new wallet: \'{}\''.format(self.name))
         if self.exists():
+            logger.warning('Create new wallet: \'{}\' already exists'.format(self.name))
             raise Exception("Wallet already exists.")
 
-        mnemonic = Wallet.create_mnemonic_phrase()
+        self.save_extra_files = save_extra_files
+
+        if mnemonic == None:
+            logger.debug('Generate new mnemonic')
+            mnemonic = Wallet.generate_mnemonic_phrase()
+        else:
+            logger.debug('Recover mnemonic')
         Command.write_to_file(self.mnemonic_phrase_file, mnemonic)
-        self.generate_key_files(mnemonic)
-        self.create_address_file()
+
+        root_private_key = Wallet.generate_root_private_key(mnemonic)
+        Command.write_to_file(self.root_private_key_file, root_private_key)
+
+        (payment_private_key, payment_verification_key) = Wallet.generate_payment_verification_key(root_private_key, 0)
+        if self.save_extra_files:
+            Command.write_to_file(self.payment_private_key_file, payment_private_key)
+
+        (stake_private_key, stake_verification_key) = Wallet.generate_stake_verification_key(root_private_key)
+        if self.save_extra_files:
+            Command.write_to_file(self.stake_private_key_file, stake_private_key)
+
+        payment_address = Wallet.generate_payment_address(self.network, payment_verification_key)
+        self.payment_address = payment_address
+        Command.write_to_file(self.payment_address_file, payment_address)
+
+        delegated_payment_address = Wallet.generate_delegated_payment_address(stake_verification_key, payment_address)
+        self.delegated_payment_address = delegated_payment_address
+        Command.write_to_file(self.delegated_payment_address_file, delegated_payment_address)
+
+        # Stake address not used.  Maybe later?
+        #stake_address = Wallet.generate_stake_address(self.network, stake_verification_key)
+        #Command.write_to_file(self.stake_address_file, stake_address)
+
+        self.create_signing_key_file()
+        self.create_verification_key_file()
+
         return self.exists()
 
-    def get_payment_address(self):
+    def get_payment_address(self, delegated: bool=True):
+        if delegated and os.path.isfile(self.delegated_payment_address_file):
+            return self.get_delegated_payment_address()
+
         self.payment_address = None
 
         with open(self.payment_address_file, 'r') as file:
             self.payment_address = file.read()
 
         return self.payment_address
+
+    def get_delegated_payment_address(self):
+        self.delegated_payment_address = None
+
+        with open(self.delegated_payment_address_file, 'r') as file:
+            self.delegated_payment_address = file.read()
+
+        return self.delegated_payment_address
 
     def get_signing_key_file(self):
         return self.signing_key_file
@@ -88,17 +150,18 @@ class Wallet:
 
     # Create a mnemonic phrase that can be used with cardano-wallet, yoroi, dadaelus, etc....
     @staticmethod
-    def create_mnemonic_phrase():
+    def generate_mnemonic_phrase():
         command = ['cardano-wallet', 'recovery-phrase', 'generate']
         output = Command.run(command, network=None)
+        logger.debug('Generate Mnemonic Phrase: {}'.format(output))
         return output
 
     @staticmethod
-    def create_root_extended_private_key(mnemonic):
+    def generate_root_private_key(mnemonic: str) -> str:
         command = ['cardano-address', 'key', 'from-recovery-phrase', 'Shelley']
         output = Command.run(command, input=mnemonic, network=None)
         return output
-    
+
     # Uses derivation path:
     #  - 1852H: purpose = not sure...
     #  - 1815H: coin-type = Cardano ADA
@@ -106,9 +169,39 @@ class Wallet:
     #  - 0:     change = receiving address
     #  - 0:     address_index increment to create a new payment address
     @staticmethod
-    def create_extended_private_key(root_extended_private_key):
-        command = ['cardano-address', 'key', 'child', '1852H/1815H/0H/0/0']
-        output = Command.run(command, input=root_extended_private_key, network=None)
+    def generate_payment_verification_key(root_private_key: str, idx: int = 0) -> Tuple[str, str]:
+        command = ['cardano-address', 'key', 'child', '1852H/1815H/0H/0/{}'.format(idx)]
+        payment_private_key = Command.run(command, input=root_private_key, network=None)
+
+        command = ['cardano-address', 'key', 'public', '--with-chain-code']
+        payment_verification_key = Command.run(command, input=payment_private_key, network=None)
+        return (payment_private_key, payment_verification_key)
+
+    @staticmethod
+    def generate_stake_verification_key(root_private_key: str) -> Tuple[str, str]:
+        command = ['cardano-address', 'key', 'child', '1852H/1815H/0H/2/0']
+        stake_private_key = Command.run(command, input=root_private_key, network=None)
+
+        command = ['cardano-address', 'key', 'public', '--with-chain-code']
+        stake_verification_key = Command.run(command, input=stake_private_key, network=None)
+        return (stake_private_key, stake_verification_key)
+
+    @staticmethod
+    def generate_payment_address(network: str, payment_verification_key: str) -> str:
+        command = ['cardano-address', 'address', 'payment', '--network-tag', network]
+        output = Command.run(command, input=payment_verification_key, network=None)
+        return output
+
+    @staticmethod
+    def generate_delegated_payment_address(stake_verification_key: str, payment_address: str) -> str:
+        command = ['cardano-address', 'address', 'delegation', stake_verification_key]
+        output = Command.run(command, input=payment_address, network=None)
+        return output
+
+    @staticmethod
+    def generate_stake_address(network: str, stake_verification_key: str) -> str:
+        command = ['cardano-address', 'address', 'stake', '--network-tag', network]
+        output = Command.run(command, input=stake_verification_key, network=None)
         return output
 
     # Private Signing Key : Is used to sign / approve transactions for your wallet. As
@@ -120,11 +213,12 @@ class Wallet:
     # 2. signing key (64 bytes) - b0bf46232c7f0f58ad333030e43ffbea7c2bb6f8135bd05fb0d343ade8453c5eacc7ac09f77e16b635832522107eaa9f56db88c615f537aa6025e6c23da98ae8
     # 3. verification key (32 bytes) - fbbbf6410e24532f35e9279febb085d2cc05b3b2ada1df77ea1951eb694f3834
     # 4. chain code (32 bytes) - b0be1868d1c36ef9089b3b094f5fe1d783e4d5fea14e2034c0397bee50e65a1a
-    def create_extended_signing_key_file(self):
-        command = ['cardano-cli', 'key', 'convert-cardano-address-key', '--shelley-payment-key', 
-                   '--signing-key-file', self.extended_private_key_file,
-                   '--out-file', self.signing_key_file]        
+    def create_signing_key_file(self):
+        command = ['cardano-cli', 'key', 'convert-cardano-address-key', '--shelley-payment-key',
+                   '--signing-key-file', self.payment_private_key_file,
+                   '--out-file', self.signing_key_file]
         output = Command.run(command, None)
+        logger.debug("Create Signing Key File: {}".format(self.signing_key_file))
         return output
 
     # Public Verification Key : Is used to derive a Cardano wallet address, a wallet
@@ -135,31 +229,12 @@ class Wallet:
     # The cborhex here contains of 3 parts:
     # 1. prefix 5840 - bytestring of 64 bytes
     # 2. verification key (32 bytes) - fbbbf6410e24532f35e9279febb085d2cc05b3b2ada1df77ea1951eb694f3834
-    # 3. chain code (32 bytes) - b0be1868d1c36ef9089b3b094f5fe1d783e4d5fea14e2034c0397bee50e65a1a    
-    def create_extended_verification_key_file(self):
+    # 3. chain code (32 bytes) - b0be1868d1c36ef9089b3b094f5fe1d783e4d5fea14e2034c0397bee50e65a1a
+    def create_verification_key_file(self):
         command = ['cardano-cli', 'key', 'verification-key', '--signing-key-file', self.signing_key_file,
                    '--verification-key-file', self.verification_key_file]
         output = Command.run(command, None)
-        return output
-
-    # following the example here: https://github.com/input-output-hk/cardano-addresses
-    def generate_key_files(self, mnemonic):
-        root_extended_private_key = Wallet.create_root_extended_private_key(mnemonic)
-        Command.write_to_file(self.root_extended_private_key_file, root_extended_private_key)
-
-        extended_private_key = Wallet.create_extended_private_key(root_extended_private_key)
-        Command.write_to_file(self.extended_private_key_file, extended_private_key)
-
-        self.create_extended_signing_key_file()
-        self.create_extended_verification_key_file()
-
-    # Since we now have our payment key-pair (skey and vkey), the next step would be to generate a wallet
-    # address.  Only the verification key (vkey) is used to generate the address.
-    def create_address_file(self):
-        command = ['cardano-cli', 'address', 'build', 
-                   '--payment-verification-key-file', self.verification_key_file,
-                   '--out-file', self.payment_address_file]
-        output = Command.run(command, self.network)
+        logger.debug('Create Verification Key File: {}'.format(self.verification_key_file))
         return output
 
 class WalletExternal(Wallet):
@@ -169,7 +244,7 @@ class WalletExternal(Wallet):
     another users wallet.
     """
 
-    def __init__(self, name, network, payment_address):
+    def __init__(self, name: str, network: str, payment_address: str):
         """
         Create an instance of WalletExternal.
 
@@ -181,13 +256,19 @@ class WalletExternal(Wallet):
         self.name = name
         self.network = network
         self.payment_address = payment_address
+        self.delegated_payment_address = None
+        self.stake_address = None
+        self.save_extra_files = False
 
         self.mnemonic_phrase_file = None
-        self.root_extended_private_key_file = None
-        self.extended_private_key_file = None
+        self.root_private_key_file = None
+        self.payment_private_key_file = None
+        self.stake_private_key_file = None
+        self.payment_address_file = None
+        self.delegated_payment_address_file = None
+        self.stake_address_file = None
         self.signing_key_file = None
         self.verification_key_file = None
-        self.payment_address_file = None
 
     def exists(self):
         return len(self.payment_address) > 0
@@ -195,6 +276,8 @@ class WalletExternal(Wallet):
     def get_verification_key_file(self):
         raise Exception("External wallet does not have verification key file")
 
-    def get_payment_address(self):
+    def get_payment_address(self, delegated: bool = True):
         return self.payment_address
 
+    def get_delegated_payment_address(self, delegated: bool = True):
+        return self.payment_address
