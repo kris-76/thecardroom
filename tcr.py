@@ -36,6 +36,7 @@ import json
 import random
 import time
 import logging
+from sales import Sales
 
 DAYS_PER_YEAR = int(365)
 MONTHS_PER_YEAR = int(12)
@@ -97,7 +98,7 @@ def transfer_all_assets(cardano: Cardano,
 
     # Sign the transaction
     cardano.sign_transaction('transaction/transfer_all_assets_unsigned_tx',
-                             from_wallet.get_signing_key_file(),
+                             [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
                              'transaction/transfer_all_assets_signed_tx')
 
     #submit
@@ -144,11 +145,13 @@ def transfer_utxo_ada(cardano: Cardano,
 
     # Sign the transaction
     cardano.sign_transaction('transaction/transfer_utxo_ada_unsigned_tx',
-                             from_wallet.get_signing_key_file(),
+                             [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
                              'transaction/transfer_utxo_ada_signed_tx')
 
     # submit
     cardano.submit_transaction('transaction/transfer_utxo_ada_signed_tx')
+
+    return (fee, utxo['amount'] - fee)
 
 def transfer_ada(cardano: Cardano,
                  from_wallet: Wallet,
@@ -198,7 +201,7 @@ def transfer_ada(cardano: Cardano,
 
     # Sign the transaction
     cardano.sign_transaction('transaction/transfer_ada_unsigned_tx',
-                             from_wallet.get_signing_key_file(),
+                             [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
                              'transaction/transfer_ada_signed_tx')
 
     #submit
@@ -278,7 +281,7 @@ def transfer_nft(cardano: Cardano,
 
     # Sign the transaction
     cardano.sign_transaction('transaction/transfer_nft_unsigned_tx',
-                             from_wallet.get_signing_key_file(),
+                             [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
                              'transaction/transfer_nft_signed_tx')
 
     #submit
@@ -330,7 +333,7 @@ def burn_nft_internal(cardano: Cardano,
                                              'transaction/burn_nft_internal_unsigned_tx')
     #sign
     cardano.sign_transaction('transaction/burn_nft_internal_unsigned_tx',
-                             burning_wallet.get_signing_key_file(),
+                             [burning_wallet.get_signing_key_file(0), burning_wallet.get_signing_key_file(1)],
                              'transaction/burn_nft_internal_signed_tx')
     #submit
     cardano.submit_transaction('transaction/burn_nft_internal_signed_tx')
@@ -380,7 +383,7 @@ def mint_nft_internal(cardano: Cardano,
                                              'transaction/mint_nft_internal_unsigned_tx')
     #sign
     cardano.sign_transaction('transaction/mint_nft_internal_unsigned_tx',
-                             minting_wallet.get_signing_key_file(),
+                             [minting_wallet.get_signing_key_file(0), minting_wallet.get_signing_key_file(1)],
                              'transaction/mint_nft_internal_signed_tx')
     #submit
     cardano.submit_transaction('transaction/mint_nft_internal_signed_tx')
@@ -402,7 +405,7 @@ def mint_nft_external(cardano: Cardano,
     logger.debug('Mint NFT External, NFT: {}, destination: {}'.format(nft_metadata_file, destination_wallet.get_payment_address()))
 
     incoming_utxos = []
-    (minting_utxos, minting_lovelace) = cardano.query_utxos(minting_wallet)
+    (minting_utxos, minting_lovelace) = cardano.query_utxos(minting_wallet, [minting_wallet.get_payment_address()])
 
     incoming_assets = {}
     for utxo in minting_utxos:
@@ -419,7 +422,7 @@ def mint_nft_external(cardano: Cardano,
 
     # The NFT minted will be added to the output when the transaction is created
     address_outputs = [{
-                            'address': minting_wallet.get_payment_address(),
+                            'address': minting_wallet.get_payment_address(0),
                             'amount': 1, 'assets': incoming_assets
                        },
                        {
@@ -468,7 +471,7 @@ def mint_nft_external(cardano: Cardano,
                                              'transaction/mint_nft_external_unsigned_tx')
     #sign
     cardano.sign_transaction('transaction/mint_nft_external_unsigned_tx',
-                             minting_wallet.get_signing_key_file(),
+                             [minting_wallet.get_signing_key_file(0), minting_wallet.get_signing_key_file(1)],
                              'transaction/mint_nft_external_signed_tx')
     #submit
     cardano.submit_transaction('transaction/mint_nft_external_signed_tx')
@@ -478,7 +481,8 @@ def mint_next_nft_in_series(cardano: Cardano,
                             minting_wallet: Wallet,
                             policy_name: str,
                             input_utxo_hash: str,
-                            nft_metadata_file: str) -> bool:
+                            nft_metadata_file: str,
+                            sales: Sales) -> bool:
     """
     Mint the NFT defined in nft_metadata_file.
 
@@ -496,6 +500,7 @@ def mint_next_nft_in_series(cardano: Cardano,
     # There can be different addresses in the inputs.  Arbitrarily pick the
     # first one.
     input_address = inputs[0]['address']
+    sales.set_input_address(input_address)
     logger.info('Mint Next Series NFT, RX Payment From: {}'.format(input_address))
 
     destination = WalletExternal('customer',
@@ -506,7 +511,8 @@ def mint_next_nft_in_series(cardano: Cardano,
     policy_id = nft_metadata['policy-id']
     token_name = nft_metadata['token-names'][0]
 
-    logger.info('Mint Next Series NFT, Minting NFT to external wallet')
+    logger.info('Mint Next Series NFT, Minting NFT: {}'.format(nft_metadata['token-names']))
+    sales.set_tokens_purchased(nft_metadata['token-names'])
     mint_nft_external(cardano,
                       minting_wallet,
                       policy_name,
@@ -520,6 +526,7 @@ def mint_next_nft_in_series(cardano: Cardano,
         iterations += 1
         if iterations >= 100:
             logger.warning('Mint Next Series NFT, Timeout waiting for txhash')
+            sales.set_timeout(True)
             break
 
         time.sleep(6)
@@ -531,20 +538,27 @@ def mint_next_nft_in_series(cardano: Cardano,
         iterations += 1
         if iterations >= 100:
             logger.warning('Mint Next Series NFT, Timeout waiting for asset')
+            sales.set_timeout(True)
             break
 
         time.sleep(6)
 
     utxo = cardano.get_utxo(destination, '{}.{}'.format(policy_id, token_name))
-    logger.info('TX HASH: {}'.format(utxo['tx-hash']))
-    for a in utxo['assets']:
-        logger.info('\t{} {}'.format(utxo['assets'][a], a))
+    if utxo != None:
+        sales.set_output_utxo(utxo['tx-hash'])
+        logger.info('TX HASH: {}'.format(utxo['tx-hash']))
+        for a in utxo['assets']:
+            logger.info('\t{} {}'.format(utxo['assets'][a], a))
 
     logger.info('Mint Next Series NFT, Transaction Complete!  {}'.format(utxo['tx-hash']))
 
     return True
 
-def refund_payment(cardano: Cardano, database: Database, wallet: Wallet, utxo: Dict) -> None:
+def refund_payment(cardano: Cardano,
+                   database: Database,
+                   wallet: Wallet,
+                   utxo: Dict,
+                   sales: Sales) -> None:
     logger.debug('Refund Payment, from: {} / UTXO: {}'.format(wallet.get_name(), utxo['tx-hash']))
     logger.debug('Refund Payment, amount: {} lovelace'.format(wallet.get_name(), utxo['amount']))
 
@@ -553,14 +567,16 @@ def refund_payment(cardano: Cardano, database: Database, wallet: Wallet, utxo: D
         logger.warning('Refund Payment, No UTXO Inputs - Waiting for DB SYNC.  Skip for now.')
         return False
 
-    # There can be different addresses in the inputs.  Arbitrarily pick the
-    # first one.
+    # There can be different addresses in the inputs but they should be from the
+    # same wallet, Arbitrarily pick the first one.
     input_address = inputs[0]['address']
+    sales.set_input_address(input_address)
     destination = WalletExternal('customer',
                                  cardano.get_network(),
                                  input_address)
 
-    transfer_utxo_ada(cardano, wallet, utxo, destination)
+    (fee, amount) = transfer_utxo_ada(cardano, wallet, utxo, destination)
+    sales.set_refund_data(fee, amount)
 
     logger.debug('Refund Payment, Wait for transaction to complete')
     iterations = 0
@@ -568,6 +584,7 @@ def refund_payment(cardano: Cardano, database: Database, wallet: Wallet, utxo: D
         iterations += 1
         if iterations >= 100:
             logger.warning('Refund Payment, Timeout waiting for transaction to complete')
+            sales.set_timeout(True)
             break
         time.sleep(6)
 
@@ -588,37 +605,44 @@ def process_incoming_payments(cardano: Cardano,
     """
 
     logger.info('Monitor Incoming Payments on: {}'.format(minting_wallet.get_payment_address()))
+    sales = Sales(cardano.get_network())
 
     metadata_set = {}
     with open(metadata_set_file, "r") as file:
+        logger.info('process_incoming_payments, Opened: {}'.format(metadata_set_file))
         metadata_set = json.loads(file.read())
 
     if metadata_set == None:
         logger.warning('process_incoming_payments, Series Metadata Set is None')
         return
 
+    logger.info('process_incoming_payments, NFTs Remaining: {}'.format(len(metadata_set['files'])))
+
     while True:
-        (utxos, total_lovelace) = cardano.query_utxos(minting_wallet)
+        (utxos, total_lovelace) = cardano.query_utxos(minting_wallet, [minting_wallet.get_payment_address()])
         for utxo in utxos:
             logger.debug('process_incoming_payments, UTXO {}: {} lovelace'.format(utxo['tx-hash'], utxo['amount']))
             if utxo['amount'] in prices:
                 num_nfts = prices[utxo['amount']]
                 logger.info('RX {} lovelace for {} NFTS'.format(utxo['amount'], num_nfts))
+                sales.set_input_utxo(utxo['tx-hash'], utxo['amount'])
+                sales.set_purchase_amount(num_nfts)
                 if len(metadata_set['files']) < num_nfts:
                     logger.error('process_incoming_payments, NFT Requested: {}, Have: {}.  Refund UTXO: {}'.format(num_nfts,
                                                                                                             len(metadata_set['files']),
                                                                                                             utxo['tx-hash']))
-                    if not refund_payment(cardano, database, minting_wallet, utxo):
+                    if not refund_payment(cardano, database, minting_wallet, utxo, sales):
                         logger.error('processing_incoming_payments, Fail to refund')
                     else:
                         logger.info('processing_incoming_payments, Refund complete.')
+                    sales.commit()
                     continue
 
                 policy_id = cardano.get_policy_id(policy_name)
                 input_utxo_hash = utxo['tx-hash']
                 nft_metadata_files = []
                 for i in range(0, num_nfts):
-                    mdfile = metadata_set['files'].pop()
+                    mdfile = metadata_set['files'].pop(0)
                     nft_metadata_files.append(mdfile)
                     logger.debug('process_incoming_payments, merging NFT metadata: {}'.format(mdfile))
 
@@ -630,7 +654,8 @@ def process_incoming_payments(cardano: Cardano,
                                                minting_wallet,
                                                policy_name,
                                                input_utxo_hash,
-                                               merged_metadata_file):
+                                               merged_metadata_file,
+                                               sales):
                     logger.error('process_incoming_payments, Fail to mint')
                     for f in nft_metadata_files:
                         metadata_set['files'].append(f)
@@ -638,6 +663,7 @@ def process_incoming_payments(cardano: Cardano,
                     logger.info('Mint complete')
                     logger.info('Monitor Incoming Payments on: {}'.format(minting_wallet.get_payment_address()))
 
+                sales.commit()
                 with open(metadata_set_file, 'w') as file:
                     file.write(json.dumps(metadata_set, indent=4))
 

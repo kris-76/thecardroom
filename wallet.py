@@ -62,24 +62,51 @@ class Wallet:
 
         self.mnemonic_phrase_file = 'wallet/{}/{}.mnemonic'.format(self.network, name)
         self.root_private_key_file = 'wallet/{}/{}_root.xprv'.format(self.network, name)
-        self.payment_private_key_file = 'wallet/{}/{}_key.xsk'.format(self.network, name)
+        self.payment_private_key_file_base = 'wallet/{}/{}_{}_key.xsk'.format(self.network, name, '{}')
         self.stake_private_key_file = 'wallet/{}/{}_stake_key.xsk'.format(self.network, name)
-        self.payment_address_file = 'wallet/{}/{}_payment.addr'.format(self.network, name)
-        self.delegated_payment_address_file = 'wallet/{}/{}_delegated_payment.addr'.format(self.network, name)
+        self.payment_address_file_base = 'wallet/{}/{}_{}_payment.addr'.format(self.network, name, '{}')
+        self.delegated_payment_address_file_base = 'wallet/{}/{}_{}_delegated_payment.addr'.format(self.network, name, '{}')
         self.stake_address_file = 'wallet/{}/{}_stake.addr'.format(self.network, name)
-        self.signing_key_file = 'wallet/{}/{}_key.skey'.format(self.network, name)
-        self.verification_key_file = 'wallet/{}/{}_key.vkey'.format(self.network, name)
+        self.signing_key_file_base = 'wallet/{}/{}_{}_key.skey'.format(self.network, name, '{}')
+        self.verification_key_file_base = 'wallet/{}/{}_{}_key.vkey'.format(self.network, name, '{}')
 
     def get_name(self):
         return self.name
 
     def exists(self):
-        return os.path.exists(self.signing_key_file) and os.path.exists(self.verification_key_file) and os.path.exists(self.payment_address_file)
+        if not os.path.isfile(self.signing_key_file_base.format(0)):
+            print('1')
+            return False
+
+        if not os.path.isfile(self.verification_key_file_base.format(0)):
+            print('2')
+            return False
+
+        if not os.path.isfile(self.payment_address_file_base.format(0)):
+            print('3')
+            return False
+
+        if not os.path.isfile(self.signing_key_file_base.format(1)):
+            print('4: {}'.format(self.signing_key_file_base.format(1)))
+            return False
+
+        if not os.path.isfile(self.verification_key_file_base.format(1)):
+            print('5')
+            return False
+
+        if not os.path.isfile(self.payment_address_file_base.format(1)):
+            print('6')
+            return False
+
+        return True
 
     def setup_wallet(self, mnemonic: str=None, save_extra_files: bool=False):
         """"
         Create a new wallet or recover a wallet if the mnemonic is given.
         """
+
+        # First create wallet for address index 0
+        idx = 0
 
         logger.debug('Create new wallet: \'{}\''.format(self.name))
         if self.exists():
@@ -98,9 +125,9 @@ class Wallet:
         root_private_key = Wallet.generate_root_private_key(mnemonic)
         Command.write_to_file(self.root_private_key_file, root_private_key)
 
-        (payment_private_key, payment_verification_key) = Wallet.generate_payment_verification_key(root_private_key, 0)
-        if self.save_extra_files:
-            Command.write_to_file(self.payment_private_key_file, payment_private_key)
+        (payment_private_key, payment_verification_key) = Wallet.generate_payment_verification_key(root_private_key, idx)
+        fname = self.payment_private_key_file_base.format(idx)
+        Command.write_to_file(fname, payment_private_key)
 
         (stake_private_key, stake_verification_key) = Wallet.generate_stake_verification_key(root_private_key)
         if self.save_extra_files:
@@ -108,45 +135,79 @@ class Wallet:
 
         payment_address = Wallet.generate_payment_address(self.network, payment_verification_key)
         self.payment_address = payment_address
-        Command.write_to_file(self.payment_address_file, payment_address)
+        fname = self.payment_address_file_base.format(idx)
+        Command.write_to_file(fname, payment_address)
 
         delegated_payment_address = Wallet.generate_delegated_payment_address(stake_verification_key, payment_address)
         self.delegated_payment_address = delegated_payment_address
-        Command.write_to_file(self.delegated_payment_address_file, delegated_payment_address)
+        fname = self.delegated_payment_address_file_base.format(idx)
+        Command.write_to_file(fname, delegated_payment_address)
 
         # Stake address not used.  Maybe later?
         #stake_address = Wallet.generate_stake_address(self.network, stake_verification_key)
         #Command.write_to_file(self.stake_address_file, stake_address)
 
-        self.create_signing_key_file()
-        self.create_verification_key_file()
+        self.create_signing_key_file(idx)
+        self.create_verification_key_file(idx)
 
+        # Then create address index 1
+        idx = 1
+        self.setup_address(idx)
         return self.exists()
 
-    def get_payment_address(self, delegated: bool=True):
-        if delegated and os.path.isfile(self.delegated_payment_address_file):
-            return self.get_delegated_payment_address()
+    def setup_address(self, idx: int):
+        """
+        Create new addresses for the specied index
+        """
+
+        with open(self.root_private_key_file, 'r') as file:
+            root_private_key = file.read()
+
+            (payment_private_key, payment_verification_key) = Wallet.generate_payment_verification_key(root_private_key, idx)
+            fname = self.payment_private_key_file_base.format(idx)
+            Command.write_to_file(fname, payment_private_key)
+
+            payment_address = Wallet.generate_payment_address(self.network, payment_verification_key)
+            self.payment_address = payment_address
+            fname = self.payment_address_file_base.format(idx)
+            Command.write_to_file(fname, payment_address)
+
+            (stake_private_key, stake_verification_key) = Wallet.generate_stake_verification_key(root_private_key)
+
+            delegated_payment_address = Wallet.generate_delegated_payment_address(stake_verification_key, payment_address)
+            self.delegated_payment_address = delegated_payment_address
+            fname = self.delegated_payment_address_file_base.format(idx)
+            Command.write_to_file(fname, delegated_payment_address)
+
+            self.create_signing_key_file(idx)
+            self.create_verification_key_file(idx)
+
+    def get_payment_address(self, idx: int = 1, delegated: bool=True):
+        if delegated and os.path.isfile(self.delegated_payment_address_file_base.format(idx)):
+            return self.get_delegated_payment_address(idx)
 
         self.payment_address = None
 
-        with open(self.payment_address_file, 'r') as file:
+        addr_file = self.payment_address_file_base.format(idx)
+        with open(addr_file, 'r') as file:
             self.payment_address = file.read()
 
         return self.payment_address
 
-    def get_delegated_payment_address(self):
+    def get_delegated_payment_address(self, idx: int=1):
         self.delegated_payment_address = None
 
-        with open(self.delegated_payment_address_file, 'r') as file:
+        addr_file = self.delegated_payment_address_file_base.format(idx)
+        with open(addr_file, 'r') as file:
             self.delegated_payment_address = file.read()
 
         return self.delegated_payment_address
 
-    def get_signing_key_file(self):
-        return self.signing_key_file
+    def get_signing_key_file(self, idx: int) -> str:
+        return self.signing_key_file_base.format(idx)
 
-    def get_verification_key_file(self):
-        return self.verification_key_file
+    def get_verification_key_file(self, idx: int) -> str:
+        return self.verification_key_file_base.format(idx)
 
     # Create a mnemonic phrase that can be used with cardano-wallet, yoroi, dadaelus, etc....
     @staticmethod
@@ -213,12 +274,12 @@ class Wallet:
     # 2. signing key (64 bytes) - b0bf46232c7f0f58ad333030e43ffbea7c2bb6f8135bd05fb0d343ade8453c5eacc7ac09f77e16b635832522107eaa9f56db88c615f537aa6025e6c23da98ae8
     # 3. verification key (32 bytes) - fbbbf6410e24532f35e9279febb085d2cc05b3b2ada1df77ea1951eb694f3834
     # 4. chain code (32 bytes) - b0be1868d1c36ef9089b3b094f5fe1d783e4d5fea14e2034c0397bee50e65a1a
-    def create_signing_key_file(self):
+    def create_signing_key_file(self, idx: int):
         command = ['cardano-cli', 'key', 'convert-cardano-address-key', '--shelley-payment-key',
-                   '--signing-key-file', self.payment_private_key_file,
-                   '--out-file', self.signing_key_file]
+                   '--signing-key-file', self.payment_private_key_file_base.format(idx),
+                   '--out-file', self.signing_key_file_base.format(idx)]
         output = Command.run(command, None)
-        logger.debug("Create Signing Key File: {}".format(self.signing_key_file))
+        logger.debug("Create Signing Key File: {}".format(self.signing_key_file_base.format(idx)))
         return output
 
     # Public Verification Key : Is used to derive a Cardano wallet address, a wallet
@@ -230,11 +291,11 @@ class Wallet:
     # 1. prefix 5840 - bytestring of 64 bytes
     # 2. verification key (32 bytes) - fbbbf6410e24532f35e9279febb085d2cc05b3b2ada1df77ea1951eb694f3834
     # 3. chain code (32 bytes) - b0be1868d1c36ef9089b3b094f5fe1d783e4d5fea14e2034c0397bee50e65a1a
-    def create_verification_key_file(self):
-        command = ['cardano-cli', 'key', 'verification-key', '--signing-key-file', self.signing_key_file,
-                   '--verification-key-file', self.verification_key_file]
+    def create_verification_key_file(self, idx: int):
+        command = ['cardano-cli', 'key', 'verification-key', '--signing-key-file', self.signing_key_file_base.format(idx),
+                   '--verification-key-file', self.verification_key_file_base.format(idx)]
         output = Command.run(command, None)
-        logger.debug('Create Verification Key File: {}'.format(self.verification_key_file))
+        logger.debug('Create Verification Key File: {}'.format(self.verification_key_file_base.format(idx)))
         return output
 
 class WalletExternal(Wallet):
@@ -276,8 +337,8 @@ class WalletExternal(Wallet):
     def get_verification_key_file(self):
         raise Exception("External wallet does not have verification key file")
 
-    def get_payment_address(self, delegated: bool = True):
+    def get_payment_address(self, idx: int = 1, delegated: bool=True):
         return self.payment_address
 
-    def get_delegated_payment_address(self, delegated: bool = True):
+    def get_delegated_payment_address(self, idx: int = 1, delegated: bool=True):
         return self.payment_address

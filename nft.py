@@ -29,6 +29,7 @@ from typing import Dict, List
 import json
 import os
 import time
+import random
 
 class Nft:
     @staticmethod
@@ -123,32 +124,68 @@ class Nft:
                                  base_nft_id: int,
                                  token_name: str,
                                  nft_name: str,
-                                 metadata: Dict) -> List[str]:
+                                 metadata: Dict,
+                                 codewords: List[str]) -> List[str]:
         count = metadata['count']
         fnames = []
         for i in range(0, count):
-            metadata['properties']['id'] = base_nft_id + i
-            fname = Nft.create_metadata(network, policy_id, series_name, token_name.format(i+1), nft_name.format(i+1), metadata)
+            if 'id' in metadata['properties']:
+                metadata['properties']['id'] = base_nft_id + i
+
+            if 'code' in metadata['properties']:
+                metadata['properties']['code'] = random.randint(0, 0xFFFFFFFF)
+
+            if 'word' in metadata['properties']:
+                metadata['properties']['word'] = codewords.pop()
+
+            fname = Nft.create_metadata(network,
+                                        policy_id,
+                                        series_name,
+                                        token_name.format(i+1),
+                                        nft_name.format(i+1),
+                                        metadata)
             fnames.append(fname)
         return fnames
 
     @staticmethod
     def create_series_metadata_set(network: str,
                                    policy_id: str,
-                                   metadata: Dict) -> List[str]:
+                                   metadata: Dict,
+                                   codewords: List[str]) -> List[str]:
         series = metadata['series']
         series_name = metadata['drop-name']
         init_nft_id = metadata['init-nft-id']
         base_token_name = metadata['token-name']
         base_nft_name = metadata['nft-name']
 
-        fnames = []
+        card_lists = []
+        total = 0
         for card in metadata['cards']:
             token_name = base_token_name.format(series, card['id'], '{:03}')
             nft_name = base_nft_name.format(series, card['id'], '{}', card['count'])
-            files = Nft.create_card_metadata_set(network, policy_id, series_name, init_nft_id, token_name, nft_name, card)
+            files = Nft.create_card_metadata_set(network,
+                                                 policy_id,
+                                                 series_name,
+                                                 init_nft_id,
+                                                 token_name,
+                                                 nft_name,
+                                                 card,
+                                                 codewords)
+            card_lists.append(files)
+            total += card['count']
 
             init_nft_id += card['count']
-            fnames.extend(files)
+
+        fnames = []
+        while total > 0:
+            num = random.randint(0, total-1)
+            for l in card_lists:
+                if num > len(l):
+                    num -= len(l)
+                elif len(l) > 0:
+                    item = l.pop(0)
+                    fnames.append(item)
+                    break
+            total -=1
 
         return fnames
