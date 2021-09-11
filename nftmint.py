@@ -123,6 +123,7 @@ def main():
     cardano = Cardano(network, '{}_protocol_parameters.json'.format(network))
 
     logger.info('{} Payment Processor / NFT Minter'.format(network.upper()))
+    logger.info('Copyright 2021 Kristofer Henderson & thecardroom.io')
     logger.info('Allow Create New Objects: {}'.format(allow_new))
     logger.info('Network: {}'.format(network))
     logger.info('Policy: {} / {}'.format(policy_name, cardano.get_policy_id(policy_name)))
