@@ -132,16 +132,16 @@ def main():
     tip = cardano.query_tip()
     cardano.query_protocol_parameters()
     tip_slot = tip['slot']
-    logger.info('Cardano Node Tip Slot: {}'.format(tip_slot))
 
     database = Database('{}.ini'.format(network))
     meta = database.query_chain_metadata()
     db_size = database.query_database_size()
     latest_slot = database.query_latest_slot()
     sync_progress = database.query_sync_progress()
-    logger.debug('Database Chain Metadata: {} / {}'.format(meta[1], meta[2]))
-    logger.debug('Database Size: {}'.format(db_size))
-    logger.info('Database Latest Slot: {}'.format(latest_slot))
+    logger.info('Database Chain Metadata: {} / {}'.format(meta[1], meta[2]))
+    logger.info('Database Size: {}'.format(db_size))
+    logger.info('Cardano Node Tip Slot: {}'.format(tip_slot))
+    logger.info(' Database Latest Slot: {}'.format(latest_slot))
     logger.info('Sync Progress: {}'.format(sync_progress))
 
     metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name, allow_new)

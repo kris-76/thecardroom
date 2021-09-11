@@ -458,6 +458,26 @@ def mint_nft_external(cardano: Cardano,
     address_outputs[0]['amount'] = total_input_lovelace - min_utxo_value - fee
     address_outputs[1]['amount'] = min_utxo_value
 
+    # If our profit is less than 0.5 then just send everything back to the
+    # purchaser.  This represents a special case where we are allowing someone
+    # to mint our NFTs only for the network gas fee.
+    if address_outputs[0]['amount'] < 0.5:
+        logger.debug('Mint NFT External, adjust outputs')
+        address_outputs[0]['amount'] = 0
+        address_outputs[1]['amount'] = total_input_lovelace - fee
+    else:
+        # Make sure the amount we are sending to ourself is above the min ada value.
+        # This should not be a problem unless selling NFTs for very cheap.  Refund
+        # send to the purchaser is padded quite a bit.  So take some from here and
+        # hope there's enough to go around
+        if address_outputs[0]['amount'] - cardano.get_min_utxo_value() < 0:
+            logger.debug('Mint NFT External, adjust outputs')
+            diff = cardano.get_min_utxo_value() - address_outputs[0]['amount']
+            address_outputs[0]['amount'] += diff
+            address_outputs[1]['amount'] -= diff
+
+    logger.debug('Mint NFT External, output[0] {} = {}'.format(address_outputs[0]['address'], address_outputs[0]['amount']))
+    logger.debug('Mint NFT External, output[1] {} = {}'.format(address_outputs[1]['address'], address_outputs[1]['amount']))
     logger.debug('Mint NFT External, Fee = {} lovelace'.format(fee))
     logger.debug('Mint NFT External, ADA min tx = {} lovelace'.format(min_utxo_value))
 

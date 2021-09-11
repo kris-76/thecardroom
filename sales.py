@@ -72,7 +72,7 @@ class Sales:
     def set_output_utxo(self, hash: str) -> None:
         self.output_hash = hash
 
-    def set_refund(self, fee: int, amount: int) -> None:
+    def set_refund_data(self, fee: int, amount: int) -> None:
         self.refund_fee = fee
         self.refund_amount = amount
 
