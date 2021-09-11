@@ -26,10 +26,10 @@ Author: Kris Henderson
 """
 
 from typing import Tuple
-
 import os
-from command import Command
 import logging
+
+from command import Command
 
 logger = logging.getLogger('wallet')
 
@@ -41,7 +41,9 @@ class Wallet:
     Commands based on https://github.com/input-output-hk/cardano-addresses
     """
 
-    def __init__(self, name: str, network: str):
+    def __init__(self,
+                 name: str,
+                 network: str):
         """
         Construct a new instance of Wallet.
 
@@ -70,39 +72,52 @@ class Wallet:
         self.signing_key_file_base = 'wallet/{}/{}_{}_key.skey'.format(self.network, name, '{}')
         self.verification_key_file_base = 'wallet/{}/{}_{}_key.vkey'.format(self.network, name, '{}')
 
-    def get_name(self):
+    def get_name(self) -> str:
+        """
+        Return the name of the wallet.
+        """
+
         return self.name
 
-    def exists(self):
+    def exists(self) -> bool:
+        """
+        Check to make sure the default files exist.
+        """
+
         if not os.path.isfile(self.signing_key_file_base.format(0)):
-            print('1')
             return False
 
         if not os.path.isfile(self.verification_key_file_base.format(0)):
-            print('2')
             return False
 
         if not os.path.isfile(self.payment_address_file_base.format(0)):
-            print('3')
             return False
 
         if not os.path.isfile(self.signing_key_file_base.format(1)):
-            print('4: {}'.format(self.signing_key_file_base.format(1)))
             return False
 
         if not os.path.isfile(self.verification_key_file_base.format(1)):
-            print('5')
             return False
 
         if not os.path.isfile(self.payment_address_file_base.format(1)):
-            print('6')
             return False
 
         return True
 
-    def setup_wallet(self, mnemonic: str=None, save_extra_files: bool=False):
+    def setup_wallet(self,
+                     mnemonic: str=None,
+                     save_extra_files: bool=False) -> bool:
         """"
         Create a new wallet or recover a wallet if the mnemonic is given.
+
+        @param mnemonic Recover a wallet from this mnemonic phrase.  If not specified
+                        then a new phrase and wallet will be generated.
+        @param save_extra_files Store extra files not normally needed.
+
+        This will setup two addresses on the wallet.  A 'private' wallet at
+        index 0 and a 'public' wallet at index 1.
+
+        @return True if the wallet was successfully created.
         """
 
         # First create wallet for address index 0
@@ -155,9 +170,12 @@ class Wallet:
         self.setup_address(idx)
         return self.exists()
 
-    def setup_address(self, idx: int):
+    def setup_address(self,
+                      idx: int) -> None:
         """
-        Create new addresses for the specied index
+        Create new addresses for the specied index.
+
+        @param idx Index for the address
         """
 
         with open(self.root_private_key_file, 'r') as file:
@@ -182,31 +200,55 @@ class Wallet:
             self.create_signing_key_file(idx)
             self.create_verification_key_file(idx)
 
-    def get_payment_address(self, idx: int = 1, delegated: bool=True):
+    def get_payment_address(self,
+                            idx: int=1,
+                            delegated: bool=True) -> str:
+        """
+        Get the payment address for the specified index, delegated or not.
+
+        @param idx Index for the address to get.
+        @param delegated Default = True.  True = return a delegated address.
+        """
+
         if delegated and os.path.isfile(self.delegated_payment_address_file_base.format(idx)):
             return self.get_delegated_payment_address(idx)
 
         self.payment_address = None
-
         addr_file = self.payment_address_file_base.format(idx)
         with open(addr_file, 'r') as file:
             self.payment_address = file.read()
 
         return self.payment_address
 
-    def get_delegated_payment_address(self, idx: int=1):
-        self.delegated_payment_address = None
+    def get_delegated_payment_address(self,
+                                      idx: int=1) -> str:
+        """
+        Get the delegated payment address for the specified index.
 
+        @param idx Index for the address to get.
+        @param delegated Default = True.  True = return a delegated address.
+        """
+
+        self.delegated_payment_address = None
         addr_file = self.delegated_payment_address_file_base.format(idx)
         with open(addr_file, 'r') as file:
             self.delegated_payment_address = file.read()
 
         return self.delegated_payment_address
 
-    def get_signing_key_file(self, idx: int) -> str:
+    def get_signing_key_file(self,
+                             idx: int) -> str:
+        """
+        Get the signing key file for the given index.
+        """
+
         return self.signing_key_file_base.format(idx)
 
     def get_verification_key_file(self, idx: int) -> str:
+        """
+        Get the verification key file for the given index.
+        """
+
         return self.verification_key_file_base.format(idx)
 
     # Create a mnemonic phrase that can be used with cardano-wallet, yoroi, dadaelus, etc....

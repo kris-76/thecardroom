@@ -422,13 +422,13 @@ def mint_nft_external(cardano: Cardano,
 
     # The NFT minted will be added to the output when the transaction is created
     address_outputs = [{
-                            'address': minting_wallet.get_payment_address(0),
-                            'amount': 1, 'assets': incoming_assets
+                           'address': minting_wallet.get_payment_address(0),
+                           'amount': 1, 'assets': incoming_assets
                        },
                        {
                            'address': destination_wallet.get_payment_address(),
-                            'amount': 1, 'assets': {}
-                        }]
+                           'amount': 1, 'assets': {}
+                       }]
 
     # draft
     fee = 0
@@ -611,10 +611,13 @@ def process_incoming_payments(cardano: Cardano,
     with open(metadata_set_file, "r") as file:
         logger.info('process_incoming_payments, Opened: {}'.format(metadata_set_file))
         metadata_set = json.loads(file.read())
+        if metadata_set == None:
+            logger.error('process_incoming_payments, Series Metadata Set is None')
+            raise Exception('process_incoming_payments, Series Metadata Set is None')
 
-    if metadata_set == None:
-        logger.warning('process_incoming_payments, Series Metadata Set is None')
-        return
+        if metadata_set['files'] == None:
+            logger.error('process_incoming_payments, Series Metadata Set missing \"files\"')
+            raise Exception('process_incoming_payments, Series Metadata Set missing \"files\"')
 
     logger.info('process_incoming_payments, NFTs Remaining: {}'.format(len(metadata_set['files'])))
 

@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+File: words.py
+Author: Kris Henderson
+"""
+
 from typing import List
 import random
 
@@ -32,7 +37,7 @@ def generate_word_list(filename: str, count: int) -> List[str]:
 
     Open the file and split it into words.  Then convert it into a dictionary
     and back to a list to get the unique words only.  Finally, slice the list
-    up to count items.  May return a list shorter can count if there are not
+    up to count items.  May return a list shorter than count if there are not
     enough unique words in the input text file.
 
     @return List of strings

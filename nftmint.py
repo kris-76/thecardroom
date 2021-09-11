@@ -6,17 +6,19 @@
 #
 
 from typing import Dict
-from wallet import Wallet
-from wallet import WalletExternal
+import argparse
+import json
+import logging
+import os
+import time
+
+from database import Database
 from cardano import Cardano
 from nft import Nft
+from wallet import Wallet
+from wallet import WalletExternal
+import command
 import tcr
-from database import Database
-import random
-import json
-import os
-import logging
-import time
 import words
 
 logger = None
@@ -58,36 +60,75 @@ def get_metametadata(cardano: Cardano, drop_name: str) -> Dict:
             raise Exception('Unexpected Drop Name: {} vs {}'.format(drop_name, series_metametadata['drop-name']))
     return series_metametadata
 
-def get_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: str) -> str:
+def get_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: str, allow_new: bool=False) -> str:
     # get the remaining NFTs in the drop.  Generate the file if it doesn't exist
     metadata_set_file = 'nft/{}/{}.json'.format(cardano.get_network(), drop_name)
     logger.info('Open Series MetaData: {}'.format(metadata_set_file))
     if not os.path.isfile(metadata_set_file):
-        series_metametadata = get_metametadata(cardano, drop_name)
-        codewords = words.generate_word_list('words.txt', 500)
-        files = Nft.create_series_metadata_set(cardano.get_network(),
-                                               cardano.get_policy_id(policy_name),
-                                               series_metametadata,
-                                               codewords)
-        metadata_set = {'files': files}
-        with open(metadata_set_file, 'w') as file:
-            file.write(json.dumps(metadata_set, indent=4))
+        if allow_new:
+            series_metametadata = get_metametadata(cardano, drop_name)
+            codewords = words.generate_word_list('words.txt', 500)
+            files = Nft.create_series_metadata_set(cardano.get_network(),
+                                                   cardano.get_policy_id(policy_name),
+                                                   series_metametadata,
+                                                   codewords)
+            metadata_set = {'files': files}
+            with open(metadata_set_file, 'w') as file:
+                file.write(json.dumps(metadata_set, indent=4))
+        else:
+            logger.error('Allow New = False, Series Metadata Set: {}, does not exist!'.format(metadata_set_file))
+            raise Exception('Allow New = False, Series Metadata Set: {}, does not exist!'.format(metadata_set_file))
 
     return metadata_set_file
 
 def main():
     # Set parameters for the transactions
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('--network',   required=True,
+                                       action='store',
+                                       metavar='NAME',
+                                       help='Which network to use, [mainnet | testnet]')
+    parser.add_argument('--policy',    required=True,
+                                       action='store',
+                                       metavar='NAME',
+                                       help='The name of the policy for minting.')
+    parser.add_argument('--wallet',    required=True,
+                                       action='store',
+                                       metavar='NAME',
+                                       help='The name of the wallet for accepting payment and minting.')
+    parser.add_argument('--drop',      required=True,
+                                       action='store',
+                                       metavar='NAME',
+                                       help='The name of the NFT drop.')
+    parser.add_argument('--allow-new', default=False,
+                                       action='store_true',
+                                       required=False,
+                                       help='Allow a new policy and or drop file to be created')
 
-    network = 'testnet'
-    drop_name = 'testnet_series_2'
-    policy_name = 'tn_policy2'
-    wallet_name = 'testnet1'
+    args = parser.parse_args()
+
+    network = args.network
+    drop_name = args.drop
+    policy_name = args.policy
+    wallet_name = args.wallet
+    allow_new = args.allow_new
 
     setup_logging(network)
-    logger.info("{} Payment Processor / NFT Minter".format(network.upper()))
+
+    if not network in command.networks:
+        logger.error('Invalid Network: {}'.format(network))
+        raise Exception('Invalid Network: {}'.format(network))
 
     # Setup connection to cardano node, cardano wallet, and cardano db sync
     cardano = Cardano(network, '{}_protocol_parameters.json'.format(network))
+
+    logger.info('{} Payment Processor / NFT Minter'.format(network.upper()))
+    logger.info('Allow Create New Objects: {}'.format(allow_new))
+    logger.info('Network: {}'.format(network))
+    logger.info('Policy: {} / {}'.format(policy_name, cardano.get_policy_id(policy_name)))
+    logger.info('Wallet: {}'.format(wallet_name))
+    logger.info('Drop: {}'.format(drop_name))
+
     tip = cardano.query_tip()
     cardano.query_protocol_parameters()
     tip_slot = tip['slot']
@@ -103,19 +144,26 @@ def main():
     logger.info('Database Latest Slot: {}'.format(latest_slot))
     logger.info('Sync Progress: {}'.format(sync_progress))
 
-    metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name)
+    metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name, allow_new)
 
     # Initialize the wallet, assume it already exists
     mint_wallet = Wallet(wallet_name, cardano.get_network())
     logger.info('Mint Wallet: {}'.format(wallet_name))
+    if not mint_wallet.exists():
+        logger.error('Wallet: {}, does not exist'.format(wallet_name))
+        raise Exception('Wallet: {}, does not exist'.format(wallet_name))
 
     # Set the policy name and create it if it doesn't exist
     logger.info('Policy: {}'.format(policy_name))
     if cardano.get_policy_id(policy_name) == None:
-        logger.info('\"{}\" Does Not Exist.  Create New.'.format(policy_name))
-        cardano.create_new_policy_id(tip_slot+tcr.SECONDS_PER_YEAR, mint_wallet, policy_name)
-        logger.info('Created Policy: \"{}\" : ID={}'.format(policy_name, cardano.get_policy_id(policy_name)))
-        logger.info('Policy Will Expire at SLOT: {}'.format(tip_slot + tcr.SECONDS_PER_YEAR))
+        if allow_new:
+            logger.info('\"{}\" Does Not Exist.  Create New.'.format(policy_name))
+            cardano.create_new_policy_id(tip_slot+tcr.SECONDS_PER_YEAR, mint_wallet, policy_name)
+            logger.info('Created Policy: \"{}\" : ID={}'.format(policy_name, cardano.get_policy_id(policy_name)))
+            logger.info('Policy Will Expire at SLOT: {}'.format(tip_slot + tcr.SECONDS_PER_YEAR))
+        else:
+            logger.error('Allow New = False, Policy: {}, does not exist'.format(policy_name))
+            raise Exception('Allow New = False, Policy: {}, does not exist'.format(policy_name))
 
     # Set prices for the drop from metametadata file.  JSON stores keys as strings
     # so convert the keys to integers
@@ -140,4 +188,8 @@ def main():
     database.close()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print("Caught Exception!")
+        print(e)
