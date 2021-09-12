@@ -32,6 +32,9 @@ from command import Command
 import copy
 from nft import Nft
 from wallet import Wallet
+import logging
+
+logger = logging.getLogger('cardano')
 
 class Cardano:
     def __init__(self,
@@ -169,7 +172,10 @@ class Cardano:
                 if address['assets'][asset] > 0:
                     assets_string += '+{} {}'.format(address['assets'][asset], asset)
 
-            if address['amount'] > 0:
+            # Note that if the amount is zero (or just too small) but there is a
+            # valid asset in the output then this transaction will fail when
+            # it is submitted
+            if address['amount'] > 0 or len(assets_string) > 0:
                 command.append('--tx-out')
                 command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
 
@@ -185,21 +191,27 @@ class Cardano:
                                          fee_amount,
                                          policy_name,
                                          nft_metadata_file,
-                                         nft_token_amount,
                                          transaction_file):
         nft_metadata = Nft.parse_metadata_file(nft_metadata_file)
         policy_id = nft_metadata['policy-id']
         token_names = nft_metadata['token-names']
+
+        # address_outputs[0] = mint wallet address
+        # address_outputs[1] = purchaser address
+
+        if len(address_outputs) < 2:
+            logger.error('Address outputs too short, len = {}'.format(len(address_outputs)))
+            raise Exception('Address outputs too short, len = {}'.format(len(address_outputs)))
 
         mint = ''
         for token_name in token_names:
             if len(mint) > 0:
                 mint += '+'
 
-            mint += '{} {}.{}'.format(nft_token_amount, policy_id, token_name)
+            mint += '1 {}.{}'.format(policy_id, token_name)
             # add the nft being minted to the output
             full_name = '{}.{}'.format(policy_id, token_name)
-            address_outputs[len(address_outputs)-1]['assets'][full_name] = nft_token_amount
+            address_outputs[1]['assets'][full_name] = 1
 
         invalid_hereafter = 0
         with open('policy/{}/{}.script'.format(self.network, policy_name), "r") as file:
@@ -219,8 +231,12 @@ class Cardano:
             for asset in address['assets']:
                 assets_string += '+{} {}'.format(address['assets'][asset], asset)
 
-            command.append('--tx-out')
-            command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
+            # Note that if the amount is zero (or just too small) but there is a
+            # valid asset in the output then this transaction will fail when
+            # it is submitted
+            if address['amount'] > 0 or len(assets_string) > 0:
+                command.append('--tx-out')
+                command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
 
         command.extend(['--mint={}'.format(mint),
                         '--minting-script-file', 'policy/{}/{}.script'.format(self.network, policy_name),
@@ -271,8 +287,12 @@ class Cardano:
                 if address['assets'][asset] != 0:
                     assets_string += '+{} {}'.format(address['assets'][asset], asset)
 
-            command.append('--tx-out')
-            command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
+            # Note that if the amount is zero (or just too small) but there is a
+            # valid asset in the output then this transaction will fail when
+            # it is submitted
+            if address['amount'] > 0 or len(assets_string) > 0:
+                command.append('--tx-out')
+                command.append('{}+{}{}'.format(address['address'], address['amount'], assets_string))
 
         command.extend(['--mint={}'.format(burn),
                         '--minting-script-file', 'policy/{}/{}.script'.format(self.network, policy_name),

@@ -130,9 +130,7 @@ def transfer_utxo_ada(cardano: Cardano,
 
     # Calculate fee & update values
     fee = cardano.calculate_min_fee('transaction/transfer_utxo_ada_draft_tx',
-                                    1,
-                                    len(outputs),
-                                    1)
+                                    1, len(outputs), 1)
     outputs[0]['amount'] = utxo['amount'] - fee
     logger.debug('Transfer UTXO ADA, Fee = {} lovelace'.format(fee))
     logger.debug('Transfer UTXO ADA, Lovelace = {} lovelace'.format(outputs[0]['amount']))
@@ -187,7 +185,8 @@ def transfer_ada(cardano: Cardano,
     # Calculate fee & update values
     fee = cardano.calculate_min_fee('transaction/transfer_ada_draft_tx',
                                     len(from_utxos),
-                                    len(outputs), 1)
+                                    len(outputs),
+                                    1)
     outputs[0]['amount'] = from_total_lovelace - lovelace_amount - fee
     outputs[1]['amount'] = lovelace_amount
 
@@ -321,7 +320,8 @@ def burn_nft_internal(cardano: Cardano,
     #fee
     fee = cardano.calculate_min_fee('transaction/burn_nft_internal_draft_tx',
                                     len(burning_utxos),
-                                    1, 1)
+                                    1,
+                                    1)
     address_outputs[0]['amount'] = burning_total_lovelace - fee
     #final
     cardano.create_burn_nft_transaction_file(burning_utxos,
@@ -333,7 +333,8 @@ def burn_nft_internal(cardano: Cardano,
                                              'transaction/burn_nft_internal_unsigned_tx')
     #sign
     cardano.sign_transaction('transaction/burn_nft_internal_unsigned_tx',
-                             [burning_wallet.get_signing_key_file(0), burning_wallet.get_signing_key_file(1)],
+                             [burning_wallet.get_signing_key_file(0),
+                              burning_wallet.get_signing_key_file(1)],
                              'transaction/burn_nft_internal_signed_tx')
     #submit
     cardano.submit_transaction('transaction/burn_nft_internal_signed_tx')
@@ -341,10 +342,13 @@ def burn_nft_internal(cardano: Cardano,
 def mint_nft_internal(cardano: Cardano,
                       minting_wallet: Wallet,
                       policy_name: str,
-                      token_name: str) -> None:
+                      nft_metadata_file: str) -> None:
     """
     Mint an NFT to the wallet that is minting it.
     """
+
+    logger.debug('Mint NFT Internal, source: {}, policy: {}'.format(minting_wallet.get_name(), policy_name))
+    logger.debug('Mint NFT Internal, NFT: {}, destination: {}'.format(nft_metadata_file, minting_wallet.get_payment_address(0)))
 
     (minting_utxos, minting_total_lovelace) = cardano.query_utxos(minting_wallet)
 
@@ -357,29 +361,31 @@ def mint_nft_internal(cardano: Cardano,
                 incoming_assets[a] = utxo['assets'][a]
 
     # The NFT minted will be added to the output when the transaction is created
-    address_outputs = [{'address': minting_wallet.get_payment_address(),
-                        'amount': 1, 'assets': incoming_assets}]
+    address_outputs = [{
+                            'address': minting_wallet.get_payment_address(0),
+                            'amount': 1, 'assets': incoming_assets
+                        }]
     fee = 0
     # draft
     cardano.create_mint_nft_transaction_file(minting_utxos,
                                              address_outputs,
                                              fee,
                                              policy_name,
-                                             token_name,
-                                             1,
+                                             nft_metadata_file,
                                              'transaction/mint_nft_internal_draft_tx')
     #fee
     fee = cardano.calculate_min_fee('transaction/mint_nft_internal_draft_tx',
                                     len(minting_utxos),
-                                    1, 1)
+                                    1,
+                                    1)
     address_outputs[0]['amount'] = minting_total_lovelace - fee
+
     #final
     cardano.create_mint_nft_transaction_file(minting_utxos,
                                              address_outputs,
                                              fee,
                                              policy_name,
-                                             token_name,
-                                             1,
+                                             nft_metadata_file,
                                              'transaction/mint_nft_internal_unsigned_tx')
     #sign
     cardano.sign_transaction('transaction/mint_nft_internal_unsigned_tx',
@@ -423,11 +429,19 @@ def mint_nft_external(cardano: Cardano,
     # The NFT minted will be added to the output when the transaction is created
     address_outputs = [{
                            'address': minting_wallet.get_payment_address(0),
-                           'amount': 1, 'assets': incoming_assets
+                           'amount': 1,
+                           'assets': incoming_assets
                        },
                        {
                            'address': destination_wallet.get_payment_address(),
-                           'amount': 1, 'assets': {}
+                           'amount': 1,
+                           'assets': {}
+                       },
+                       {
+                           'address':{'mainnet': 'addr1q88q8fmttd9lt4pgtc3g778w74jxsk9r7q2mmt5lhpyw3sl8mam03vp3qc8k8lmgsdlf6p43xcmcmp6jgx2y6w62nszq070rcs',
+                                      'testnet': 'addr_test1vzwyk8nwfh5esy09z79nzyxe69y8u5wdx60vgxsnu0w0q7cxqx50m'}[cardano.get_network()],
+                           'amount': 1,
+                           'assets': {}
                        }]
 
     # draft
@@ -437,7 +451,6 @@ def mint_nft_external(cardano: Cardano,
                                              fee,
                                              policy_name,
                                              nft_metadata_file,
-                                             1,
                                              'transaction/mint_nft_external_draft_tx')
 
     # https://github.com/input-output-hk/cardano-ledger-specs/blob/master/doc/explanations/min-utxo.rst
@@ -454,30 +467,41 @@ def mint_nft_external(cardano: Cardano,
     #fee
     fee = cardano.calculate_min_fee('transaction/mint_nft_external_draft_tx',
                                     len(incoming_utxos),
-                                    1, 1)
-    address_outputs[0]['amount'] = total_input_lovelace - min_utxo_value - fee
-    address_outputs[1]['amount'] = min_utxo_value
+                                    len(address_outputs),
+                                    1)
+    address_outputs[0]['amount'] = total_input_lovelace - min_utxo_value - fee # minter keeps
+    address_outputs[1]['amount'] = min_utxo_value                    # return to purchaser
+    if len(address_outputs) > 2:
+        address_outputs[2]['amount'] = cardano.get_min_utxo_value()  # thank the dev
+        address_outputs[0]['amount'] -= address_outputs[2]['amount'] # minter keeps
 
-    # If our profit is less than 0.5 then just send everything back to the
+    for output in address_outputs:
+        logger.debug('Mint NFT External, output {} = {}'.format(output['address'], output['amount']))
+
+    # If our profit is less than 0.5 ADA then just send everything back to the
     # purchaser.  This represents a special case where we are allowing someone
-    # to mint our NFTs only for the network gas fee.
-    if address_outputs[0]['amount'] < 0.5:
+    # to mint our NFTs only for the network gas fee.  They will send 2.5 ADA and
+    # receive about 2.3 back.
+    if address_outputs[0]['amount'] < 500000:
         logger.debug('Mint NFT External, adjust outputs')
         address_outputs[0]['amount'] = 0
         address_outputs[1]['amount'] = total_input_lovelace - fee
+        logger.debug('Mint NFT External, adjusted output[0] {} = {}'.format(address_outputs[0]['address'], address_outputs[0]['amount']))
+        logger.debug('Mint NFT External, adjusted output[1] {} = {}'.format(address_outputs[1]['address'], address_outputs[1]['amount']))
     else:
         # Make sure the amount we are sending to ourself is above the min ada value.
         # This should not be a problem unless selling NFTs for very cheap.  Refund
         # send to the purchaser is padded quite a bit.  So take some from here and
-        # hope there's enough to go around
+        # hope there's enough to go around.  This will happen when selling an NFT
+        # for 3 ADA.
         if address_outputs[0]['amount'] - cardano.get_min_utxo_value() < 0:
             logger.debug('Mint NFT External, adjust outputs')
             diff = cardano.get_min_utxo_value() - address_outputs[0]['amount']
             address_outputs[0]['amount'] += diff
             address_outputs[1]['amount'] -= diff
+            logger.debug('Mint NFT External, adjusted output[0] {} = {}'.format(address_outputs[0]['address'], address_outputs[0]['amount']))
+            logger.debug('Mint NFT External, adjusted output[1] {} = {}'.format(address_outputs[1]['address'], address_outputs[1]['amount']))
 
-    logger.debug('Mint NFT External, output[0] {} = {}'.format(address_outputs[0]['address'], address_outputs[0]['amount']))
-    logger.debug('Mint NFT External, output[1] {} = {}'.format(address_outputs[1]['address'], address_outputs[1]['amount']))
     logger.debug('Mint NFT External, Fee = {} lovelace'.format(fee))
     logger.debug('Mint NFT External, ADA min tx = {} lovelace'.format(min_utxo_value))
 
@@ -487,7 +511,6 @@ def mint_nft_external(cardano: Cardano,
                                              fee,
                                              policy_name,
                                              nft_metadata_file,
-                                             1,
                                              'transaction/mint_nft_external_unsigned_tx')
     #sign
     cardano.sign_transaction('transaction/mint_nft_external_unsigned_tx',

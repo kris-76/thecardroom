@@ -52,7 +52,7 @@ def setup_logging(network) -> None:
 
 def get_metametadata(cardano: Cardano, drop_name: str) -> Dict:
     series_metametadata = {}
-    metametadata_file = 'nft/{}/{}_metametadata.json'.format(cardano.get_network(), drop_name)
+    metametadata_file = 'nft/{}/{}/{}_metametadata.json'.format(cardano.get_network(), drop_name, drop_name)
     logger.info('Open MetaMetaData: {}'.format(metametadata_file))
     with open(metametadata_file, 'r') as file:
         series_metametadata = json.load(file)
@@ -62,7 +62,7 @@ def get_metametadata(cardano: Cardano, drop_name: str) -> Dict:
 
 def get_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: str, allow_new: bool=False) -> str:
     # get the remaining NFTs in the drop.  Generate the file if it doesn't exist
-    metadata_set_file = 'nft/{}/{}.json'.format(cardano.get_network(), drop_name)
+    metadata_set_file = 'nft/{}/{}/{}.json'.format(cardano.get_network(), drop_name, drop_name)
     logger.info('Open Series MetaData: {}'.format(metadata_set_file))
     if not os.path.isfile(metadata_set_file):
         if allow_new:
@@ -145,8 +145,6 @@ def main():
     logger.info(' Database Latest Slot: {}'.format(latest_slot))
     logger.info('Sync Progress: {}'.format(sync_progress))
 
-    metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name, allow_new)
-
     # Initialize the wallet, assume it already exists
     mint_wallet = Wallet(wallet_name, cardano.get_network())
     logger.info('Mint Wallet: {}'.format(wallet_name))
@@ -165,6 +163,8 @@ def main():
         else:
             logger.error('Allow New = False, Policy: {}, does not exist'.format(policy_name))
             raise Exception('Allow New = False, Policy: {}, does not exist'.format(policy_name))
+
+    metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name, allow_new)
 
     # Set prices for the drop from metametadata file.  JSON stores keys as strings
     # so convert the keys to integers

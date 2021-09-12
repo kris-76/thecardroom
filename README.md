@@ -37,7 +37,6 @@ is minted to an external address the code will also transfer the min utxo value 
 the TCR wallet.  Currently this is just 1 ADA.  You can of course remove this
 from the code but it will be highly appreciated if you leave it in.
 
-
 # Conclusion
 
 We at TCR hope you find this software useful.  Feel free to provide suggestions
