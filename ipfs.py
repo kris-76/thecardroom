@@ -46,7 +46,7 @@ import words
 
 logger = None
 
-def setup_logging(network) -> None:
+def setup_logging(network: str) -> None:
     # Setup logging INFO and higher goes to the console.  DEBUG and higher goes to file
     global logger
 
@@ -89,6 +89,46 @@ def get_metametadata(network: str, drop_name: str) -> Dict:
             raise Exception('Unexpected Drop Name: {} vs {}'.format(drop_name, series_metametadata['drop-name']))
     return series_metametadata
 
+def ipfs_upload(projectid: str, filename: str) -> str:
+    headers = {'project_id': projectid}
+    files = {'file': (os.path.basename(filename), open(filename, 'rb'))}
+
+    logger.info('Uploading: {}'.format(filename))
+    # Thank you!!  https://curl.trillworks.com/#python
+    response = requests.post('https://ipfs.blockfrost.io/api/v0/ipfs/add',
+                             headers=headers,
+                             files=files)
+
+    if response.status_code != 200:
+        logger.error('Upload Status Code: {}'.format(response.status_code()))
+        raise Exception('Upload Status Code: {}'.format(response.status_code()))
+
+    upload_json = response.json()
+    return upload_json['ipfs_hash']
+
+def ipfs_pin(projectid: str, ipfs_hash: str) -> str:
+    headers = {'project_id': projectid}
+
+    logger.info('Pinning: {}'.format(ipfs_hash))
+
+    # Thank you!!  https://curl.trillworks.com/#python
+    response = requests.post('https://ipfs.blockfrost.io/api/v0/ipfs/pin/add/{}'.format(ipfs_hash),
+                             headers=headers)
+    if response.status_code != 200:
+        logger.error('Pin Status Code: {}'.format(response.status_code()))
+        raise Exception('Pin Status Code: {}'.format(response.status_code()))
+
+    pin_json = response.json()
+    if pin_json['state'] != 'queued' and pin_json['state'] != 'pinned':
+        logger.error('PIN Unexpected State: {}'.format(pin_json['state']))
+        raise Exception('PIN Unexpected State: {}'.format(pin_json['state']))
+
+    if pin_json['ipfs_hash'] != ipfs_hash:
+        logger.error('WUT?  {} != {}'.format(pin_json['ipfs_hash'], ipfs_hash))
+        raise Exception('WUT?  {} != {}'.format(pin_json['ipfs_hash'], ipfs_hash))
+
+    return pin_json['state']
+
 def main():
     # Set parameters for the transactions
     parser = argparse.ArgumentParser(add_help=False)
@@ -96,77 +136,74 @@ def main():
                                        action='store',
                                        metavar='ID',
                                        help='API key from blockfrost')
-    parser.add_argument('--network',   required=True,
+    parser.add_argument('--network',   required=False,
                                        action='store',
+                                       default='',
                                        metavar='NAME',
                                        help='Which network to use, [mainnet | testnet]')
-    parser.add_argument('--drop',      required=True,
+    parser.add_argument('--drop',      required=False,
                                        action='store',
+                                       default='',
                                        metavar='NAME',
                                        help='The name of the NFT drop.')
+    parser.add_argument('--file',      required=False,
+                                       action='store',
+                                       metavar='NAME',
+                                       help='Filename to upload and pin')
 
     args = parser.parse_args()
 
     projectid = args.projectid
     network = args.network
     drop_name = args.drop
+    filename = args.file
 
     setup_logging(network)
 
-    if not network in command.networks:
-        logger.error('Invalid Network: {}'.format(network))
-        raise Exception('Invalid Network: {}'.format(network))
-
     logger.info('{} IPFS Uploader / Metadata Generator'.format(network.upper()))
     logger.info('Copyright 2021 Kristofer Henderson & thecardroom.io')
-    logger.info('Network: {}'.format(network))
-    logger.info('Drop: {}'.format(drop_name))
+    print('network = _{}_'.format(network))
+    print('   drop = _{}_'.format(drop_name))
+    if filename == None and (len(network) == 0 or len(drop_name) == 0):
+        logger.error('Invalid parameters.  Must give --network and --drop')
+        raise Exception('Invalid parameters.  Must give --network and --drop')
 
-    metametadata = get_metametadata(network, drop_name)
-    for card in metametadata['cards']:
-        headers = {'project_id': projectid}
-        filename = './nft/{}/{}/{}'.format(network, drop_name, card['local_source'])
-        files = {'file': (card['local_source'], open(filename, 'rb'))}
+    if filename != None and (len(network) > 0 or len(drop_name) > 0):
+        logger.error('Invalid parameters.  With --file, Do not set --network and --drop')
+        raise Exception('Invalid parameters.  With --file, Do not set --network and --drop')
 
-        # Thank you!!  https://curl.trillworks.com/#python
-        logger.info('Uploading: {}'.format(filename))
-        response = requests.post('https://ipfs.blockfrost.io/api/v0/ipfs/add',
-                                 headers=headers,
-                                 files=files)
+    if filename == None:
+        # Upload and update content in a drop metametadata file
+        if not network in command.networks:
+            logger.error('Invalid Network: {}'.format(network))
+            raise Exception('Invalid Network: {}'.format(network))
 
-        if response.status_code != 200:
-            logger.error('Upload Status Code: {}'.format(response.status_code()))
-            break
+        logger.info('Network: {}'.format(network))
+        logger.info('Drop: {}'.format(drop_name))
 
-        upload_json = response.json()
-        logger.info('Uploaded: {}, IPFS HASH: {}'.format(filename, upload_json['ipfs_hash']))
+        metametadata = get_metametadata(network, drop_name)
+        for card in metametadata['cards']:
+            nftfilename = './nft/{}/{}/{}'.format(network, drop_name, card['local_source'])
+            ipfs_hash = ipfs_upload(projectid, nftfilename)
+            pin_state = ipfs_pin(projectid, ipfs_hash)
+            logger.info('PIN State: {}'.format(pin_state))
+            logger.info('   Verify: http://ipfs.blockfrost.dev/ipfs/{}'.format(ipfs_hash))
+            logger.info('')
+            card['image'] = 'ipfs://{}'.format(ipfs_hash)
 
-
-        response = requests.post('https://ipfs.blockfrost.io/api/v0/ipfs/pin/add/{}'.format(upload_json['ipfs_hash']),
-                                 headers=headers)
-        if response.status_code != 200:
-            logger.error('Pin Status Code: {}'.format(response.status_code()))
-            break
-
-        pin_json = response.json()
-        if pin_json['state'] != 'queued' and pin_json['state'] != 'pinned':
-            logger.error('PIN Unexpected State: {}'.format(pin_json['state']))
-            break
-
-        logger.info('PIN State: {}'.format(pin_json['state']))
-
-        if pin_json['ipfs_hash'] != upload_json['ipfs_hash']:
-            logger.error('WUT?  {} != {}'.format(pin_json['ipfs_hash'], upload_json['ipfs_hash']))
-            break
-
-        logger.info('Verify: http://ipfs.blockfrost.dev/ipfs/{}'.format(pin_json['ipfs_hash']))
-        card['image'] = 'ipfs://{}'.format(upload_json['ipfs_hash'])
-
-    set_metametadata(network, drop_name, metametadata)
+        set_metametadata(network, drop_name, metametadata)
+    else:
+        # Just upload and pin the specified file
+        logger.info('File: {}'.format(filename))
+        ipfs_hash = ipfs_upload(projectid, filename)
+        pin_state = ipfs_pin(projectid, ipfs_hash)
+        logger.info('PIN State: {}'.format(pin_state))
+        logger.info('   Verify: http://ipfs.blockfrost.dev/ipfs/{}'.format(ipfs_hash))
+        logger.info('')
 
 if __name__ == '__main__':
-    #try:
-    main()
-    #except Exception as e:
-    #    print("Caught Exception!")
-    #    print(e)
+    try:
+        main()
+    except Exception as e:
+        print("Caught Exception!")
+        print(e)

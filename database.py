@@ -28,6 +28,7 @@ Author: Kris Henderson
 from configparser import ConfigParser
 import psycopg2
 import logging
+import binascii
 
 logger = logging.getLogger('database')
 
@@ -74,12 +75,12 @@ class Database:
         return row
 
     def query_total_supply(self):
-        sql = '''select sum (value) / 1000000 as current_supply from tx_out as tx_outer where
-                     not exists
-                         ( select tx_out.id from tx_out inner join tx_in
-                             on tx_out.tx_id = tx_in.tx_out_id and tx_out.index = tx_in.tx_out_index
-                             where tx_outer.id = tx_out.id
-                         );'''
+        sql = ('select sum (value) / 1000000 as current_supply from tx_out as tx_outer where '
+               '      not exists '
+               '          ( select tx_out.id from tx_out inner join tx_in '
+               '              on tx_out.tx_id = tx_in.tx_out_id and tx_out.index = tx_in.tx_out_index '
+               '              where tx_outer.id = tx_out.id '
+               '          );')
         logger.debug('query_total_supply(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
@@ -101,7 +102,9 @@ class Database:
         return row[0]
 
     def query_latest_slot(self):
-        sql = 'select slot_no from block where block_no is not null order by block_no desc limit 1 ;'
+        sql = ('select slot_no from block '
+               'where block_no is not null '
+               'order by block_no desc limit 1;')
         logger.debug('query_latest_slot(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
@@ -136,8 +139,24 @@ class Database:
         cursor.close()
         return (row[0], int(row[1]))
 
+    def query_stake_address(self, address: str):
+        sql = ('select stake_address.id as stake_address_id, tx_out.address, stake_address.view as stake_address '
+               'from tx_out inner join stake_address on tx_out.stake_address_id = stake_address.id '
+               'where address = \'{}\';'.format(address))
+
+        logger.debug('query_stake_address(), sql = {}'.format(sql))
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        logger.debug('query_stake_address(), response:\r\n{}'.format(row))
+        cursor.close()
+        return row[2]
+
     def query_utxo_outputs(self, txid: str):
-        sql = 'select tx_out.* from tx_out inner join tx on tx_out.tx_id = tx.id where tx.hash = \'\\x{}\' ;'.format(txid)
+        sql = ('select tx_out.* from tx_out '
+               'inner join tx on tx_out.tx_id = tx.id '
+               'where tx.hash = \'\\x{}\';'.format(txid))
         logger.debug('query_utxo_outputs(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
@@ -151,7 +170,10 @@ class Database:
         return outputs
 
     def query_utxo_inputs(self, txid: str):
-        sql = 'select tx_out.* from tx_out inner join tx_in on tx_out.tx_id = tx_in.tx_out_id inner join tx on tx.id = tx_in.tx_in_id and tx_in.tx_out_index = tx_out.index where tx.hash = \'\\x{}\' ;'.format(txid)
+        sql = ('select tx_out.* from tx_out '
+               'inner join tx_in on tx_out.tx_id = tx_in.tx_out_id '
+               'inner join tx    on tx.id = tx_in.tx_in_id and tx_in.tx_out_index = tx_out.index '
+               'where tx.hash = \'\\x{}\';'.format(txid))
         logger.debug('query_utxo_inputs(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
@@ -163,3 +185,45 @@ class Database:
             inputs.append({'address': row[3], 'value': int(row[7])})
         cursor.close()
         return inputs
+
+    def query_mint_transactions(self, policy_id: str):
+        sql = 'select * from ma_tx_mint where ma_tx_mint.policy=\'\\x{}\';'.format(policy_id)
+        logger.info('query_utxo_inputs(), sql = {}'.format(sql))
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        tokens = []
+        for row in rows:
+            tokens.append({'policy-id': bytes(row[1]).hex(),
+                           'name': binascii.unhexlify(bytes(row[2]).hex()).decode("utf-8") ,
+                           'tx-id': row[4]})
+        return tokens
+
+    # https://github.com/input-output-hk/cardano-db-sync/blob/master/doc/schema.md
+    def query_current_owner(self, policy_id: str):
+        def sort_by_time(item):
+            return item['time']
+
+        sql = ('select ma_tx_out.name, stake_address.view, block.slot_no from ma_tx_out '
+               'inner join tx_out on ma_tx_out.tx_out_id = tx_out.id '
+               'inner join tx on tx_out.tx_id = tx.id '
+               'inner join block on tx.block_id = block.id '
+               'inner join stake_address on tx_out.stake_address_id = stake_address.id '
+               'where ma_tx_out.policy=\'\\x{}\';'.format(policy_id))
+        logger.info('query_utxo_inputs(), sql = {}'.format(sql))
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        tokens = {}
+        for row in rows:
+            name = binascii.unhexlify(bytes(row[0]).hex()).decode("utf-8")
+            if name in tokens:
+                if tokens[name]['slot'] < row[2]:
+                    tokens[name]['address'] = row[1]
+                    tokens[name]['slot'] = row[2]
+            else:
+                tokens[name] = {'address': row[1], 'slot': row[2]}
+
+        return tokens
