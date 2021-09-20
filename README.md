@@ -23,6 +23,13 @@ how to install and run these on the input-output-hk github account:
       * TESTNET_CARDANO_NODE_SOCKET_PATH
       * MAINNET_CARDANO_NODE_SOCKET_PATH
 
+# Installation
+
+  - PostgreSQL
+
+# Running
+
+
 # License
 
 This code is released under the [MIT Opensource License](https://en.wikipedia.org/wiki/MIT_License)

@@ -11,6 +11,7 @@ import logging
 import argparse
 import command
 import datetime
+import nftmint
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--network',   required=True,
@@ -20,33 +21,11 @@ parser.add_argument('--network',   required=True,
 args = parser.parse_args()
 network = args.network
 
-# Setup logging INFO and higher goes to the console.  DEBUG and higher goes to file
-logger = logging.getLogger('status-{}'.format(network))
-logger.setLevel(logging.DEBUG)
-
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-console_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
-console_handler.setFormatter(console_format)
-
-file_handler = logging.FileHandler('log/status-{}.log'.format(network))
-file_handler.setLevel(logging.DEBUG)
-file_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
-file_handler.setFormatter(file_format)
-
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
-logger_names = ['nft', 'cardano', 'command', 'database', 'tcr', 'wallet']
-for logger_name in logger_names:
-    other_logger = logging.getLogger(logger_name)
-    other_logger.setLevel(logging.DEBUG)
-    other_logger.addHandler(console_handler)
-    other_logger.addHandler(file_handler)
-
 if not network in command.networks:
-    logger.error('Invalid Network: {}'.format(network))
     raise Exception('Invalid Network: {}'.format(network))
+
+nftmint.setup_logging(network, 'status')
+logger = logging.getLogger(network)
 
 cardano = Cardano(network, '{}_protocol_parameters.json'.format(network))
 

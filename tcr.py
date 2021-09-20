@@ -32,6 +32,8 @@ from cardano import Cardano
 from wallet import Wallet
 from wallet import WalletExternal
 from database import Database
+from metadata_list import MetadataList
+
 import json
 import random
 import time
@@ -650,19 +652,8 @@ def process_incoming_payments(cardano: Cardano,
     logger.info('Monitor Incoming Payments on: {}'.format(minting_wallet.get_payment_address()))
     sales = Sales(cardano.get_network())
 
-    metadata_set = {}
-    with open(metadata_set_file, "r") as file:
-        logger.info('process_incoming_payments, Opened: {}'.format(metadata_set_file))
-        metadata_set = json.loads(file.read())
-        if metadata_set == None:
-            logger.error('process_incoming_payments, Series Metadata Set is None')
-            raise Exception('process_incoming_payments, Series Metadata Set is None')
-
-        if metadata_set['files'] == None:
-            logger.error('process_incoming_payments, Series Metadata Set missing \"files\"')
-            raise Exception('process_incoming_payments, Series Metadata Set missing \"files\"')
-
-    logger.info('process_incoming_payments, NFTs Remaining: {}'.format(len(metadata_set['files'])))
+    nft_metadata = MetadataList(metadata_set_file)
+    logger.info('process_incoming_payments, NFTs Remaining: {}'.format(nft_metadata.get_remaining()))
 
     while True:
         (utxos, total_lovelace) = cardano.query_utxos(minting_wallet, [minting_wallet.get_payment_address()])
@@ -673,9 +664,9 @@ def process_incoming_payments(cardano: Cardano,
                 logger.info('RX {} lovelace for {} NFTS'.format(utxo['amount'], num_nfts))
                 sales.set_input_utxo(utxo['tx-hash'], utxo['amount'])
                 sales.set_purchase_amount(num_nfts)
-                if len(metadata_set['files']) < num_nfts:
+                if nft_metadata.get_remaining() < num_nfts:
                     logger.error('process_incoming_payments, NFT Requested: {}, Have: {}.  Refund UTXO: {}'.format(num_nfts,
-                                                                                                            len(metadata_set['files']),
+                                                                                                            nft_metadata.get_remaining(),
                                                                                                             utxo['tx-hash']))
                     if not refund_payment(cardano, database, minting_wallet, utxo, sales):
                         logger.error('processing_incoming_payments, Fail to refund')
@@ -688,7 +679,7 @@ def process_incoming_payments(cardano: Cardano,
                 input_utxo_hash = utxo['tx-hash']
                 nft_metadata_files = []
                 for i in range(0, num_nfts):
-                    mdfile = metadata_set['files'].pop(0)
+                    mdfile = nft_metadata.peek_next_file()
                     nft_metadata_files.append(mdfile)
                     logger.debug('process_incoming_payments, merging NFT metadata: {}'.format(mdfile))
 
@@ -702,18 +693,17 @@ def process_incoming_payments(cardano: Cardano,
                                                input_utxo_hash,
                                                merged_metadata_file,
                                                sales):
+                    nft_metadata.revert()
                     logger.error('process_incoming_payments, Fail to mint')
-                    for f in nft_metadata_files:
-                        metadata_set['files'].append(f)
+
                 else:
+                    nft_metadata.commit()
                     logger.info('Mint complete')
                     logger.info('Monitor Incoming Payments on: {}'.format(minting_wallet.get_payment_address()))
 
                 sales.commit()
-                with open(metadata_set_file, 'w') as file:
-                    file.write(json.dumps(metadata_set, indent=4))
 
-        if len(metadata_set['files']) == 0:
+        if nft_metadata.get_remaining() == 0:
             logger.info('ALL NFTs MINTED!!!!!')
 
         logger.debug('process_incoming_payments, Waiting for matching UTXO')

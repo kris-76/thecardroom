@@ -110,6 +110,19 @@ class Cardano:
 
         return (utxos, total_lovelace)
 
+    def query_utxos_dict(self,
+                         wallet: Wallet,
+                         addresses: List[str]=None) -> Dict:
+        (utxos, lovelace) = self.query_utxos(wallet, addresses)
+        output = {'lovelace': lovelace}
+        for utxo in utxos:
+            output[utxo['tx-hash']] = {'tx-ix':utxo['tx-ix'],
+                                       'amount':utxo['amount'],
+                                       'assets':utxo['assets'],
+                                       'tx-out-datum-hash': utxo['tx-out-datum-hash']}
+
+        return output
+
     def dump_utxos(self,
                    wallet: Wallet) -> None:
         print('{} UTXOS:'.format(wallet.get_name()))

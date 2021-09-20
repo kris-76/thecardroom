@@ -23,32 +23,28 @@ import words
 
 logger = None
 
-def setup_logging(network) -> None:
+def setup_logging(network: str, application: str) -> None:
     # Setup logging INFO and higher goes to the console.  DEBUG and higher goes to file
     global logger
-
-    logger = logging.getLogger(network)
-    logger.setLevel(logging.DEBUG)
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
     console_handler.setFormatter(console_format)
 
-    file_handler = logging.FileHandler('log/{}_payments_{}.log'.format(network, round(time.time())))
+    file_handler = logging.FileHandler('log/{}_{}_{}.log'.format(network, application, round(time.time())))
     file_handler.setLevel(logging.DEBUG)
     file_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
     file_handler.setFormatter(file_format)
 
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-
-    logger_names = ['nft', 'cardano', 'command', 'database', 'tcr']
+    logger_names = [network, 'tcr', 'nft', 'cardano', 'wallet', 'command', 'database', 'metadata-list']
     for logger_name in logger_names:
         other_logger = logging.getLogger(logger_name)
         other_logger.setLevel(logging.DEBUG)
         other_logger.addHandler(console_handler)
         other_logger.addHandler(file_handler)
+
+    logger = logging.getLogger(network)
 
 def get_metametadata(cardano: Cardano, drop_name: str) -> Dict:
     series_metametadata = {}
@@ -116,25 +112,25 @@ def main():
                                                   metavar='NAME',
                                                   default=None,
                                                   help='')
-    parser.add_argument('--mint',      required=False,
-                                       action='store_true',
-                                       default=False,
-                                       help='Process payments, mint NFTs.  Requires --wallet, --policy, --drop')
-    parser.add_argument('--policy',    required=False,
-                                       action='store',
-                                       metavar='NAME',
-                                       default=None,
-                                       help='The name of the policy for minting.')
-    parser.add_argument('--wallet',    required=False,
-                                       action='store',
-                                       metavar='NAME',
-                                       default=None,
-                                       help='The name of the wallet for accepting payment and minting.')
-    parser.add_argument('--drop',      required=False,
-                                       action='store',
-                                       metavar='NAME',
-                                       default=None,
-                                       help='The name of the NFT drop.')
+    parser.add_argument('--mint',   required=False,
+                                    action='store_true',
+                                    default=False,
+                                    help='Process payments, mint NFTs.  Requires --wallet, --policy, --drop')
+    parser.add_argument('--policy', required=False,
+                                    action='store',
+                                    metavar='NAME',
+                                    default=None,
+                                    help='The name of the policy for minting.')
+    parser.add_argument('--wallet', required=False,
+                                    action='store',
+                                    metavar='NAME',
+                                    default=None,
+                                    help='The name of the wallet for accepting payment and minting.')
+    parser.add_argument('--drop',   required=False,
+                                    action='store',
+                                    metavar='NAME',
+                                    default=None,
+                                    help='The name of the NFT drop.')
 
     args = parser.parse_args()
     network = args.network
@@ -147,7 +143,8 @@ def main():
     policy_name = args.policy
     drop_name = args.drop
 
-    setup_logging(network)
+    setup_logging(network, 'nftmint')
+    logger = logging.getLogger(network)
 
     if not network in command.networks:
         logger.error('Invalid Network: {}'.format(network))
@@ -224,15 +221,6 @@ def main():
         logger.info('Successfully created new policy: {} / {}'.format(create_policy, cardano.get_policy_id(create_policy)))
         logger.info('Expires at slot: {}'.format(tip_slot+tcr.SECONDS_PER_YEAR))
     elif create_drop != None:
-#    network = args.network
-#    create_wallet = args.create_wallet
-#    create_policy = args.create_policy
-#    create_drop = args.create_drop
-#    create_drop_template = args.create_drop_template
-#    mint = args.mint
-#    wallet_name = args.wallet
-#    policy_name = args.policy
-#    drop_name = args.drop
         if (create_wallet != None or create_policy != None or
                 create_drop_template != None or mint == True or wallet_name != None or
                 drop_name != None):
@@ -251,6 +239,7 @@ def main():
         logger.info('Successfully created new drop: {} '.format(metadata_set_file))
     elif create_drop_template != None:
         logger.info('TODO')
+
     elif mint == True:
         if (create_wallet != None or create_policy != None or create_drop != None or
                 create_drop_template != None):

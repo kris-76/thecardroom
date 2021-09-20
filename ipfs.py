@@ -43,35 +43,9 @@ from wallet import WalletExternal
 import command
 import tcr
 import words
+import nftmint
 
 logger = None
-
-def setup_logging(network: str) -> None:
-    # Setup logging INFO and higher goes to the console.  DEBUG and higher goes to file
-    global logger
-
-    logger = logging.getLogger(network)
-    logger.setLevel(logging.DEBUG)
-
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
-    console_handler.setFormatter(console_format)
-
-    file_handler = logging.FileHandler('log/{}_payments_{}.log'.format(network, round(time.time())))
-    file_handler.setLevel(logging.DEBUG)
-    file_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
-    file_handler.setFormatter(file_format)
-
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-
-    logger_names = ['nft', 'cardano', 'command', 'database', 'tcr']
-    for logger_name in logger_names:
-        other_logger = logging.getLogger(logger_name)
-        other_logger.setLevel(logging.DEBUG)
-        other_logger.addHandler(console_handler)
-        other_logger.addHandler(file_handler)
 
 def set_metametadata(network: str, drop_name: str, metametadata: Dict) -> None:
     metametadata_file = 'nft/{}/{}/{}_metametadata.json'.format(network, drop_name, drop_name)
@@ -158,7 +132,8 @@ def main():
     drop_name = args.drop
     filename = args.file
 
-    setup_logging(network)
+    nftmint.setup_logging(network, 'ipfs')
+    logger = logging.getLogger(network)
 
     logger.info('{} IPFS Uploader / Metadata Generator'.format(network.upper()))
     logger.info('Copyright 2021 Kristofer Henderson & thecardroom.io')
