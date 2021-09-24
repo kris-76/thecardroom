@@ -77,6 +77,21 @@ class Command:
         logger.debug(cmdstr)
 
     @staticmethod
+    def run_generic(command: List[str]):
+        Command.print_command(command)
+
+        try:
+            completed = subprocess.run(command, check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError as e:
+            logger.error('{}, return code: {}'.format(command[0], e.returncode))
+            logger.error('output: {}'.format(e.output))
+            logger.error('stdout: {}'.format(e.stdout))
+            logger.error('stderr: {}'.format(e.stderr))
+            raise e
+
+        return completed.stdout.strip('\r\n')
+
+    @staticmethod
     def run(command: List[str], network: str, input: str = None):
         """
         Run the specified command.

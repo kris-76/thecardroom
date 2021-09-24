@@ -32,7 +32,9 @@ def setup_logging(network: str, application: str) -> None:
     console_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
     console_handler.setFormatter(console_format)
 
-    file_handler = logging.FileHandler('log/{}_{}_{}.log'.format(network, application, round(time.time())))
+    log_file = 'log/{}/{}_{}.log'.format(network, application, round(time.time()))
+    print('Log File: {}'.format(log_file))
+    file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.DEBUG)
     file_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
     file_handler.setFormatter(file_format)
@@ -59,14 +61,16 @@ def get_metametadata(cardano: Cardano, drop_name: str) -> Dict:
 def get_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: str) -> str:
     # get the remaining NFTs in the drop.  Generate the file if it doesn't exist
     metadata_set_file = 'nft/{}/{}/{}.json'.format(cardano.get_network(), drop_name, drop_name)
-    logger.info('Open Series MetaData: {}'.format(metadata_set_file))
+    logger.debug('Metadata Set File = {}'.format(metadata_set_file))
     if not os.path.isfile(metadata_set_file):
         logger.error('Series Metadata Set: {}, does not exist!'.format(metadata_set_file))
         raise Exception('Series Metadata Set: {}, does not exist!'.format(metadata_set_file))
 
     return metadata_set_file
 
-def create_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: str) -> str:
+def create_series_metadata_set_file(cardano: Cardano,
+                                    policy_name: str,
+                                    drop_name: str) -> str:
     metadata_set_file = 'nft/{}/{}/{}.json'.format(cardano.get_network(), drop_name, drop_name)
 
     if os.path.isfile(metadata_set_file):
@@ -116,6 +120,14 @@ def main():
                                     action='store_true',
                                     default=False,
                                     help='Process payments, mint NFTs.  Requires --wallet, --policy, --drop')
+    parser.add_argument('--burn',   required=False,
+                                    action='store_true',
+                                    default=False,
+                                    help='Burn the token named at the policy.  Requires --wallet, --policy, --token')
+    parser.add_argument('--confirm', required=False,
+                                     action='store_true',
+                                     default=False,
+                                     help='Confirm burn all tokens in policy')
     parser.add_argument('--policy', required=False,
                                     action='store',
                                     metavar='NAME',
@@ -131,6 +143,11 @@ def main():
                                     metavar='NAME',
                                     default=None,
                                     help='The name of the NFT drop.')
+    parser.add_argument('--token',  required=False,
+                                    action='store',
+                                    metavar='NAME',
+                                    default=None,
+                                    help='The token to burn or empty to burn all in the policy')
 
     args = parser.parse_args()
     network = args.network
@@ -139,9 +156,12 @@ def main():
     create_drop = args.create_drop
     create_drop_template = args.create_drop_template
     mint = args.mint
+    burn = args.burn
     wallet_name = args.wallet
     policy_name = args.policy
     drop_name = args.drop
+    token_name = args.token
+    confirm = args.confirm
 
     setup_logging(network, 'nftmint')
     logger = logging.getLogger(network)
@@ -239,16 +259,30 @@ def main():
         logger.info('Successfully created new drop: {} '.format(metadata_set_file))
     elif create_drop_template != None:
         logger.info('TODO')
-
     elif mint == True:
         if (create_wallet != None or create_policy != None or create_drop != None or
                 create_drop_template != None):
-            logger.error('--mint, Requires --wallet, --policy, --drop')
-            raise Exception('--mint, Requires --wallet, --policy, --drop')
+            logger.error('--mint, Requires --drop')
+            raise Exception('--mint, Requires --drop')
 
-        if (wallet_name == None or policy_name == None or drop_name == None):
-            logger.error('--mint, Requires --wallet, --policy, --drop')
-            raise Exception('--mint, Requires --wallet, --policy, --drop')
+        if (drop_name == None):
+            logger.error('--mint, Requires --drop')
+            raise Exception('--mint, Requires --drop')
+
+        if (wallet_name != None or policy_name != None):
+            logger.error('--mint, Wallet and policy derived from metadata')
+            raise Exception('--mint, Wallet and policy derived from metadata')
+
+        metametadata = get_metametadata(cardano, drop_name)
+        policy_name = metametadata['policy']
+
+        # Set the policy name
+        logger.info('Policy: {}'.format(policy_name))
+        if cardano.get_policy_id(policy_name) == None:
+            logger.error('Policy: {}, does not exist'.format(policy_name))
+            raise Exception('Policy: {}, does not exist'.format(policy_name))
+
+        wallet_name = cardano.get_policy_owner(policy_name)
 
         # Initialize the wallet
         mint_wallet = Wallet(wallet_name, cardano.get_network())
@@ -257,11 +291,6 @@ def main():
             logger.error('Wallet: {}, does not exist'.format(wallet_name))
             raise Exception('Wallet: {}, does not exist'.format(wallet_name))
 
-        # Set the policy name
-        logger.info('Policy: {}'.format(policy_name))
-        if cardano.get_policy_id(policy_name) == None:
-            logger.error('Policy: {}, does not exist'.format(policy_name))
-            raise Exception('Policy: {}, does not exist'.format(policy_name))
 
         metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name)
         logger.info('Metadata Set File: {}'.format(metadata_set_file))
@@ -285,6 +314,50 @@ def main():
                                         prices)
         except Exception as e:
             logger.exception("Caught Exception")
+    elif burn == True:
+        # Initialize the wallet
+        burn_wallet = Wallet(wallet_name, cardano.get_network())
+        logger.info('Burn Wallet: {}'.format(wallet_name))
+        if not burn_wallet.exists():
+            logger.error('Wallet: {}, does not exist'.format(wallet_name))
+            raise Exception('Wallet: {}, does not exist'.format(wallet_name))
+
+        policy_id = cardano.get_policy_id(policy_name)
+
+        # Set the policy name
+        logger.info('Policy: {}'.format(policy_name))
+        if cardano.get_policy_id(policy_name) == None:
+            logger.error('Policy: {}, does not exist'.format(policy_name))
+            raise Exception('Policy: {}, does not exist'.format(policy_name))
+
+        if token_name == None and confirm:
+            #burn all
+            token_names = []
+            while True:
+                (utxos, lovelace) = cardano.query_utxos(burn_wallet)
+
+                utxo_in = None
+                for utxo in utxos:
+                    for a in utxo['assets']:
+                        if a.startswith('{}.'.format(policy_id)):
+                            utxo_in = utxo
+                            token_name = a.split('.')[1]
+                            token_names.append(token_name)
+
+                if len(token_names) == 0:
+                    break
+
+                tcr.burn_nft_internal(cardano, burn_wallet, policy_name, token_names, token_amount=1)
+                while cardano.contains_txhash(burn_wallet, utxo_in['tx-hash']):
+                    logger.info('wait')
+                    time.sleep(10)
+
+                logger.info('next')
+                token_name = None
+        else:
+            # burn just the specified token in the specified policy
+            tcr.burn_nft_internal(cardano, burn_wallet, policy_name, [token_name], token_amount=1)
+
     else:
         logger.info('')
         logger.info('Help:')
@@ -293,12 +366,13 @@ def main():
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-drop=<name> --policy=<name>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-drop-template=<name>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --mint --wallet=<name> --policy=<name> --drop=<name>')
+        logger.info('\t$ nftmint --network=<testnet | mainnet> --burn --wallet=<name> --policy=<name> [--confirm | --token=<name>]')
 
     database.close()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        print("Caught Exception!")
-        print(e)
+    #try:
+    main()
+    #except Exception as e:
+    #    print("Caught Exception!")
+    #    print(e)

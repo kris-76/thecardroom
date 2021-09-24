@@ -43,18 +43,31 @@ def main():
                                   default=None,
                                   help='Wallet name to send to.')
 
-    parser.add_argument('--amount', required=True,
+    parser.add_argument('--amount', required=False,
                                     action='store',
                                     type=int,
                                     metavar='NAME',
                                     default=0,
                                     help='Amount of lovelace to send')
 
+    parser.add_argument('--repeat', required=False,
+                                    action='store_true',
+                                    default=False,
+                                    help='Continuously send specified amount')
+
+    parser.add_argument('--nft', required=False,
+                                    action='store',
+                                    type=str,
+                                    metavar='NAME',
+                                    default=None,
+                                    help='Full name of NFT to send')
     args = parser.parse_args()
     network = args.network
     src_name = args.src
     dst_name = args.dst
     amount = args.amount
+    nft = args.nft
+    repeat = args.repeat
 
     if not network in command.networks:
         raise Exception('Invalid Network: {}'.format(network))
@@ -88,20 +101,27 @@ def main():
     dst_wallet = Wallet(dst_name, cardano.get_network())
 
     cardano.dump_utxos(src_wallet)
-    while True:
-        print('send: {}'.format(amount))
-        utxos_before = cardano.query_utxos_dict(src_wallet)
-        tcr.transfer_ada(cardano, src_wallet, amount, dst_wallet)
+    if amount >= 0:
+        send_payment = True
+        while send_payment:
+            utxos_before = cardano.query_utxos_dict(src_wallet)
 
-        complete = False
-        while not complete:
-            print('waiting...')
-            time.sleep(5)
-            current = cardano.query_utxos_dict(src_wallet)
-            for key in utxos_before:
-                if key not in current:
-                    complete = True
+            if amount > 0:
+                tcr.transfer_ada(cardano, src_wallet, amount, dst_wallet)
+            else:
+                tcr.transfer_all_assets(cardano, src_wallet, dst_wallet)
 
+            complete = False
+            while not complete:
+                time.sleep(5)
+                current = cardano.query_utxos_dict(src_wallet)
+                for key in utxos_before:
+                    if key not in current:
+                        complete = True
+
+            send_payment = repeat
+    elif nft != None:
+        tcr.transfer_nft(cardano, src_wallet, {nft: 1}, dst_wallet)
 
 if __name__ == '__main__':
     main()

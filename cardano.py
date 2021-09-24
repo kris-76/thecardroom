@@ -128,16 +128,15 @@ class Cardano:
         print('{} UTXOS:'.format(wallet.get_name()))
         (utxos, lovelace) = self.query_utxos(wallet)
         for utxo in utxos:
-            print("tx-hash = {}, tx-ix = {}, amount = {} lovelace".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
+            print("UTXO: {}#{}, = {} lovelace".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
             for a in utxo['assets']:
-                print('\t\t\t\t {} {}'.format(utxo['assets'][a], a))
-            print("tx-out-datum-hash: {}".format(utxo['tx-out-datum-hash']))
+                print('  - {} {}'.format(utxo['assets'][a], a))
 
-        print("Total: {}".format(lovelace))
+        print("Total: {} ADA".format(lovelace/1000000))
 
     def contains_txhash(self,
-                        wallet,
-                        txhash) -> bool:
+                        wallet: Wallet,
+                        txhash: str) -> bool:
         (utxos, lovelace) = self.query_utxos(wallet)
         for utxo in utxos:
             if utxo['tx-hash'] == txhash:
@@ -199,7 +198,7 @@ class Cardano:
         return output
 
     def create_mint_nft_transaction_file(self,
-                                         utxo_inputs,
+                                         input_utxos,
                                          address_outputs,
                                          fee_amount,
                                          policy_name,
@@ -210,21 +209,34 @@ class Cardano:
         token_names = nft_metadata['token-names']
 
         # address_outputs[0] = mint wallet address
-        # address_outputs[1] = purchaser address
+        # address_outputs[1..len_input(utxos)] = purchaser address
 
-        if len(address_outputs) < 2:
+        if len(address_outputs) < 1 + len(input_utxos):
             logger.error('Address outputs too short, len = {}'.format(len(address_outputs)))
             raise Exception('Address outputs too short, len = {}'.format(len(address_outputs)))
 
-        mint = ''
-        for token_name in token_names:
-            if len(mint) > 0:
-                mint += '+'
+        nfts_to_mint = 0
+        for item in input_utxos:
+            nfts_to_mint += item['count']
+        if nfts_to_mint != len(token_names):
+            logger.error('Mint count mismatch {} != {}'.format(len(nfts_to_mint, len(token_names))))
+            raise Exception('Mint count mismatch {} != {}'.format(len(nfts_to_mint, len(token_names))))
 
-            mint += '1 {}.{}'.format(policy_id, token_name)
-            # add the nft being minted to the output
-            full_name = '{}.{}'.format(policy_id, token_name)
-            address_outputs[1]['assets'][full_name] = 1
+        mint = ''
+        token_index = 0
+        address_index = 1 # index 0 is the project wallet so skip it
+
+        for item in input_utxos:
+            count = item['count']
+            for i in range(0, count):
+                if len(mint) > 0:
+                    mint += '+'
+                full_name = '{}.{}'.format(policy_id, token_names[token_index])
+                mint += '1 {}'.format(full_name)
+                # add the nft being minted to the output
+                address_outputs[address_index]['assets'][full_name] = 1
+                token_index += 1
+            address_index += 1
 
         invalid_hereafter = 0
         with open('policy/{}/{}.script'.format(self.network, policy_name), "r") as file:
@@ -235,9 +247,9 @@ class Cardano:
 
         command = ['cardano-cli', 'transaction', 'build-raw', '--fee', '{}'.format(fee_amount)]
 
-        for utxo in utxo_inputs:
+        for item in input_utxos:
             command.append('--tx-in')
-            command.append('{}#{}'.format(utxo['tx-hash'], utxo['tx-ix']))
+            command.append('{}#{}'.format(item['utxo']['tx-hash'], item['utxo']['tx-ix']))
 
         for address in address_outputs:
             assets_string = ''
@@ -266,20 +278,22 @@ class Cardano:
                                          address_outputs: List[Dict],
                                          fee_amount: int,
                                          policy_name: str,
-                                         token_name: str,
+                                         token_names: str,
                                          nft_token_amount: int,
                                          transaction_file: str) -> str:
         # copy some stuff so it doesn't get modified to the caller
         address_outputs_cp = copy.deepcopy(address_outputs)
 
         policy_id = self.get_policy_id(policy_name)
-        burn = '{} {}.{}'.format(-1*nft_token_amount, policy_id, token_name)
-
-        # remove the nft being burned from the output
-        full_name = '{}.{}'.format(policy_id, token_name)
-
-
-        address_outputs_cp[len(address_outputs_cp)-1]['assets'][full_name] -= nft_token_amount
+        burn = ''
+        for token_name in token_names:
+            if len(burn) == 0:
+                burn += '{} {}.{}'.format(-1*nft_token_amount, policy_id, token_name)
+            else:
+                burn += '+{} {}.{}'.format(-1*nft_token_amount, policy_id, token_name)
+            # remove the nft being burned from the output
+            full_name = '{}.{}'.format(policy_id, token_name)
+            address_outputs_cp[len(address_outputs_cp)-1]['assets'][full_name] -= nft_token_amount
 
         invalid_hereafter = 0
         with open('policy/{}/{}.script'.format(self.network, policy_name), "r") as file:
@@ -397,3 +411,15 @@ class Cardano:
             policy_id = None
 
         return policy_id
+
+    def get_policy_owner(self,
+                         policy_name: str) -> str:
+        policy_owner = None
+
+        try:
+            with open('policy/{}/{}.owner'.format(self.network, policy_name), 'r') as file:
+                policy_owner = file.read()
+        except FileNotFoundError as e:
+            policy_owner = None
+
+        return policy_owner

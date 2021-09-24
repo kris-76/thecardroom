@@ -14,12 +14,27 @@ import datetime
 import nftmint
 
 parser = argparse.ArgumentParser(add_help=False)
-parser.add_argument('--network',   required=True,
-                                    action='store',
-                                    metavar='NAME',
-                                    help='Which network to use, [mainnet | testnet]')
+parser.add_argument('--network', required=True,
+                                 action='store',
+                                 type=str,
+                                 metavar='NAME',
+                                 help='Which network to use, [mainnet | testnet]')
+parser.add_argument('--wallet',  required=False,
+                                 action='store',
+                                 type=str,
+                                 default=None,
+                                 metavar='NAME',
+                                 help='Dump UTXOs from wallet')
+parser.add_argument('--policy',  required=False,
+                                 action='store',
+                                 type=str,
+                                 default=None,
+                                 metavar='NAME',
+                                 help='')
 args = parser.parse_args()
 network = args.network
+wallet_name = args.wallet
+policy_name = args.policy
 
 if not network in command.networks:
     raise Exception('Invalid Network: {}'.format(network))
@@ -44,16 +59,28 @@ logger.info('Cardano Node Tip Slot: {}'.format(tip_slot))
 logger.info(' Database Latest Slot: {}'.format(latest_slot))
 logger.info('Sync Progress: {}'.format(sync_progress))
 
-if cardano.get_network() == 'mainnet':
-    wallet = Wallet('tcr_mint', cardano.get_network())
+wallet = None
+if wallet_name != None:
+    wallet = Wallet(wallet_name, cardano.get_network())
 
+    if not wallet.exists():
+        logger.error('Wallet: <{}> does not exist'.format(wallet_name))
+        raise Exception('Wallet: <{}> does not exist'.format(wallet_name))
+
+    cardano.dump_utxos(wallet)
+
+if policy_name != None:
     stake_address = database.query_stake_address(wallet.get_payment_address())
     logger.info('      address = {}'.format(wallet.get_payment_address()))
     logger.info('Stake address = {}'.format(stake_address))
 
     logger.info('')
 
-    tokens = database.query_current_owner('2b9fb283d8116489f4a494e76c75efe0d9992aaef6c65eaf9b374298')
+    if cardano.get_policy_id(policy_name) == None:
+        logger.error('Policy: <{}> does not exist'.format(policy_name))
+        raise Exception('Policy: <{}> does not exist'.format(policy_name))
+
+    tokens = database.query_current_owner(cardano.get_policy_id(policy_name))
     print("By Token: ")
     print('len = {}'.format(len(tokens)))
     by_address = {}
