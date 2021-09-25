@@ -17,6 +17,7 @@ from cardano import Cardano
 from nft import Nft
 from wallet import Wallet
 from wallet import WalletExternal
+from metadata_list import MetadataList
 import command
 import tcr
 import words
@@ -58,6 +59,13 @@ def get_metametadata(cardano: Cardano, drop_name: str) -> Dict:
             raise Exception('Unexpected Drop Name: {} vs {}'.format(drop_name, series_metametadata['drop-name']))
     return series_metametadata
 
+def set_metametadata(cardano: Cardano, series_metametadata: Dict) -> None:
+    drop_name = series_metametadata['drop-name']
+    metametadata_file = 'nft/{}/{}/{}_metametadata.json'.format(cardano.get_network(), drop_name, drop_name)
+    logger.info('Save MetaMetaData: {}'.format(metametadata_file))
+    with open(metametadata_file, 'w') as file:
+        file.write(json.dumps(series_metametadata, indent=4))
+
 def get_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: str) -> str:
     # get the remaining NFTs in the drop.  Generate the file if it doesn't exist
     metadata_set_file = 'nft/{}/{}/{}.json'.format(cardano.get_network(), drop_name, drop_name)
@@ -78,11 +86,13 @@ def create_series_metadata_set_file(cardano: Cardano,
         raise Exception('Series Metadata Set: {}, already exists!'.format(metadata_set_file))
 
     series_metametadata = get_metametadata(cardano, drop_name)
+    series_metametadata['policy'] = policy_name
     codewords = words.generate_word_list('words.txt', 500)
     files = Nft.create_series_metadata_set(cardano.get_network(),
                                            cardano.get_policy_id(policy_name),
                                            series_metametadata,
                                            codewords)
+    series_metametadata = set_metametadata(cardano, series_metametadata)
     metadata_set = {'files': files}
     with open(metadata_set_file, 'w') as file:
         file.write(json.dumps(metadata_set, indent=4))
@@ -248,8 +258,8 @@ def main():
             raise Exception('--create-drop <NAME>, Requires only --policy')
 
         if (policy_name == None):
-            logger.error('--create-policy <NAME>, Requires --policy')
-            raise Exception('--create-policy <NAME>, Requires --policy')
+            logger.error('--create-drop <NAME>, Requires --policy')
+            raise Exception('--create-drop <NAME>, Requires --policy')
 
         if cardano.get_policy_id(policy_name) == None:
             logger.error('Policy: <{}> does not exist'.format(create_policy))
@@ -282,18 +292,34 @@ def main():
             logger.error('Policy: {}, does not exist'.format(policy_name))
             raise Exception('Policy: {}, does not exist'.format(policy_name))
 
-        wallet_name = cardano.get_policy_owner(policy_name)
-
         # Initialize the wallet
+        wallet_name = cardano.get_policy_owner(policy_name)
         mint_wallet = Wallet(wallet_name, cardano.get_network())
         logger.info('Mint Wallet: {}'.format(wallet_name))
         if not mint_wallet.exists():
             logger.error('Wallet: {}, does not exist'.format(wallet_name))
             raise Exception('Wallet: {}, does not exist'.format(wallet_name))
 
-
         metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name)
         logger.info('Metadata Set File: {}'.format(metadata_set_file))
+
+        # verify the metadata for each NFT
+        metadatalist = MetadataList(metadata_set_file)
+        while metadatalist.get_remaining() > 0:
+            nftmd = Nft.parse_metadata_file(metadatalist.peek_next_file())
+            if len(nftmd['token-names']) != 1:
+                logger.error('There should only be one token name')
+                raise Exception('There should only be one token name')
+
+            if nftmd['policy-id'] != cardano.get_policy_id(policy_name):
+                logger.error('Policy ID mismatch')
+                raise Exception('Policy ID mismatch')
+
+            token = nftmd['token-names'][0]
+            if not nftmd['properties'][token]['image'].startswith('ipfs://'):
+                logger.error('Image not uploaded to IPFS')
+                raise Exception('Image not uploaded to IPFS')
+        metadatalist.revert()
 
         # Set prices for the drop from metametadata file.  JSON stores keys as strings
         # so convert the keys to integers
@@ -303,60 +329,61 @@ def main():
             prices[int(price)] = metametadata['prices'][price]
         logger.info('prices: {}'.format(prices))
 
+        max_per_tx = metametadata['max_per_tx']
+
         try:
             # Listen for incoming payments and mint NFTs when a UTXO matching a payment
             # value is found
             tcr.process_incoming_payments(cardano,
-                                        database,
-                                        mint_wallet,
-                                        policy_name,
-                                        metadata_set_file,
-                                        prices)
+                                          database,
+                                          mint_wallet,
+                                          policy_name,
+                                          metadata_set_file,
+                                          prices,
+                                          max_per_tx)
         except Exception as e:
             logger.exception("Caught Exception")
     elif burn == True:
+        # Set the policy name
+        policy_id = cardano.get_policy_id(policy_name)
+        logger.info('Policy: {}'.format(policy_name))
+        if cardano.get_policy_id(policy_name) == None:
+            logger.error('Policy: {}, does not exist'.format(policy_name))
+            raise Exception('Policy: {}, does not exist'.format(policy_name))
+
         # Initialize the wallet
+        wallet_name = cardano.get_policy_owner(policy_name)
         burn_wallet = Wallet(wallet_name, cardano.get_network())
         logger.info('Burn Wallet: {}'.format(wallet_name))
         if not burn_wallet.exists():
             logger.error('Wallet: {}, does not exist'.format(wallet_name))
             raise Exception('Wallet: {}, does not exist'.format(wallet_name))
 
-        policy_id = cardano.get_policy_id(policy_name)
-
-        # Set the policy name
-        logger.info('Policy: {}'.format(policy_name))
-        if cardano.get_policy_id(policy_name) == None:
-            logger.error('Policy: {}, does not exist'.format(policy_name))
-            raise Exception('Policy: {}, does not exist'.format(policy_name))
-
         if token_name == None and confirm:
             #burn all
             token_names = []
-            while True:
-                (utxos, lovelace) = cardano.query_utxos(burn_wallet)
+            (utxos, lovelace) = cardano.query_utxos(burn_wallet)
 
-                utxo_in = None
-                for utxo in utxos:
-                    for a in utxo['assets']:
-                        if a.startswith('{}.'.format(policy_id)):
-                            utxo_in = utxo
-                            token_name = a.split('.')[1]
-                            token_names.append(token_name)
+            utxo_in = None
+            for utxo in utxos:
+                for a in utxo['assets']:
+                    if a.startswith('{}.'.format(policy_id)):
+                        utxo_in = utxo
+                        token_name = a.split('.')[1]
+                        token_names.append(token_name)
 
-                if len(token_names) == 0:
-                    break
-
+            if len(token_names) > 0:
                 tcr.burn_nft_internal(cardano, burn_wallet, policy_name, token_names, token_amount=1)
                 while cardano.contains_txhash(burn_wallet, utxo_in['tx-hash']):
                     logger.info('wait')
                     time.sleep(10)
-
-                logger.info('next')
-                token_name = None
-        else:
+            else:
+                logger.error('No tokens found for policy')
+        elif token_name != None:
             # burn just the specified token in the specified policy
             tcr.burn_nft_internal(cardano, burn_wallet, policy_name, [token_name], token_amount=1)
+        else:
+            logger.error('Nothing to do')
 
     else:
         logger.info('')

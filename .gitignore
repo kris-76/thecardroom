@@ -2,7 +2,8 @@ nft/*
 wallet/*
 transaction/*
 policy/*
+log/*
+test/__pycache__/*
 __pycache__/*
-mainnet.py
 mainnet_protocol_parameters.json
 testnet_protocol_parameters.json

@@ -45,8 +45,8 @@ class MetadataList:
                 raise Exception('MetadataList, Series Metadata Set is None')
 
             if self.metadata_list['files'] == None:
-                logger.error('process_incoming_payments, Series Metadata Set missing \"files\"')
-                raise Exception('process_incoming_payments, Series Metadata Set missing \"files\"')
+                logger.error('MetadataList, Series Metadata Set missing \"files\"')
+                raise Exception('MetadataList, Series Metadata Set missing \"files\"')
 
     def get_remaining(self) -> int:
         return len(self.metadata_list['files']) - self.peek_index

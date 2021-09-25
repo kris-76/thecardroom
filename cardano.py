@@ -131,6 +131,7 @@ class Cardano:
             print("UTXO: {}#{}, = {} lovelace".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
             for a in utxo['assets']:
                 print('  - {} {}'.format(utxo['assets'][a], a))
+            print('  - assets = {}'.format(len(utxo['assets'])))
 
         print("Total: {} ADA".format(lovelace/1000000))
 
@@ -235,6 +236,7 @@ class Cardano:
                 mint += '1 {}'.format(full_name)
                 # add the nft being minted to the output
                 address_outputs[address_index]['assets'][full_name] = 1
+                logger.debug('Mint {} to {}'.format(token_names[token_index], address_outputs[address_index]['address']))
                 token_index += 1
             address_index += 1
 

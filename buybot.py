@@ -50,6 +50,11 @@ def main():
                                     default=0,
                                     help='Amount of lovelace to send')
 
+    parser.add_argument('--all', required=False,
+                                 action='store_true',
+                                 default=False,
+                                 help='Confirm to send all')
+
     parser.add_argument('--repeat', required=False,
                                     action='store_true',
                                     default=False,
@@ -66,6 +71,7 @@ def main():
     src_name = args.src
     dst_name = args.dst
     amount = args.amount
+    all = args.all
     nft = args.nft
     repeat = args.repeat
 
@@ -108,8 +114,11 @@ def main():
 
             if amount > 0:
                 tcr.transfer_ada(cardano, src_wallet, amount, dst_wallet)
-            else:
+            elif all == True:
                 tcr.transfer_all_assets(cardano, src_wallet, dst_wallet)
+            else:
+                logger.error("Nothing to Send")
+                break
 
             complete = False
             while not complete:

@@ -32,6 +32,7 @@ import time
 import random
 from command import Command
 import logging
+import hashlib
 
 logger = logging.getLogger('nft')
 
@@ -169,6 +170,17 @@ class Nft:
         return total
 
     @staticmethod
+    def calc_sha256(filepath) :
+        BLOCKSIZE = 65536
+        hasher = hashlib.sha256()
+        with open(filepath, 'rb') as afile:
+            buf = afile.read(BLOCKSIZE)
+            while len(buf) > 0:
+                hasher.update(buf)
+                buf = afile.read(BLOCKSIZE)
+        return hasher.hexdigest()
+
+    @staticmethod
     def create_series_metadata_set(network: str,
                                    policy_id: str,
                                    metametadata: Dict,
@@ -210,8 +222,12 @@ class Nft:
                         break
                 total -=1
         else:
+            image_hashes = {}
+
             total_combinations = Nft.calculate_total_combinations(metametadata)
             logger.info('Generate {} images across {} sets'.format(total_combinations, len(metametadata['layer-sets'])))
+            if 'maximum' in metametadata:
+                logger.info('Maximum: {}'.format(metametadata['maximum']))
 
             # assign card numbers randomly
             card_numbers = []
@@ -228,50 +244,70 @@ class Nft:
                 done = False
                 while not done:
                     images = []
+                    generate_nft = True
                     card_number = card_numbers.pop(0)
-                    result_name = 'nft/{}/{}/nft_img/{:05}_{}_'.format(network, drop_name, card_number, layer_set_name)
-                    metadata = {}
-                    properties = {}
-                    for i in range(0, len(options)):
-                        # Set a filename to identify the components that went into it
-                        result_name = result_name + '_{}'.format(options[i])
+                    if 'maximum' in metametadata:
+                        # skip this one if it's not needed
+                        if card_number > metametadata['maximum']:
+                            generate_nft = False
 
-                        # Save the image for merging
-                        if layer_set[i]['images'][options[i]]['image'] != None:
-                            images.append(layer_set[i]['images'][options[i]]['image'])
+                    if generate_nft:
+                        result_name = 'nft/{}/{}/nft_img/{:05}_{}_'.format(network, drop_name, card_number, layer_set_name)
+                        metadata = {}
+                        properties = {}
+                        for i in range(0, len(options)):
+                            # Set a filename to identify the components that went into it
+                            result_name = result_name + '_{}'.format(options[i])
 
-                        # Add any metadata / properties associated with the image layer.  I suppose
-                        # later layers could override some properties from previous layers
-                        if 'properties' in layer_set[i]['images'][options[i]]:
-                            layer_properties = layer_set[i]['images'][options[i]]['properties']
-                            for k in layer_properties:
-                                properties[k] = layer_properties[k]
+                            # Save the image for merging
+                            if layer_set[i]['images'][options[i]]['image'] != None:
+                                images.append(layer_set[i]['images'][options[i]]['image'])
 
-                    # Construct the command to merge image layers
-                    result_name = result_name + '.png'
-                    logger.info('Create: {}'.format(result_name))
-                    command = ['convert', 'nft/{}/{}/{}'.format(network, drop_name, images.pop(0))]
-                    for image in images:
-                        command.extend(['nft/{}/{}/{}'.format(network, drop_name, image), '-composite'])
+                            # Add any metadata / properties associated with the image layer.  I suppose
+                            # later layers could override some properties from previous layers
+                            if 'properties' in layer_set[i]['images'][options[i]]:
+                                layer_properties = layer_set[i]['images'][options[i]]['properties']
+                                for k in layer_properties:
+                                    properties[k] = layer_properties[k]
 
-                    # Create the file
-                    command.append(result_name)
-                    Command.run_generic(command)
+                        # Construct the command to merge image layers
+                        result_name = result_name + '.png'
+                        logger.info('Create: {}'.format(result_name))
+                        command = ['convert', 'nft/{}/{}/{}'.format(network, drop_name, images.pop(0))]
+                        for image in images:
+                            command.extend(['nft/{}/{}/{}'.format(network, drop_name, image), '-composite'])
 
-                    token_name = base_token_name.format(series, card_number, 1)
-                    nft_name = base_nft_name.format(series, card_number, 1, 1)
+                        # Create the file
+                        command.append(result_name)
+                        Command.run_generic(command)
 
-                    metadata['image'] = result_name
-                    if 'id' in properties:
-                        properties['id'] = init_nft_id + card_number - 1
-                    metadata['properties'] = properties
-                    metadata_file = Nft.create_metadata(network,
-                                                        policy_id,
-                                                        drop_name,
-                                                        token_name,
-                                                        nft_name,
-                                                        metadata)
-                    fnames.append(metadata_file)
+                        # Make sure it got created
+                        if not os.path.isfile(result_name):
+                            logger.error('File is missing: {}'.format(result_name))
+                            raise Exception('File is missing: {}'.format(result_name))
+
+                        # Make sure the generated file is unique
+                        logger.info('Verify Unique: {}'.format(result_name))
+                        hash = Nft.calc_sha256(result_name)
+                        if hash in image_hashes:
+                            logger.error('Found Duplicate NFT Image: {}'.format(result_name))
+                            raise Exception('Found Duplicate NFT Image: {}'.format(result_name))
+                        image_hashes[hash] = True
+
+                        token_name = base_token_name.format(series, card_number, 1)
+                        nft_name = base_nft_name.format(series, card_number, 1, 1)
+
+                        metadata['image'] = result_name
+                        if 'id' in properties:
+                            properties['id'] = init_nft_id + card_number - 1
+                        metadata['properties'] = properties
+                        metadata_file = Nft.create_metadata(network,
+                                                            policy_id,
+                                                            drop_name,
+                                                            token_name,
+                                                            nft_name,
+                                                            metadata)
+                        fnames.append(metadata_file)
 
                     for i in range(0, len(options)):
                         options[i] += 1
@@ -287,7 +323,7 @@ class Nft:
 
             fnames.sort()
 
-        if 'maximum' in metametadata:
-            fnames = fnames[0: metametadata['maximum']]
+            if len(card_numbers) != 0:
+                logger.error("Expected length of remaining card numbers == 0.  Actual: {}".format(len(card_numbers)))
 
         return fnames
