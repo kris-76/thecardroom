@@ -5,27 +5,30 @@ NFT playing cards, individually minted on the Cardano blockchain.  This codebase
 represents a collection of scripts we have created and found useful for minting
 NFTs on the Cardano blockchain.
 
+
 # Prerequisites
 
 These scripts assume that cardano-node, cardano-addresses, cardano-db-sync, and
-cardano-wallet are installed and running on the system.  Please see details of
+are installed and running on the system.  Please see details of
 how to install and run these on the input-output-hk github account:
   - [cardano-node](https://github.com/input-output-hk/cardano-node)
   - [cardano-db-sync](https://github.com/input-output-hk/cardano-db-sync)
   - [cardano-addresses](https://github.com/input-output-hk/cardano-addresses)
-  - [cardano-wallet](https://github.com/input-output-hk/cardano-wallet)
 
-  These scripts also require the following:
-    - cardano-node, cardano-db-sync, cardano-address, and cardano-wallet are
-      installed and available on the sytem path.
-    - The following environment variables have been set appropriately:
-      * CARDANO_NODE_SOCKET_PATH
-      * TESTNET_CARDANO_NODE_SOCKET_PATH
-      * MAINNET_CARDANO_NODE_SOCKET_PATH
+The scripts also require some environment variables to be set (click the link
+below for detailed installation instructions):
+  - CARDANO_NODE_SOCKET_PATH
+  - TESTNET_CARDANO_NODE_SOCKET_PATH
+  - MAINNET_CARDANO_NODE_SOCKET_PATH
+
+If you don't want to build from source, the installation instructions below show
+where to download pre-build binaries from.
+
 
 # Installation
 
   Detailed [Installation Instructions](INSTALL.md)
+
 
 # Running
 Before NFTs can be minted, some basic setup and initialization needs to be done.
@@ -54,11 +57,13 @@ Before NFTs can be minted, some basic setup and initialization needs to be done.
   - Accept payments and mint NFTs
     > nftmint --network=testnet --mint --wallet=project_mint --policy=project_policy --drop=project_series_1
 
+
 # License
 
 This code is released under the [MIT Opensource License](https://en.wikipedia.org/wiki/MIT_License)
 you may use and and modify this code as you see fit.  However, this license and
 all copyright attributions must remain in place.
+
 
 # Commission
 
@@ -68,6 +73,7 @@ is minted to an external address the code will also transfer the min utxo value 
 the TCR wallet.  Currently this is just 1 ADA.  You can of course remove this
 from the code but it will be highly appreciated if you leave it in.  Consider it
 a small tip to the development team at TCR.
+
 
 # Conclusion
 
