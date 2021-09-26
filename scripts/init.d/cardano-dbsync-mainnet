@@ -2,7 +2,7 @@
 
 ### BEGIN INIT INFO
 # Provides:          Cardano DB Sync MainNet
-# Required-Start:    $local_fs $network $syslog
+# Required-Start:    $local_fs $network $syslog postgresql cardano-node-mainnet
 # Required-Stop:     $local_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
