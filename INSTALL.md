@@ -6,7 +6,7 @@ slight modification it should also work in other linux environments, such as
 Windows 10 WSL2
 
 
-# 1.  Update The Server & Install Prerequisites
+## 1.  Update The Server & Install Prerequisites
 
   - sudo apt update
   - sudo apt upgrade
@@ -18,7 +18,7 @@ Windows 10 WSL2
   - pip install psycopg2
 
 
-# 2.  Install Cardano Binaries
+## 2.  Install Cardano Binaries
 
   - cd ~
   - mkdir cardano-bin
@@ -36,7 +36,7 @@ Windows 10 WSL2
     * export CARDANO_NODE_SOCKET_PATH=$MAINNET_CARDANO_NODE_SOCKET_PATH
 
 
-# 3.  Setup Configuration for Node and DB Sync
+## 3.  Setup Configuration for Node and DB Sync
 
   - mkdir ~/cardano
   - mkdir ~/cardano/mainnet
@@ -45,7 +45,7 @@ Windows 10 WSL2
   - mkdir ~/cardano/testnet/db
 
 
-# 4.  Get the Source
+## 4.  Get the Source
 
   - mkdir ~/workspace
   - cd ~/workspace
@@ -55,7 +55,7 @@ Windows 10 WSL2
   - git clone https://github.com/input-output-hk/cardano-node.git
   - git clone https://github.com/input-output-hk/cardano-db-sync.git
 
-# 5.  Copy Configuration & Scripts
+## 5.  Copy Configuration & Scripts
 
 Note that configuration files for mainnet and testnet are included in
 ~/workspace/thecardroom/scripts/mainnet and ~/workspace/thecardroom/scripts/testnet
@@ -98,7 +98,7 @@ Make sure the files are executable
   - chmod 755 ~/cardano/testnet/tail-logs.sh
 
 
-# 6.  Setup Databases
+## 6.  Setup Databases
 
   - sudo -i -u postgres
   - createuser --createdb --superuser ubuntu
@@ -126,7 +126,7 @@ Run and Configure the database to run on startup
   - sudo service postgresql start
 
 
-# 7.  Setup cardano node and dbsync to run on startup
+## 7.  Setup cardano node and dbsync to run on startup
   - sudo cp ~/workspace/thecardroom/scripts/init.d/cardano-* /etc/init.d
   - Review scripts in init.d and ~/workspace/thecardroom/scripts/mainnet to see
     if any changes are needed for your environment.  Usernames, passwords, path,
@@ -145,7 +145,7 @@ Optional, repeat for testnet
   - sudo service cardano-dbsync-testnet start
 
 
-# 8.  Final Setup
+## 8.  Final Setup
 
   - cd ~/workspace/thecardroom
   - review testnet.ini
@@ -155,7 +155,7 @@ Optional, repeat for testnet
   - mkdir log/testnet
 
 
-# 9.  Test
+## 9.  Test
 
 Downloading the Cardano blockchain and populating the database can take 24 hours
 or more.  Even after synchronization is complete it can take several minutes or
@@ -174,6 +174,3 @@ If you see some output that looks like this then everything was successful:<br>
 > 2021-09-26 04:49:15,559:INFO:mainnet: Cardano Node Tip Slot: 38829215<br>
 > 2021-09-26 04:49:15,559:INFO:mainnet:  Database Latest Slot: 24107986<br>
 > 2021-09-26 04:49:15,559:INFO:mainnet: Sync Progress: 86.58731497899508<br>
-
---shelley-mode
---cardano-mode
