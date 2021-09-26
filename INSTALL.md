@@ -25,8 +25,10 @@ Windows 10 WSL2
   - cd cardano-bin
   - curl https://hydra.iohk.io/build/7760210/download/1/cardano-node-1.30.0-linux.tar.gz --output cardano-node-1.30.0-linux.tar.gz
   - curl https://hydra.iohk.io/build/7520425/download/1/cardano-db-sync-11.0.0-linux.tar.gz --output cardano-db-sync-11.0.0-linux.tar.gz
+  - curl https://github.com/input-output-hk/cardano-addresses/releases/download/3.6.0/cardano-addresses-3.6.0-linux64.tar.gz --output cardano-addresses-3.6.0-linux64.tar.gz
   - tar --ungzip -xvf cardano-node-1.30.0-linux.tar.gz
   - tar --ungzip -xvf cardano-db-sync-11.0.0-linux.tar.gz
+  - tar --ungzip -xvf cardano-addresses-3.6.0-linux64.tar.gz
   - Edit ~/.profile and add:
     * PATH=$PATH:/home/ubuntu/cardano-bin
     * export TESTNET_CARDANO_NODE_SOCKET_PATH="/home/ubuntu/cardano/testnet/db/node.socket"
@@ -96,7 +98,6 @@ Make sure the files are executable
   - chmod 755 ~/cardano/testnet/tail-logs.sh
 
 
-
 # 6.  Setup Databases
 
   - sudo -i -u postgres
@@ -137,6 +138,12 @@ Run and Configure the database to run on startup
   - sudo systemctl enable cardano-dbsync-mainnet
   - sudo service cardano-dbsync-mainnet start
 
+Optional, repeat for testnet
+  - sudo update-rc.d cardano-node-testnet defaults
+  - sudo service cardano-node-testnet start
+  - sudo update-rc.d cardano-dbsync-testnet defaults
+  - sudo service cardano-dbsync-testnet start
+
 
 # 8.  Final Setup
 
@@ -167,3 +174,6 @@ If you see some output that looks like this then everything was successful:<br>
 > 2021-09-26 04:49:15,559:INFO:mainnet: Cardano Node Tip Slot: 38829215<br>
 > 2021-09-26 04:49:15,559:INFO:mainnet:  Database Latest Slot: 24107986<br>
 > 2021-09-26 04:49:15,559:INFO:mainnet: Sync Progress: 86.58731497899508<br>
+
+--shelley-mode
+--cardano-mode

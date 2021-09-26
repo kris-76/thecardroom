@@ -25,7 +25,7 @@ how to install and run these on the input-output-hk github account:
 
 # Installation
 
-  - PostgreSQL
+  Detailed [Installation Instructions](INSTALL.md)
 
 # Running
 Before NFTs can be minted, some basic setup and initialization needs to be done.
