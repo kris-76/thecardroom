@@ -25,6 +25,7 @@ File: database.py
 Author: Kris Henderson
 """
 
+from typing import Dict
 from configparser import ConfigParser
 import psycopg2
 import logging
@@ -186,18 +187,40 @@ class Database:
         cursor.close()
         return inputs
 
-    def query_mint_transactions(self, policy_id: str):
-        sql = 'select * from ma_tx_mint where ma_tx_mint.policy=\'\\x{}\';'.format(policy_id)
-        logger.info('query_utxo_inputs(), sql = {}'.format(sql))
+    def query_txhash_time(self, txhash: str):
+        sql = ('select block.time, block.slot_no from tx '
+               'inner join block on tx.block_id = block.id '
+               'where tx.hash = \'\\x{}\';'.format(txhash))
+        logger.debug('query_txhash_time(), sql = {}'.format(sql))
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        return (row[0], row[1])
+
+    def query_mint_transactions(self, policy_id: str) -> Dict:
+        sql = 'select * from ma_tx_mint where ma_tx_mint.policy=\'\\x{}\' order by tx_id;'.format(policy_id)
+        logger.debug('query_mint_transactions(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
         cursor.execute(sql)
         rows = cursor.fetchall()
-        tokens = []
+        tokens = {}
         for row in rows:
-            tokens.append({'policy-id': bytes(row[1]).hex(),
-                           'name': binascii.unhexlify(bytes(row[2]).hex()).decode("utf-8") ,
-                           'tx-id': row[4]})
+            name = binascii.unhexlify(bytes(row[2]).hex()).decode("utf-8")
+            quantity = row[3]
+            if not name in tokens:
+                tokens[name] = quantity
+            else:
+                tokens[name] += quantity
+
+            if tokens[name] < 0:
+                logger.error('that was unexpected.  need to sort by date???')
+                raise Exception('that was unexpected.  need to sort by date???')
+
+            if tokens[name] == 0:
+                tokens.pop(name)
+
         return tokens
 
     # https://github.com/input-output-hk/cardano-db-sync/blob/master/doc/schema.md
@@ -211,7 +234,7 @@ class Database:
                'inner join block on tx.block_id = block.id '
                'inner join stake_address on tx_out.stake_address_id = stake_address.id '
                'where ma_tx_out.policy=\'\\x{}\';'.format(policy_id))
-        logger.info('query_utxo_inputs(), sql = {}'.format(sql))
+        logger.debug('query_current_owner(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
         cursor.execute(sql)

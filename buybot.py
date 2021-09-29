@@ -110,27 +110,22 @@ def main():
     if amount >= 0:
         send_payment = True
         while send_payment:
-            utxos_before = cardano.query_utxos_dict(src_wallet)
-
             if amount > 0:
-                tcr.transfer_ada(cardano, src_wallet, amount, dst_wallet)
+                tx_id = tcr.transfer_ada(cardano, src_wallet, amount, dst_wallet)
             elif all == True:
-                tcr.transfer_all_assets(cardano, src_wallet, dst_wallet)
+                tx_id = tcr.transfer_all_assets(cardano, src_wallet, dst_wallet)
             else:
                 logger.error("Nothing to Send")
                 break
 
-            complete = False
-            while not complete:
+            while not cardano.contains_txhash(dst_wallet, tx_id):
                 time.sleep(5)
-                current = cardano.query_utxos_dict(src_wallet)
-                for key in utxos_before:
-                    if key not in current:
-                        complete = True
 
             send_payment = repeat
     elif nft != None:
-        tcr.transfer_nft(cardano, src_wallet, {nft: 1}, dst_wallet)
+        tx_id = tcr.transfer_nft(cardano, src_wallet, {nft: 1}, dst_wallet)
+        while not cardano.contains_txhash(dst_wallet, tx_id):
+            time.sleep(5)
 
 if __name__ == '__main__':
     main()

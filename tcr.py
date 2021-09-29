@@ -105,7 +105,9 @@ def transfer_all_assets(cardano: Cardano,
                              'transaction/transfer_all_assets_signed_tx')
 
     #submit
-    cardano.submit_transaction('transaction/transfer_all_assets_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_all_assets_signed_tx')
+
+    return tx_id
 
 def transfer_utxo_ada(cardano: Cardano,
                       from_wallet: Wallet,
@@ -150,9 +152,9 @@ def transfer_utxo_ada(cardano: Cardano,
                              'transaction/transfer_utxo_ada_signed_tx')
 
     # submit
-    cardano.submit_transaction('transaction/transfer_utxo_ada_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_utxo_ada_signed_tx')
 
-    return (fee, utxo['amount'] - fee)
+    return (tx_id, fee, utxo['amount'] - fee)
 
 def transfer_ada(cardano: Cardano,
                  from_wallet: Wallet,
@@ -207,7 +209,9 @@ def transfer_ada(cardano: Cardano,
                              'transaction/transfer_ada_signed_tx')
 
     #submit
-    cardano.submit_transaction('transaction/transfer_ada_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_ada_signed_tx')
+
+    return tx_id
 
 def transfer_nft(cardano: Cardano,
                  from_wallet: Wallet,
@@ -287,7 +291,9 @@ def transfer_nft(cardano: Cardano,
                              'transaction/transfer_nft_signed_tx')
 
     #submit
-    cardano.submit_transaction('transaction/transfer_nft_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_nft_signed_tx')
+
+    return tx_id
 
 def burn_nft_internal(cardano: Cardano,
                       burning_wallet: Wallet,
@@ -340,7 +346,37 @@ def burn_nft_internal(cardano: Cardano,
                               burning_wallet.get_signing_key_file(1)],
                              'transaction/burn_nft_internal_signed_tx')
     #submit
-    cardano.submit_transaction('transaction/burn_nft_internal_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/burn_nft_internal_signed_tx')
+
+    return tx_id
+
+def verify_unique_nfts(cardano: Cardano,
+                       database: Database,
+                       policy_name: str,
+                       nft_metadata_file: str) -> bool:
+    # Make sure we're not about to mint multiple of the same token
+    # Make sure the token we're about to mint hasn't already been minted
+    nft_metadata = Nft.parse_metadata_file(nft_metadata_file)
+    policy_id = nft_metadata['policy-id']
+
+    if policy_id != cardano.get_policy_id(policy_name):
+        logger.error("Policy ID mismatch")
+        return False
+
+    token_names = nft_metadata['token-names']
+    minted_nfts = database.query_mint_transactions(policy_id)
+
+    for name in token_names:
+        if token_names.count(name) > 1:
+            logger.error('Minting multiple of the same token')
+            return False
+
+        if name in minted_nfts:
+            logger.error('Token already minted!')
+            return False
+
+    return True
+
 
 def mint_nft_external(cardano: Cardano,
                       database: Database,
@@ -360,6 +396,10 @@ def mint_nft_external(cardano: Cardano,
     Also transfers the minimum lovelace amount as defined by the network protocol
     parameters plus 1000000.  Currently 2 ADA.
     """
+
+    if not verify_unique_nfts(cardano, database, policy_name, nft_metadata_file):
+        logger.error("NFT Uniqueness Violation found.")
+        raise Exception('NFT Uniqueness Violation')
 
     # The NFT minted will be added to the output when the transaction is created
     address_outputs = [{
@@ -400,16 +440,9 @@ def mint_nft_external(cardano: Cardano,
                                              'transaction/mint_nft_external_draft_tx')
 
     # https://github.com/input-output-hk/cardano-ledger-specs/blob/master/doc/explanations/min-utxo.rst
-    # minUTxOValue is the minimum value if sending ADA only.  Since ADA plus a
-    # custom NFT token is being sent the amount to send is larger.  There is a
-    # cardano-cli command to calculate this but as of V1.29 it's not supported.
-    #
-    # For now 1.5 ADA + (0.11 ADA * NUM_NFTS) works well.  it returns a little
-    # more than needed for small mints but we don't need to be greedy.  This has
-    # been tested for NFTs up to 50 in a single transaction
-    min_utxo_value = cardano.get_min_utxo_value() + 500000
-
-    logger.debug('Mint NFT External, ADA min tx = {} lovelace'.format(min_utxo_value))
+    cardano.calculate_min_required_utxo_mint(input_utxos,
+                                             address_outputs,
+                                             nft_metadata_file)
 
     total_input_lovelace = 0
     for item in input_utxos:
@@ -427,13 +460,9 @@ def mint_nft_external(cardano: Cardano,
     address_outputs[0]['amount'] = total_input_lovelace - fee # the project keeps
 
     for i in range(0, len(input_utxos)):
-        out_min_ada = min_utxo_value + (110000 * input_utxos[i]['count'])
-        if out_min_ada > 11000000:
-            # returning more than 11 ADA?  Something must have gone wrong.  That means
-            # more than 85 NFTs were attempted to mint in a single transaction
-            logger.error("Unexpected out_min_ada value ({})".format(out_min_ada))
-            raise Exception("Unexpected out_min_ada value ({})".format(out_min_ada))
-
+        # the first UTXO corresponds to the second address and so on
+        out_min_ada = address_outputs[i+1]['min-required-utxo']
+        logger.info('out min ada = {}'.format(out_min_ada))
         out_min_ada = int(out_min_ada + input_utxos[i]['refund'])
         address_outputs[0]['amount'] = address_outputs[0]['amount'] - out_min_ada # remove from the project
         address_outputs[i+1]['amount'] = out_min_ada             # give to minter for tx min ADA requirement
@@ -470,7 +499,9 @@ def mint_nft_external(cardano: Cardano,
                              [minting_wallet.get_signing_key_file(0), minting_wallet.get_signing_key_file(1)],
                              'transaction/mint_nft_external_signed_tx')
     #submit
-    cardano.submit_transaction('transaction/mint_nft_external_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/mint_nft_external_signed_tx')
+
+    return tx_id
 
 def batch_mint_next_nft_in_series(cardano: Cardano,
                                   database: Database,
@@ -493,23 +524,24 @@ def batch_mint_next_nft_in_series(cardano: Cardano,
 
     logger.info('Mint Next Series NFT, Mint NFTs: {}'.format(nft_metadata['token-names']))
     sales.set_tokens_purchased(nft_metadata['token-names'])
-    mint_nft_external(cardano,
-                      database,
-                      minting_wallet,
-                      policy_name,
-                      input_utxos,
-                      nft_metadata_file)
+    tx_id = mint_nft_external(cardano,
+                              database,
+                              minting_wallet,
+                              policy_name,
+                              input_utxos,
+                              nft_metadata_file)
 
-    # 1.  Query minting wallet until input utxo is gone.
+    # wait for the transaction to complete by seeing the output tx id show up
+    # in our wallet
     iterations = 0
-    while cardano.contains_txhash(minting_wallet, input_utxos[0]['utxo']['tx-hash']):
+    while not cardano.contains_txhash(minting_wallet, tx_id):
         iterations += 1
         if iterations >= 100:
-            logger.warning('Mint Next Series NFT, Timeout waiting for txhash')
+            logger.warning('Mint Next Series NFT, Timeout waiting for tx id')
             sales.set_timeout(True)
             break
 
-        time.sleep(6)
+        time.sleep(10)
 
     logger.info('Mint Next Series NFT, Transaction Complete!')
 
@@ -536,12 +568,12 @@ def refund_payment(cardano: Cardano,
                                  cardano.get_network(),
                                  input_address)
 
-    (fee, amount) = transfer_utxo_ada(cardano, wallet, utxo, destination)
+    (tx_id, fee, amount) = transfer_utxo_ada(cardano, wallet, utxo, destination)
     sales.set_refund_data(fee, amount)
 
     logger.debug('Refund Payment, Wait for transaction to complete')
     iterations = 0
-    while cardano.contains_txhash(wallet, utxo['tx-hash']):
+    while not cardano.contains_txhash(destination, tx_id):
         iterations += 1
         if iterations >= 100:
             logger.warning('Refund Payment, Timeout waiting for transaction to complete')
@@ -676,7 +708,7 @@ def process_incoming_payments(cardano: Cardano,
             logger.debug('Refund {} queued UTXOs'.format(len(input_utxos)))
             for item in input_utxos:
                 logger.info("Refund: {} = {}".format(item['utxo']['tx-hash'], item['utxo']['amount']))
-                if not refund_payment(cardano, database, minting_wallet, utxo, sales):
+                if not refund_payment(cardano, database, minting_wallet, item['utxo'], sales):
                     logger.error('processing_incoming_payments, Fail to refund')
                 else:
                     logger.info('processing_incoming_payments, Refund complete.')

@@ -364,6 +364,9 @@ def main():
             token_names = []
             (utxos, lovelace) = cardano.query_utxos(burn_wallet)
 
+            utxos = cardano.query_utxos_time(database, utxos)
+            utxos.sort(key=lambda item : item['slot-no'])
+
             utxo_in = None
             for utxo in utxos:
                 for a in utxo['assets']:

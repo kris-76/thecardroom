@@ -254,7 +254,7 @@ class Wallet:
     # Create a mnemonic phrase that can be used with cardano-wallet, yoroi, dadaelus, etc....
     @staticmethod
     def generate_mnemonic_phrase():
-        command = ['cardano-wallet', 'recovery-phrase', 'generate']
+        command = ['cardano-address', 'recovery-phrase', 'generate']
         output = Command.run(command, network=None)
         logger.debug('Generate Mnemonic Phrase: {}'.format(output))
         return output

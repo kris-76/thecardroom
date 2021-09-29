@@ -69,6 +69,12 @@ if wallet_name != None:
 
     cardano.dump_utxos(wallet)
 
+    (utxos, lovelace) = cardano.query_utxos(wallet)
+    utxos = cardano.query_utxos_time(database, utxos)
+    utxos.sort(key=lambda item : item['slot-no'])
+    for utxo in utxos:
+        logger.info('{} {}: {} = {} lovelace'.format(utxo['time'], utxo['slot-no'], utxo['tx-hash'], utxo['amount']))
+
 if policy_name != None:
     stake_address = database.query_stake_address(wallet.get_payment_address())
     logger.info('      address = {}'.format(wallet.get_payment_address()))
@@ -81,13 +87,13 @@ if policy_name != None:
         raise Exception('Policy: <{}> does not exist'.format(policy_name))
 
     tokens = database.query_current_owner(cardano.get_policy_id(policy_name))
-    print("By Token: ")
-    print('len = {}'.format(len(tokens)))
+    logger.info("By Token: ")
+    logger.info('len = {}'.format(len(tokens)))
     by_address = {}
     for name in tokens:
         address = tokens[name]['address']
         slot = tokens[name]['slot']
-        print('{} owned by {} at slot {}'.format(name, address, slot))
+        logger.info('{} owned by {} at slot {}'.format(name, address, slot))
 
         if address in by_address:
             by_address[address].append(name)
@@ -98,9 +104,9 @@ if policy_name != None:
     def sort_by_length(item):
         return len(item[1])
     holders.sort(key=sort_by_length)
-    print('')
-    print('')
-    print('By Owner:')
-    print('len = {}'.format(len(holders)))
+    logger.info('')
+    logger.info('')
+    logger.info('By Owner:')
+    logger.info('len = {}'.format(len(holders)))
     for holder in holders:
-        print('{}({})= {}'.format(holder[0], len(holder[1]), holder[1]))
+        logger.info('{}({})= {}'.format(holder[0], len(holder[1]), holder[1]))

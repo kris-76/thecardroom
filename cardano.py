@@ -33,6 +33,7 @@ import copy
 from nft import Nft
 from wallet import Wallet
 import logging
+from database import Database
 
 logger = logging.getLogger('cardano')
 
@@ -110,6 +111,14 @@ class Cardano:
 
         return (utxos, total_lovelace)
 
+    def query_utxos_time(self, database: Database, utxos: List):
+        for utxo in utxos:
+            (txtime, txslotno) = database.query_txhash_time(utxo['tx-hash'])
+            utxo['time'] = txtime
+            utxo['slot-no'] = txslotno
+
+        return utxos
+
     def query_utxos_dict(self,
                          wallet: Wallet,
                          addresses: List[str]=None) -> Dict:
@@ -166,6 +175,25 @@ class Cardano:
                     return utxo
 
         return None
+
+    def get_transaction_id(self, transaction_signed_file: str) -> str:
+        command = ['cardano-cli', 'transaction', 'txid', '--tx-file', transaction_signed_file]
+        # TODO, error checking.  missing file?  unsigned file?
+        output = Command.run(command, None)
+        return output
+
+    def calculate_min_required_utxo(self, address, amount, assets):
+        command = ['cardano-cli', 'transaction', 'calculate-min-required-utxo',
+                   '--alonzo-era', '--protocol-params-file', self.protocol_parameters_file,
+                   '--tx-out', '{}+{}{}'.format(address, amount, assets)]
+
+        output = Command.run(command, None)
+        cells = output.split()
+        if cells[0] != 'Lovelace':
+            logger.error('Expected \'Lovelace\'')
+            raise Exception('Expected \'Lovelace\'')
+
+        return int(cells[1])
 
     def create_transfer_transaction_file(self,
                                          utxo_inputs,
@@ -274,6 +302,50 @@ class Cardano:
         output = Command.run(command, None)
         return output
 
+    def calculate_min_required_utxo_mint(self,
+                                         input_utxos: List,
+                                         address_outputs: List,
+                                         nft_metadata_file: str):
+        nft_metadata = Nft.parse_metadata_file(nft_metadata_file)
+        policy_id = nft_metadata['policy-id']
+        token_names = nft_metadata['token-names']
+
+        # address_outputs[0] = mint wallet address
+        # address_outputs[1..len_input(utxos)] = purchaser address
+
+        if len(address_outputs) < 1 + len(input_utxos):
+            logger.error('Address outputs too short, len = {}'.format(len(address_outputs)))
+            raise Exception('Address outputs too short, len = {}'.format(len(address_outputs)))
+
+        nfts_to_mint = 0
+        for item in input_utxos:
+            nfts_to_mint += item['count']
+        if nfts_to_mint != len(token_names):
+            logger.error('Mint count mismatch {} != {}'.format(len(nfts_to_mint, len(token_names))))
+            raise Exception('Mint count mismatch {} != {}'.format(len(nfts_to_mint, len(token_names))))
+
+        token_index = 0
+        address_index = 1 # index 0 is the project wallet so skip it
+
+        for item in input_utxos:
+            count = item['count']
+            for i in range(0, count):
+                full_name = '{}.{}'.format(policy_id, token_names[token_index])
+                # add the nft being minted to the output
+                address_outputs[address_index]['assets'][full_name] = 1
+                token_index += 1
+            address_index += 1
+
+        for address in address_outputs:
+            assets_string = ''
+            for asset in address['assets']:
+                assets_string += '+{} {}'.format(address['assets'][asset], asset)
+
+            min_required = self.calculate_min_required_utxo(address['address'], address['amount'], assets_string)
+            address['min-required-utxo'] = min_required
+
+        return True
+
     # burning is just like minting except the value is negative
     def create_burn_nft_transaction_file(self,
                                          utxo_inputs: List,
@@ -342,6 +414,7 @@ class Cardano:
                    '--protocol-params-file', self.protocol_parameters_file]
         output = Command.run(command, self.network)
         cells = output.split()
+
         return int(cells[0])
 
     def sign_transaction(self,
@@ -353,13 +426,21 @@ class Cardano:
             command.extend(['--signing-key-file', file])
         command.extend(['--out-file', signed_transaction_file])
         output = Command.run(command, self.network)
+
         return output
 
     def submit_transaction(self,
                            transaction_file: str) -> str:
+
+        tx_id = self.get_transaction_id(transaction_file)
+
         command = ['cardano-cli', 'transaction', 'submit', '--tx-file', transaction_file]
         output = Command.run(command, self.network)
-        return output
+        if output != 'Transaction successfully submitted.':
+            logger.error('Error submitting transaction')
+            tx_id = None
+
+        return tx_id
 
     def create_new_policy_id(self,
                              before_slot: int,
