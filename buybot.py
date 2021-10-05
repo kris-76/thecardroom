@@ -106,7 +106,7 @@ def main():
     src_wallet = Wallet(src_name, cardano.get_network())
     dst_wallet = Wallet(dst_name, cardano.get_network())
 
-    cardano.dump_utxos(src_wallet)
+    cardano.dump_utxos_sorted(database, src_wallet)
     if amount >= 0:
         send_payment = True
         while send_payment:
@@ -118,8 +118,11 @@ def main():
                 logger.error("Nothing to Send")
                 break
 
-            while not cardano.contains_txhash(dst_wallet, tx_id):
-                time.sleep(5)
+            if tx_id == None:
+                repeat = False
+            else:
+                while not cardano.contains_txhash(dst_wallet, tx_id):
+                    time.sleep(5)
 
             send_payment = repeat
     elif nft != None:

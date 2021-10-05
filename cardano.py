@@ -144,6 +144,21 @@ class Cardano:
 
         print("Total: {} ADA".format(lovelace/1000000))
 
+    def dump_utxos_sorted(self,
+                          database: Database,
+                          wallet: Wallet) -> None:
+        print('{} UTXOS:'.format(wallet.get_name()))
+        (utxos, lovelace) = self.query_utxos(wallet)
+        utxos = self.query_utxos_time(database, utxos)
+        utxos.sort(key=lambda item : item['slot-no'])
+        for utxo in utxos:
+            print("UTXO: {}#{}, = {} lovelace".format(utxo['tx-hash'], utxo['tx-ix'], utxo['amount'], ))
+            for a in utxo['assets']:
+                print('  - {} {}'.format(utxo['assets'][a], a))
+            print('  - assets = {}'.format(len(utxo['assets'])))
+
+        print("Total: {} ADA".format(lovelace/1000000))
+
     def contains_txhash(self,
                         wallet: Wallet,
                         txhash: str) -> bool:
@@ -255,8 +270,11 @@ class Cardano:
         token_index = 0
         address_index = 1 # index 0 is the project wallet so skip it
 
+        mint_map = {}
         for item in input_utxos:
             count = item['count']
+            key = item['utxo']['tx-hash']+'#'+str(item['utxo']['tx-ix'])
+            mint_map[key] = {}
             for i in range(0, count):
                 if len(mint) > 0:
                     mint += '+'
@@ -265,6 +283,11 @@ class Cardano:
                 # add the nft being minted to the output
                 address_outputs[address_index]['assets'][full_name] = 1
                 logger.debug('Mint {} to {}'.format(token_names[token_index], address_outputs[address_index]['address']))
+                if 'tokens' in mint_map[key]:
+                    mint_map[key]['tokens'].append(token_names[token_index])
+                else:
+                    mint_map[key]['address'] = address_outputs[address_index]['address']
+                    mint_map[key]['tokens'] = [token_names[token_index]]
                 token_index += 1
             address_index += 1
 
@@ -300,7 +323,7 @@ class Cardano:
                         '--out-file', transaction_file])
 
         output = Command.run(command, None)
-        return output
+        return (output, mint_map)
 
     def calculate_min_required_utxo_mint(self,
                                          input_utxos: List,

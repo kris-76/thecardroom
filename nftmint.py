@@ -338,6 +338,7 @@ def main():
                                           database,
                                           mint_wallet,
                                           policy_name,
+                                          drop_name,
                                           metadata_set_file,
                                           prices,
                                           max_per_tx)
@@ -363,20 +364,23 @@ def main():
             #burn all
             token_names = []
             (utxos, lovelace) = cardano.query_utxos(burn_wallet)
-
             utxos = cardano.query_utxos_time(database, utxos)
             utxos.sort(key=lambda item : item['slot-no'])
 
             utxo_in = None
+            input_utxos = []
             for utxo in utxos:
                 for a in utxo['assets']:
                     if a.startswith('{}.'.format(policy_id)):
-                        utxo_in = utxo
-                        token_name = a.split('.')[1]
-                        token_names.append(token_name)
+                        if len(token_names) < 200:
+                            utxo_in = utxo
+                            token_name = a.split('.')[1]
+                            token_names.append(token_name)
+                            if not utxo in input_utxos:
+                                input_utxos.append(utxo)
 
             if len(token_names) > 0:
-                tcr.burn_nft_internal(cardano, burn_wallet, policy_name, token_names, token_amount=1)
+                tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
                 while cardano.contains_txhash(burn_wallet, utxo_in['tx-hash']):
                     logger.info('wait')
                     time.sleep(10)
@@ -384,7 +388,21 @@ def main():
                 logger.error('No tokens found for policy')
         elif token_name != None:
             # burn just the specified token in the specified policy
-            tcr.burn_nft_internal(cardano, burn_wallet, policy_name, [token_name], token_amount=1)
+            token_names = []
+            (utxos, lovelace) = cardano.query_utxos(burn_wallet)
+            utxos = cardano.query_utxos_time(database, utxos)
+            utxos.sort(key=lambda item : item['slot-no'])
+
+            utxo_in = None
+            input_utxos = []
+            for utxo in utxos:
+                for a in utxo['assets']:
+                    if a == '{}.{}'.format(policy_id, token_name):
+                        token_names.append(token_name)
+                        if not utxo in input_utxos:
+                            input_utxos.append(utxo)
+
+            tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
         else:
             logger.error('Nothing to do')
 

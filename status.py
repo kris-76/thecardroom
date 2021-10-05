@@ -67,19 +67,13 @@ if wallet_name != None:
         logger.error('Wallet: <{}> does not exist'.format(wallet_name))
         raise Exception('Wallet: <{}> does not exist'.format(wallet_name))
 
-    cardano.dump_utxos(wallet)
-
-    (utxos, lovelace) = cardano.query_utxos(wallet)
-    utxos = cardano.query_utxos_time(database, utxos)
-    utxos.sort(key=lambda item : item['slot-no'])
-    for utxo in utxos:
-        logger.info('{} {}: {} = {} lovelace'.format(utxo['time'], utxo['slot-no'], utxo['tx-hash'], utxo['amount']))
-
-if policy_name != None:
     stake_address = database.query_stake_address(wallet.get_payment_address())
     logger.info('      address = {}'.format(wallet.get_payment_address()))
     logger.info('Stake address = {}'.format(stake_address))
 
+    cardano.dump_utxos_sorted(database, wallet)
+
+if policy_name != None:
     logger.info('')
 
     if cardano.get_policy_id(policy_name) == None:

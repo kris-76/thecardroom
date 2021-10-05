@@ -29,13 +29,14 @@ from typing import List
 
 import json
 import time
+from datetime import datetime
 
 class Sales:
     """
     Simple class to track each sale as JSON file
     """
-    def __init__(self, network: str):
-        self.filename = 'nft/{}/sales.json'.format(network)
+    def __init__(self, network: str, drop: str):
+        self.filename = 'nft/{}/{}/sales.json'.format(network, drop)
         self.sales = {'transactions': []}
         try:
             with open(self.filename, 'r') as file:
@@ -43,64 +44,77 @@ class Sales:
         except FileNotFoundError as e:
             pass
 
-        self.input_hash = None
-        self.input_amount = 0
-        self.input_address = None
-        self.num_nfts = 0
-        self.tokens_purchased = None
-        self.timeout = False
-        self.output_hash = None
-        self.refund_fee = 0
-        self.refund_amount = 0
+    def contains(self, hash: str, ix: str) -> bool:
+        for item in self.sales['transactions']:
+            if item['input-hash'] == hash and item['input-ix'] == ix:
+                return True
 
-    def set_input_utxo(self, hash: str, amount: int) -> None:
-        self.input_hash = hash
-        self.input_amount = amount
+        return False
 
-    def set_purchase_amount(self, num_nfts: int) -> None:
-        self.num_nfts = num_nfts
+    def add_utxo(self, hash: str, ix: str, amount: int, count: int) -> bool:
+        if self.contains(hash, ix):
+            return False
 
-    def set_input_address(self, address: str) -> None:
-        self.input_address = address
+        self.sales['transactions'].append({'input-hash': hash,
+                                           'input-ix': ix,
+                                           'input-amount': amount,
+                                           'count': count,
+                                           'time': {'epoch': round(time.time()),
+                                                    'date-time': datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
+                                          })
+        return True
 
-    def set_tokens_purchased(self, tokens: List[str]) -> None:
-        self.tokens_purchased = tokens
+    def remove_utxo(self, hash: str, ix: str) -> bool:
+        if not self.contains(hash, ix):
+            return False
 
-    def set_timeout(self, timeout: bool) -> None:
-        self.timeout = timeout
+        for item in self.sales['transactions']:
+            if item['input-hash'] == hash and item['input-ix'] == ix:
+                self.sales['transactions'].remove(item)
+                return True
 
-    def set_output_utxo(self, hash: str) -> None:
-        self.output_hash = hash
+        return False
 
-    def set_refund_data(self, fee: int, amount: int) -> None:
-        self.refund_fee = fee
-        self.refund_amount = amount
+    def set_input_address(self, hash: str, ix: str, address: str) -> bool:
+        for item in self.sales['transactions']:
+            if item['input-hash'] == hash and item['input-ix'] == ix:
+                item['input-address'] = address
+                return True
 
+        return False
+
+    def set_tx_ada(self, hash: str, ix: str, out_min_ada: int) -> bool:
+        for item in self.sales['transactions']:
+            if item['input-hash'] == hash and item['input-ix'] == ix:
+                item['out-ada'] = out_min_ada
+                return True
+
+        return False
+
+    def set_refund(self, hash: str, ix: str, fee: int, amount: int) -> bool:
+        for item in self.sales['transactions']:
+            if item['input-hash'] == hash and item['input-ix'] == ix:
+                item['refund'] = {'amount': amount, 'fee': fee}
+                return True
+
+        return False
+
+    def set_output_txid(self, hash: str, ix: str, txid: str) -> bool:
+        for item in self.sales['transactions']:
+            if item['input-hash'] == hash and item['input-ix'] == ix:
+                item['out-txid'] = txid
+                return True
+
+        return False
+
+    def set_tokens_minted(self, hash: str, ix: str, tokens: List) -> bool:
+        for item in self.sales['transactions']:
+            if item['input-hash'] == hash and item['input-ix'] == ix:
+                item['tokens-minted'] = tokens
+                return True
+
+        return False
 
     def commit(self) -> None:
-        tx = {
-            'tx-time': round(time.time()),
-            'input-hash': self.input_hash,
-            'input-amount': self.input_amount,
-            'input-address': self.input_address,
-            'num-nfts': self.num_nfts,
-            'tokens-purchased': self.tokens_purchased,
-            'timeout': self.timeout,
-            'output-hash': self.output_hash,
-            'refund-fee': self.refund_fee,
-            'refund-amount': self.refund_amount
-        }
-
-        self.sales['transactions'].append(tx)
         with open(self.filename, 'w') as file:
             file.write(json.dumps(self.sales, indent=4))
-
-        self.input_hash = None
-        self.input_amount = 0
-        self.input_address = None
-        self.num_nfts = 0
-        self.tokens_purchased = None
-        self.timeout = False
-        self.output_hash = None
-        self.refund_fee = 0
-        self.refund_amount = 0
