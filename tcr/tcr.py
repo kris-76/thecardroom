@@ -28,18 +28,17 @@ Author: Kris Henderson
 from typing import Dict
 from typing import List
 
-from nft import Nft
-from cardano import Cardano
-from wallet import Wallet
-from wallet import WalletExternal
-from database import Database
-from metadata_list import MetadataList
+from tcr.nft import Nft
+from tcr.cardano import Cardano
+from tcr.wallet import Wallet
+from tcr.wallet import WalletExternal
+from tcr.database import Database
+from tcr.metadata_list import MetadataList
 
 import json
-import random
 import time
 import logging
-from sales import Sales
+from tcr.sales import Sales
 
 DAYS_PER_YEAR = int(365)
 MONTHS_PER_YEAR = int(12)

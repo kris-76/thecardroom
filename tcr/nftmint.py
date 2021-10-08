@@ -11,16 +11,17 @@ import json
 import logging
 import os
 import time
+import traceback
 
-from database import Database
-from cardano import Cardano
-from nft import Nft
-from wallet import Wallet
-from wallet import WalletExternal
-from metadata_list import MetadataList
-import command
-import tcr
-import words
+from tcr.database import Database
+from tcr.cardano import Cardano
+from tcr.nft import Nft
+from tcr.wallet import Wallet
+from tcr.wallet import WalletExternal
+from tcr.metadata_list import MetadataList
+import tcr.command
+import tcr.tcr
+import tcr.words
 
 logger = None
 
@@ -57,6 +58,7 @@ def get_metametadata(cardano: Cardano, drop_name: str) -> Dict:
         series_metametadata = json.load(file)
         if drop_name != series_metametadata['drop-name']:
             raise Exception('Unexpected Drop Name: {} vs {}'.format(drop_name, series_metametadata['drop-name']))
+        series_metametadata['self'] = metametadata_file
     return series_metametadata
 
 def set_metametadata(cardano: Cardano, series_metametadata: Dict) -> None:
@@ -87,7 +89,7 @@ def create_series_metadata_set_file(cardano: Cardano,
 
     series_metametadata = get_metametadata(cardano, drop_name)
     series_metametadata['policy'] = policy_name
-    codewords = words.generate_word_list('words.txt', 500)
+    codewords = tcr.words.generate_word_list('words.txt', 500)
     files = Nft.create_series_metadata_set(cardano.get_network(),
                                            cardano.get_policy_id(policy_name),
                                            series_metametadata,
@@ -176,31 +178,32 @@ def main():
     setup_logging(network, 'nftmint')
     logger = logging.getLogger(network)
 
-    if not network in command.networks:
+    if not network in tcr.command.networks:
         logger.error('Invalid Network: {}'.format(network))
         raise Exception('Invalid Network: {}'.format(network))
 
     # Setup connection to cardano node, cardano wallet, and cardano db sync
     cardano = Cardano(network, '{}_protocol_parameters.json'.format(network))
+    database = Database('{}.ini'.format(network))
 
     logger.info('{} Payment Processor / NFT Minter'.format(network.upper()))
     logger.info('Copyright 2021 Kristofer Henderson & thecardroom.io')
     logger.info('Network: {}'.format(network))
 
-    tip = cardano.query_tip()
-    cardano.query_protocol_parameters()
-    tip_slot = tip['slot']
+    if create_wallet != None or create_policy != None or mint or burn:
+        tip = cardano.query_tip()
+        cardano.query_protocol_parameters()
+        tip_slot = tip['slot']
 
-    database = Database('{}.ini'.format(network))
-    meta = database.query_chain_metadata()
-    db_size = database.query_database_size()
-    latest_slot = database.query_latest_slot()
-    sync_progress = database.query_sync_progress()
-    logger.info('Database Chain Metadata: {} / {}'.format(meta[1], meta[2]))
-    logger.info('Database Size: {}'.format(db_size))
-    logger.info('Cardano Node Tip Slot: {}'.format(tip_slot))
-    logger.info(' Database Latest Slot: {}'.format(latest_slot))
-    logger.info('Sync Progress: {}'.format(sync_progress))
+        meta = database.query_chain_metadata()
+        db_size = database.query_database_size()
+        latest_slot = database.query_latest_slot()
+        sync_progress = database.query_sync_progress()
+        logger.info('Database Chain Metadata: {} / {}'.format(meta[1], meta[2]))
+        logger.info('Database Size: {}'.format(db_size))
+        logger.info('Cardano Node Tip Slot: {}'.format(tip_slot))
+        logger.info(' Database Latest Slot: {}'.format(latest_slot))
+        logger.info('Sync Progress: {}'.format(sync_progress))
 
 
     # Run commands specified in the command parameters and verify valid input
@@ -240,7 +243,7 @@ def main():
             logger.error('Wallet: <{}> does not exist'.format(wallet_name))
             raise Exception('Wallet: <{}> does not exist'.format(wallet_name))
 
-        cardano.create_new_policy_id(tip_slot+tcr.SECONDS_PER_YEAR,
+        cardano.create_new_policy_id(tip_slot+tcr.SECONDS_PER_MONTH * 6,
                                      policy_wallet,
                                      create_policy)
 
@@ -249,7 +252,7 @@ def main():
             raise Exception('Failed to create policy: <{}>'.format(create_policy))
 
         logger.info('Successfully created new policy: {} / {}'.format(create_policy, cardano.get_policy_id(create_policy)))
-        logger.info('Expires at slot: {}'.format(tip_slot+tcr.SECONDS_PER_YEAR))
+        logger.info('Expires at slot: {}'.format(tip_slot+(tcr.SECONDS_PER_MONTH * 6)))
     elif create_drop != None:
         if (create_wallet != None or create_policy != None or
                 create_drop_template != None or mint == True or wallet_name != None or
@@ -419,8 +422,11 @@ def main():
     database.close()
 
 if __name__ == '__main__':
-    #try:
-    main()
-    #except Exception as e:
-    #    print("Caught Exception!")
-    #    print(e)
+    try:
+        main()
+    except Exception as e:
+        print('')
+        print('')
+        print('EXCEPTION: {}'.format(e))
+        print('')
+        traceback.print_exc()

@@ -16,15 +16,20 @@ Windows 10 WSL2
   - sudo apt install python3-pip
   - sudo apt install libpq-dev
   - pip install psycopg2
+  - pip install numpy
 
 
 ## 2.  Install Cardano Binaries
 
+  - https://hydra.iohk.io/job/Cardano/cardano-node/cardano-node-linux/latest-finished
+  - https://hydra.iohk.io/job/Cardano/cardano-db-sync/cardano-db-sync-linux/latest-finished
+
+
   - cd ~
   - mkdir cardano-bin
   - cd cardano-bin
-  - curl https://hydra.iohk.io/build/7760210/download/1/cardano-node-1.30.0-linux.tar.gz --output cardano-node-1.30.0-linux.tar.gz
-  - curl https://hydra.iohk.io/build/7520425/download/1/cardano-db-sync-11.0.0-linux.tar.gz --output cardano-db-sync-11.0.0-linux.tar.gz
+  - curl https://hydra.iohk.io/build/7872177/download/1/cardano-node-1.30.0-linux.tar.gz --output cardano-node-1.30.0-linux.tar.gz
+  - curl https://hydra.iohk.io/build/7857352/download/1/cardano-db-sync-11.0.4-linux.tar.gz --output cardano-db-sync-11.0.4-linux.tar.gz
   - curl https://github.com/input-output-hk/cardano-addresses/releases/download/3.6.0/cardano-addresses-3.6.0-linux64.tar.gz --output cardano-addresses-3.6.0-linux64.tar.gz
   - tar --ungzip -xvf cardano-node-1.30.0-linux.tar.gz
   - tar --ungzip -xvf cardano-db-sync-11.0.0-linux.tar.gz

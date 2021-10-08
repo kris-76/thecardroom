@@ -30,9 +30,12 @@ import json
 import os
 import time
 import random
-from command import Command
+from tcr.command import Command
 import logging
 import hashlib
+import numpy
+
+from PIL import Image
 
 logger = logging.getLogger('nft')
 
@@ -157,23 +160,34 @@ class Nft:
     @staticmethod
     def calculate_total_combinations(metametadata: Dict):
         total = 0
-        layer_set_names = metametadata['layer-sets']
+        layer_sets = metametadata['layer-sets']
         layer_set_weight = 0
-        for layer_set_name in layer_set_names:
-            layer_set = metametadata[layer_set_name]
-            layer_set_weight += layer_set['weight']
+        dir = os.path.dirname(os.path.abspath(metametadata['self']))
+        for layer_set_item in layer_sets:
+            with open(os.path.join(dir, layer_set_item['file']), 'r') as ls_file:
+                layer_set = json.load(ls_file)
+
+            layer_set_weight += layer_set_item['weight']
             combos = 1
             for layer in layer_set['layers']:
-                print("{} - {} = {}".format(layer_set_name, layer['name'], len(layer['images'])))
+                logger.info("{} - {} = {}".format(layer_set_item['file'], layer['name'], len(layer['images'])))
                 combos = combos * len(layer['images'])
                 image_weight_total = 0
                 for image in layer['images']:
                     image_weight_total += image['weight']
-                if image_weight_total != 100:
-                    logger.error('{}, {} Image weight {} != 100'.format(layer_set_name, layer['name'], image_weight_total))
-                    raise Exception('{}, {} Image weight {} != 100'.format(layer_set_name, layer['name'], image_weight_total))
+                    if image['image'] != None:
+                        dir = os.path.dirname(os.path.abspath(metametadata['self']))
+                        image_path = os.path.join(dir, image['image'])
+                        im = Image.open(image_path)
+                        (width, height) = im.size
+                        if width != layer['width'] or height != layer['height']:
+                            logger.error('{} != {} x {}'.format(image['image'], layer['width'], layer['height']))
 
-            print('{} = {}'.format(layer_set_name, combos))
+                if image_weight_total != 100:
+                    logger.error('{}, {} Image weight {} != 100'.format(layer_set_item['file'], layer['name'], image_weight_total))
+                    raise Exception('{}, {} Image weight {} != 100'.format(layer_set_item['file'], layer['name'], image_weight_total))
+
+            logger.info('{} = {}'.format(layer_set_item['file'], combos))
             total += combos
 
         if layer_set_weight != 100:
@@ -225,7 +239,7 @@ class Nft:
 
             fnames = []
             while total > 0:
-                num = random.randint(0, total-1)
+                num = numpy.random.randint(0, total)
                 for l in card_lists:
                     if num > len(l):
                         num -= len(l)
@@ -242,13 +256,10 @@ class Nft:
             logger.info('Total Combinations: {} images, Layer Sets: {} sets'.format(total_combinations, len(metametadata['layer-sets'])))
             logger.info('NFTs to generate: {}'.format(metametadata['total']))
 
-            # 1.  Randomly pick a layer set
-            # 2.  For each layer randomly choose an image
-            # 3.  Make sure it's unique.  Otherwise, try again
-            # 4.  Continue until reached the total NFTs to generate
-
             total_to_generate = metametadata['total']
             fnames = []
+
+            frequencies = [0] * 101
 
             while len(fnames) < total_to_generate:
                 images = []
@@ -259,14 +270,17 @@ class Nft:
                 # 1.  Randomly choose a layer-set according to weight of all
                 # layer sets.  The weight must add to 100
                 sum = 0
-                num = random.randint(1, 100)
-                layer_set_names = metametadata['layer-sets']
+                num = numpy.random.randint(1, 101)
+                frequencies[num] += 1
+                layer_sets = metametadata['layer-sets']
                 layer_set_obj = None
-                for layer_set_name in layer_set_names:
-                    if num <= sum + metametadata[layer_set_name]['weight']:
-                        layer_set_obj = metametadata[layer_set_name]
+                for layer_set_item in layer_sets:
+                    if num <= sum + layer_set_item['weight']:
+                        dir = os.path.dirname(os.path.abspath(metametadata['self']))
+                        with open(os.path.join(dir, layer_set_item['file']), 'r') as ls_file:
+                            layer_set_obj = json.load(ls_file)
                         break
-                    sum += metametadata[layer_set_name]['weight']
+                    sum += layer_set_item['weight']
 
                 if layer_set_obj == None:
                     logger.error('Unexpected layer_set_obj == None')
@@ -280,7 +294,8 @@ class Nft:
                 # select an image from it
                 for layer in layer_set_obj['layers']:
                     sum = 0
-                    num = random.randint(1, 100)
+                    num = numpy.random.randint(1, 101)
+                    frequencies[num] += 1
                     img_obj = None
                     img_idx = 0
                     for image in layer['images']:
@@ -296,7 +311,7 @@ class Nft:
 
                     image_name = image_name + '_{}'.format(img_idx)
                     if img_obj['image'] != None:
-                        images.append(img_obj['image'])
+                        images.append(img_obj)
 
                     # Add any metadata / properties associated with the image layer.  I suppose
                     # later layers could override some properties from previous layers
@@ -313,9 +328,22 @@ class Nft:
                 image_names[image_name] = True
                 result_name = result_name + image_name + '.png'
                 logger.info('Create: {}'.format(result_name))
-                command = ['convert', 'nft/{}/{}/{}'.format(network, drop_name, images.pop(0))]
+                command = ['convert']
                 for image in images:
-                    command.extend(['nft/{}/{}/{}'.format(network, drop_name, image), '-composite'])
+                    if image['offset-x'] >= 0:
+                        geometry = '+{}'.format(image['offset-x'])
+                    else:
+                        geometry = '{}'.format(image['offset-x'])
+
+                    if image['offset-y'] >= 0:
+                        geometry += '+{}'.format(image['offset-y'])
+                    else:
+                        geometry += '{}'.format(image['offset-y'])
+
+                    if len(command) == 1:
+                        command.extend(['nft/{}/{}/{}'.format(network, drop_name, image['image']), '-geometry', geometry])
+                    else:
+                        command.extend(['nft/{}/{}/{}'.format(network, drop_name, image['image']), '-geometry', geometry, '-composite'])
 
                 # Create the file
                 command.append(result_name)
@@ -350,5 +378,6 @@ class Nft:
                 fnames.append(metadata_file)
             # should already be sorted....
             # fnames.sort()
+            logger.info('frequencies = {}'.format(frequencies))
 
         return fnames

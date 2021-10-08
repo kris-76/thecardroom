@@ -33,8 +33,8 @@ import json
 import logging
 import os
 import requests
-import command
-import nftmint
+import tcr.command
+import tcr.nftmint
 
 logger = None
 

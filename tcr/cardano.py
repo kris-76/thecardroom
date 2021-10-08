@@ -28,12 +28,12 @@ Author: Kris Henderson
 from typing import Dict, List, Tuple
 
 import json
-from command import Command
+from tcr.command import Command
 import copy
-from nft import Nft
-from wallet import Wallet
+from tcr.nft import Nft
+from tcr.wallet import Wallet
 import logging
-from database import Database
+from tcr.database import Database
 
 logger = logging.getLogger('cardano')
 

@@ -5,5 +5,8 @@ policy/*
 log/*
 test/__pycache__/*
 __pycache__/*
+tcr/__pycache__/*
+.vscode
 mainnet_protocol_parameters.json
 testnet_protocol_parameters.json
+build

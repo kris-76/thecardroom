@@ -29,7 +29,7 @@ from typing import Tuple
 import os
 import logging
 
-from command import Command
+from tcr.command import Command
 
 logger = logging.getLogger('wallet')
 
