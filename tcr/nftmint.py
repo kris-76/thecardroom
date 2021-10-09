@@ -12,6 +12,7 @@ import logging
 import os
 import time
 import traceback
+from datetime import datetime
 
 from tcr.database import Database
 from tcr.cardano import Cardano
@@ -34,7 +35,7 @@ def setup_logging(network: str, application: str) -> None:
     console_format = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
     console_handler.setFormatter(console_format)
 
-    log_file = 'log/{}/{}_{}.log'.format(network, application, round(time.time()))
+    log_file = 'log/{}/{}_{}.log'.format(network, application, datetime.now().strftime("%Y%m%d_%H%M%S"))
     print('Log File: {}'.format(log_file))
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.DEBUG)
@@ -89,7 +90,8 @@ def create_series_metadata_set_file(cardano: Cardano,
 
     series_metametadata = get_metametadata(cardano, drop_name)
     series_metametadata['policy'] = policy_name
-    codewords = tcr.words.generate_word_list('words.txt', 500)
+    #codewords = tcr.words.generate_word_list('words.txt', 500)
+    codewords = None
     files = Nft.create_series_metadata_set(cardano.get_network(),
                                            cardano.get_policy_id(policy_name),
                                            series_metametadata,
@@ -193,6 +195,7 @@ def main():
     if create_wallet != None or create_policy != None or mint or burn:
         tip = cardano.query_tip()
         cardano.query_protocol_parameters()
+        database.open()
         tip_slot = tip['slot']
 
         meta = database.query_chain_metadata()

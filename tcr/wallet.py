@@ -41,6 +41,10 @@ class Wallet:
     Commands based on https://github.com/input-output-hk/cardano-addresses
     """
 
+    ADDRESS_INDEX_ROOT = 0
+    ADDRESS_INDEX_MINT = 1
+    ADDRESS_INDEX_PRESALE = 2
+
     def __init__(self,
                  name: str,
                  network: str):
@@ -215,8 +219,12 @@ class Wallet:
 
         self.payment_address = None
         addr_file = self.payment_address_file_base.format(idx)
-        with open(addr_file, 'r') as file:
-            self.payment_address = file.read()
+
+        try:
+            with open(addr_file, 'r') as file:
+                self.payment_address = file.read()
+        except FileNotFoundError as e:
+            self.payment_address = None
 
         return self.payment_address
 

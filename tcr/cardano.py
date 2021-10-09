@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#luck
+#flight
+#strength
+#degen
+#poker pro
+
+
 """
 File: cardano.py
 Author: Kris Henderson

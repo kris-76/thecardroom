@@ -38,6 +38,9 @@ class Database:
     def __init__(self, config_file: str):
         self.config_file = config_file
         self.config_params = Database.read_config_params(self.config_file)
+        self.connection = None
+
+    def open(self):
         self.connection = psycopg2.connect(**self.config_params)
         cursor = self.connection.cursor()
         cursor.execute('SELECT version()')
@@ -46,7 +49,8 @@ class Database:
         logger.debug('Postgres SQL Database Version: {}'.format(db_version))
 
     def close(self):
-        self.connection.close()
+        if self.connection != None:
+            self.connection.close()
 
     @staticmethod
     def read_config_params(filename: str):
@@ -65,6 +69,9 @@ class Database:
         return config_params
 
     def query_chain_metadata(self):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = 'select * from meta;'
         logger.debug('query_chain_metadata(), sql = {}'.format(sql))
 
@@ -76,6 +83,9 @@ class Database:
         return row
 
     def query_total_supply(self):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = ('select sum (value) / 1000000 as current_supply from tx_out as tx_outer where '
                '      not exists '
                '          ( select tx_out.id from tx_out inner join tx_in '
@@ -92,6 +102,9 @@ class Database:
         return row[0]
 
     def query_database_size(self):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = 'select pg_size_pretty (pg_database_size (\'{}\'));'.format(self.config_params['database'])
         logger.debug('query_database_size(), sql = {}'.format(sql))
 
@@ -103,6 +116,9 @@ class Database:
         return row[0]
 
     def query_latest_slot(self):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = ('select slot_no from block '
                'where block_no is not null '
                'order by block_no desc limit 1;')
@@ -116,6 +132,9 @@ class Database:
         return int(row[0])
 
     def query_sync_progress(self):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = '''select
                      100 * (extract (epoch from (max (time) at time zone 'UTC')) - extract (epoch from (min (time) at time zone 'UTC')))
                          / (extract (epoch from (now () at time zone 'UTC')) - extract (epoch from (min (time) at time zone 'UTC')))
@@ -130,6 +149,9 @@ class Database:
         return float(row[0])
 
     def query_tx_fee(self, txid: str):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = 'select tx.id, tx.fee from tx where tx.hash = \'\\x{}\';'.format(txid)
         logger.debug('query_tx_fee(), sql = {}'.format(sql))
 
@@ -141,6 +163,9 @@ class Database:
         return (row[0], int(row[1]))
 
     def query_stake_address(self, address: str):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = ('select stake_address.id as stake_address_id, tx_out.address, stake_address.view as stake_address '
                'from tx_out inner join stake_address on tx_out.stake_address_id = stake_address.id '
                'where address = \'{}\';'.format(address))
@@ -155,6 +180,9 @@ class Database:
         return row[2]
 
     def query_utxo_outputs(self, txid: str):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = ('select tx_out.* from tx_out '
                'inner join tx on tx_out.tx_id = tx.id '
                'where tx.hash = \'\\x{}\';'.format(txid))
@@ -171,6 +199,9 @@ class Database:
         return outputs
 
     def query_utxo_inputs(self, txid: str):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = ('select tx_out.* from tx_out '
                'inner join tx_in on tx_out.tx_id = tx_in.tx_out_id '
                'inner join tx    on tx.id = tx_in.tx_in_id and tx_in.tx_out_index = tx_out.index '
@@ -188,6 +219,9 @@ class Database:
         return inputs
 
     def query_txhash_time(self, txhash: str):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = ('select block.time, block.slot_no from tx '
                'inner join block on tx.block_id = block.id '
                'where tx.hash = \'\\x{}\';'.format(txhash))
@@ -199,6 +233,9 @@ class Database:
         return (row[0], row[1])
 
     def query_mint_transactions(self, policy_id: str) -> Dict:
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         sql = 'select * from ma_tx_mint where ma_tx_mint.policy=\'\\x{}\' order by tx_id;'.format(policy_id)
         logger.debug('query_mint_transactions(), sql = {}'.format(sql))
 
@@ -225,6 +262,9 @@ class Database:
 
     # https://github.com/input-output-hk/cardano-db-sync/blob/master/doc/schema.md
     def query_current_owner(self, policy_id: str):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
         def sort_by_time(item):
             return item['time']
 
