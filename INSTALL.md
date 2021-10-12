@@ -17,6 +17,7 @@ Windows 10 WSL2
   - sudo apt install libpq-dev
   - pip install psycopg2
   - pip install numpy
+  - pip install pillow
 
 
 ## 2.  Install Cardano Binaries

@@ -23,6 +23,7 @@ from tcr.metadata_list import MetadataList
 import tcr.command
 import tcr.tcr
 import tcr.words
+import numpy
 
 logger = None
 
@@ -81,7 +82,8 @@ def get_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: 
 
 def create_series_metadata_set_file(cardano: Cardano,
                                     policy_name: str,
-                                    drop_name: str) -> str:
+                                    drop_name: str,
+                                    rng: numpy.random.RandomState) -> str:
     metadata_set_file = 'nft/{}/{}/{}.json'.format(cardano.get_network(), drop_name, drop_name)
 
     if os.path.isfile(metadata_set_file):
@@ -95,7 +97,8 @@ def create_series_metadata_set_file(cardano: Cardano,
     files = Nft.create_series_metadata_set(cardano.get_network(),
                                            cardano.get_policy_id(policy_name),
                                            series_metametadata,
-                                           codewords)
+                                           codewords,
+                                           rng)
     series_metametadata = set_metametadata(cardano, series_metametadata)
     metadata_set = {'files': files}
     with open(metadata_set_file, 'w') as file:
@@ -104,7 +107,6 @@ def create_series_metadata_set_file(cardano: Cardano,
     return metadata_set_file
 
 def main():
-    # Set parameters for the transactions
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--network',       required=True,
                                            action='store',
@@ -157,6 +159,12 @@ def main():
                                     metavar='NAME',
                                     default=None,
                                     help='The name of the NFT drop.')
+    parser.add_argument('--seed',   required=False,
+                                    action='store',
+                                    metavar='VALUE',
+                                    type=int,
+                                    default=0,
+                                    help='Seed for RNG')
     parser.add_argument('--token',  required=False,
                                     action='store',
                                     metavar='NAME',
@@ -175,6 +183,7 @@ def main():
     policy_name = args.policy
     drop_name = args.drop
     token_name = args.token
+    rng_seed = args.seed
     confirm = args.confirm
 
     setup_logging(network, 'nftmint')
@@ -209,8 +218,10 @@ def main():
         logger.info('Sync Progress: {}'.format(sync_progress))
 
 
-    # Run commands specified in the command parameters and verify valid input
     if create_wallet != None:
+        #
+        # Create a new wallet
+        #
         if (create_policy != None or create_drop != None or
                 create_drop_template != None or mint == True or drop_name != None or
                 policy_name != None or wallet_name != None):
@@ -228,12 +239,15 @@ def main():
 
         logger.info('Successfully created new wallet: <{}>'.format(create_wallet))
     elif create_policy != None:
+        #
+        # Create a new policy
+        #
         if (create_wallet != None or create_drop != None or create_drop_template != None or
                 mint == True or policy_name != None or drop_name != None):
             logger.error('--create-policy=<NAME>, Requires only --wallet')
             raise Exception('--create-policy=<NAME>, Requires only --wallet')
 
-        if (wallet_name == None):
+        if wallet_name == None:
             logger.error('--create-policy=<NAME>, Requires --wallet')
             raise Exception('--create-policy=<NAME>, Requires --wallet')
 
@@ -257,6 +271,9 @@ def main():
         logger.info('Successfully created new policy: {} / {}'.format(create_policy, cardano.get_policy_id(create_policy)))
         logger.info('Expires at slot: {}'.format(tip_slot+(tcr.SECONDS_PER_MONTH * 6)))
     elif create_drop != None:
+        #
+        # Create a new drop, metadata and nft images
+        #
         if (create_wallet != None or create_policy != None or
                 create_drop_template != None or mint == True or wallet_name != None or
                 drop_name != None):
@@ -271,11 +288,22 @@ def main():
             logger.error('Policy: <{}> does not exist'.format(create_policy))
             raise Exception('Policy: <{}> does not exist'.format(create_policy))
 
-        metadata_set_file = create_series_metadata_set_file(cardano, policy_name, create_drop)
+        if rng_seed == 0:
+            rng_seed = round(time.time())
+        logger.info('Create RNG with SEED: {}'.format(rng_seed))
+
+        rng = numpy.random.default_rng(rng_seed)
+        metadata_set_file = create_series_metadata_set_file(cardano, policy_name, create_drop, rng)
         logger.info('Successfully created new drop: {} '.format(metadata_set_file))
     elif create_drop_template != None:
+        #
+        # Create a template file
+        #
         logger.info('TODO')
     elif mint == True:
+        #
+        # Mint the drop!
+        #
         if (create_wallet != None or create_policy != None or create_drop != None or
                 create_drop_template != None):
             logger.error('--mint, Requires --drop')
@@ -351,6 +379,10 @@ def main():
         except Exception as e:
             logger.exception("Caught Exception")
     elif burn == True:
+        #
+        # Burn the tokens
+        #
+
         # Set the policy name
         policy_id = cardano.get_policy_id(policy_name)
         logger.info('Policy: {}'.format(policy_name))
@@ -411,13 +443,12 @@ def main():
             tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
         else:
             logger.error('Nothing to do')
-
     else:
         logger.info('')
         logger.info('Help:')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-wallet=<name>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-policy=<name> --wallet=<name>')
-        logger.info('\t$ nftmint --network=<testnet | mainnet> --create-drop=<name> --policy=<name>')
+        logger.info('\t$ nftmint --network=<testnet | mainnet> --create-drop=<name> --policy=<name> --seed=<value>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-drop-template=<name>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --mint --wallet=<name> --policy=<name> --drop=<name>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --burn --wallet=<name> --policy=<name> [--confirm | --token=<name>]')

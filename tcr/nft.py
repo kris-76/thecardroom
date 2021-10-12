@@ -165,6 +165,7 @@ class Nft:
         dir = os.path.dirname(os.path.abspath(metametadata['self']))
         for layer_set_item in layer_sets:
             with open(os.path.join(dir, layer_set_item['file']), 'r') as ls_file:
+                logger.info("Opening Layer Set: {}".format(layer_set_item['file']))
                 layer_set = json.load(ls_file)
 
             layer_set_weight += layer_set_item['weight']
@@ -174,6 +175,7 @@ class Nft:
                 combos = combos * len(layer['images'])
                 image_weight_total = 0
                 for image in layer['images']:
+                    logger.debug('{} + {} = {}'.format(image_weight_total, image['weight'], image_weight_total+image['weight']))
                     image_weight_total += image['weight']
                     if image['image'] != None:
                         dir = os.path.dirname(os.path.abspath(metametadata['self']))
@@ -183,7 +185,7 @@ class Nft:
                         if width != layer['width'] or height != layer['height']:
                             logger.error('{} != {} x {}'.format(image['image'], layer['width'], layer['height']))
 
-                if image_weight_total != 100:
+                if abs(100 - image_weight_total) > 0.0001:
                     logger.error('{}, {} Image weight {} != 100'.format(layer_set_item['file'], layer['name'], image_weight_total))
                     raise Exception('{}, {} Image weight {} != 100'.format(layer_set_item['file'], layer['name'], image_weight_total))
 
@@ -211,7 +213,8 @@ class Nft:
     def create_series_metadata_set(network: str,
                                    policy_id: str,
                                    metametadata: Dict,
-                                   codewords: List[str]) -> List[str]:
+                                   codewords: List[str],
+                                   rng: numpy.random.RandomState) -> List[str]:
         series = metametadata['series']
         drop_name = metametadata['drop-name']
         init_nft_id = metametadata['init-nft-id']
@@ -239,7 +242,7 @@ class Nft:
 
             fnames = []
             while total > 0:
-                num = numpy.random.randint(0, total)
+                num = rng.randint(0, total)
                 for l in card_lists:
                     if num > len(l):
                         num -= len(l)
@@ -270,8 +273,8 @@ class Nft:
                 # 1.  Randomly choose a layer-set according to weight of all
                 # layer sets.  The weight must add to 100
                 sum = 0
-                num = numpy.random.randint(1, 101)
-                frequencies[num] += 1
+                num = rng.random() * 100
+                frequencies[round(num)] += 1
                 layer_sets = metametadata['layer-sets']
                 layer_set_obj = None
                 for layer_set_item in layer_sets:
@@ -294,8 +297,8 @@ class Nft:
                 # select an image from it
                 for layer in layer_set_obj['layers']:
                     sum = 0
-                    num = numpy.random.randint(1, 101)
-                    frequencies[num] += 1
+                    num = rng.random() * 100
+                    frequencies[round(num)] += 1
                     img_obj = None
                     img_idx = 0
                     for image in layer['images']:
@@ -358,9 +361,9 @@ class Nft:
                 logger.info('Verify Unique: {}'.format(result_name))
                 hash = Nft.calc_sha256(result_name)
                 if hash in image_hashes:
-                    logger.error('Found Duplicate NFT Image: {}'.format(result_name))
-                    raise Exception('Found Duplicate NFT Image: {}'.format(result_name))
-                image_hashes[hash] = True
+                    logger.error('Found Duplicate NFT Image: {} exists at {} for {}'.format(image_hashes[hash], hash, result_name))
+                    raise Exception('Found Duplicate NFT Image: {} exists at {} for {}'.format(image_hashes[hash], hash, result_name))
+                image_hashes[hash] = result_name
 
                 token_name = base_token_name.format(series, card_number, 1)
                 nft_name = base_nft_name.format(series, card_number, 1, 1)
@@ -378,6 +381,7 @@ class Nft:
                 fnames.append(metadata_file)
             # should already be sorted....
             # fnames.sort()
-            logger.info('frequencies = {}'.format(frequencies))
+            for i in range(0, len(frequencies)):
+                logger.info('frequencies[{}] = {}'.format(i, frequencies[i]))
 
         return fnames

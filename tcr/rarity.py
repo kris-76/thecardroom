@@ -50,6 +50,7 @@ def main():
                 token['saliva+scene'] = token['saliva'] + '+' + token['scene']
                 token['teeth+scene'] = token['teeth'] + '+' + token['scene']
                 token['saliva+teeth+scene'] = token['saliva'] + '+' + token['teeth'] + '+' + token['scene']
+                token['flavor+potency'] = token['flavor'] + '+' + token['potency']
 
                 for key in token:
                     if not key in properties:
@@ -79,9 +80,13 @@ def main():
         if key == 'name' or key == 'image' or key == 'publisher' or key == 'description' or key == 'artist' or key == 'id':
             continue
 
+        values = list(properties[key].keys())
+        values.sort(reverse=True, key=lambda item: properties[key][item])
         print('{}'.format(key))
-        for value in properties[key]:
-            print('\t{:20} = {:5}/{} = {}%'.format(value, properties[key][value], total, (properties[key][value]*100)/total))
+        i = 1
+        for value in values:
+            print('\t{}. {:30} = {:5}/{} = {}%'.format(i, value, properties[key][value], total, (properties[key][value]*100)/total))
+            i += 1
 
         print('')
 

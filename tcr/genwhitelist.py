@@ -101,7 +101,7 @@ def main():
                                                                     wallet.get_payment_address(address_index)))
 
     logger.info("Wallet <{}>: Process whitelist on: {}".format(wallet.get_name(),
-                                                                  wallet.get_payment_address(address_index)))
+                                                               wallet.get_payment_address(address_index)))
     stake_address = database.query_stake_address(wallet.get_payment_address())
     logger.info('      address = {}'.format(wallet.get_payment_address(address_index)))
     logger.info('Stake address = {}'.format(stake_address))
