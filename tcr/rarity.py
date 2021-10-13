@@ -57,10 +57,17 @@ def main():
                         properties[key] = {}
 
                     value = token[key]
-                    if not value in properties[key]:
-                        properties[key][value] = 1
+                    if type(value) is list:
+                        for subvalue in value:
+                            if not subvalue in properties[key]:
+                                properties[key][subvalue] = 1
+                            else:
+                                properties[key][subvalue] += 1
                     else:
-                        properties[key][value] += 1
+                        if not value in properties[key]:
+                            properties[key][value] = 1
+                        else:
+                            properties[key][value] += 1
 
     for name in properties['name']:
         if properties['name'][name] != 1:
