@@ -90,7 +90,7 @@ def main():
             print("ERROR, invalid id count: {}".format(properties['id'][id]))
 
     total = len(properties['name'])
-'''
+
     for key in properties:
         if key == 'name' or key == 'image' or key == 'publisher' or key == 'description' or key == 'artist' or key == 'id':
             continue
@@ -104,7 +104,6 @@ def main():
             i += 1
 
         print('')
-'''
 
 
 if __name__ == '__main__':
