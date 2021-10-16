@@ -1,0 +1,147 @@
+{
+    "series": 1,
+    "drop-name": "tcr_series_1_general",
+    "init-nft-id": 1,
+    "token-name": "TCRx{:03}x{:02}x{}",
+    "nft-name": "The Card Room {}.{} [{}/{}]",
+    "prices": {
+        "25000000": 1,
+        "50000000": 2,
+        "75000000": 3,
+        "85000000": 4
+    },
+    "cards": [
+        {
+            "id": 1,
+            "count": 255,
+            "local_source": "card01_KingCharles.png",
+            "image": "ipfs://QmSEoV5g6QjqEJm5V8wa9WoeWRwEVjvBYMHakD16jb9MD8",
+            "description": "King Charles I",
+            "properties": {
+                "rarity": "Common",
+                "artist": "The Card Room",
+                "traits": [
+                    "King",
+                    "Clubs",
+                    "Beard",
+                    "Sword",
+                    "Crown",
+                    "Orb"
+                ],
+                "website": "http://thecardroom.io/",
+                "id": null,
+                "code": 0,
+                "word": "",
+                "copyright": "The Card Room 2021; all rights reserved"
+            }
+        },
+        {
+            "id": 2,
+            "count": 145,
+            "local_source": "card02_HulaHosky.png",
+            "image": "ipfs://QmPVf12DAxotYf3hqgKdPYY8d9R2QqqaptLGCPw9SMTQpP",
+            "description": "Hula Hosky",
+            "properties": {
+                "rarity": "Uncommon",
+                "artist": "The Card Room",
+                "traits": [
+                    "King",
+                    "Hearts",
+                    "Beard",
+                    "Glasses",
+                    "Skirt",
+                    "Flowers",
+                    "Volcano",
+                    "Surfboard",
+                    "Mask"
+                ],
+                "website": "http://thecardroom.io/",
+                "id": null,
+                "code": 0,
+                "word": "",
+                "copyright": "The Card Room 2021; all rights reserved"
+            }
+        },
+        {
+            "id": 3,
+            "count": 73,
+            "local_source": "card03_KingOfRats_dream.png",
+            "image": "ipfs://QmT8ChfbFiP188s1mJzTcCPGfqYWuGLruAsZqmcuQaS4jB",
+            "description": "King of Rats",
+            "properties": {
+                "rarity": "Rare",
+                "artist": "The Card Room",
+                "traits": [
+                    "King",
+                    "Spades",
+                    "Hoody",
+                    "Halo",
+                    "Rat",
+                    "Cigar",
+                    "Beard",
+                    "Psychedelic"
+                ],
+                "website": "http://thecardroom.io/",
+                "id": null,
+                "code": 0,
+                "word": "",
+                "copyright": "The Card Room 2021; all rights reserved"
+            }
+        },
+        {
+            "id": 4,
+            "count": 18,
+            "local_source": "card04_EmperorCharles.png",
+            "image": "ipfs://QmdtSaokr2M7odwXdVh1MePq9nXb76ycK8vnA99mc82EhX",
+            "description": "Emperor Charles",
+            "properties": {
+                "rarity": "Ultra Rare",
+                "artist": "The Card Room",
+                "traits": [
+                    "King",
+                    "Diamonds",
+                    "Beard",
+                    "Sword",
+                    "Cigar",
+                    "Crown",
+                    "Skull Jade Ring",
+                    "Glasses",
+                    "Volcano"
+                ],
+                "website": "http://thecardroom.io/",
+                "id": null,
+                "code": 0,
+                "word": "",
+                "copyright": "The Card Room 2021; all rights reserved"
+            }
+        },
+        {
+            "id": 5,
+            "count": 9,
+            "local_source": "card05_EmperorCharlesLaserEyes.png",
+            "image": "ipfs://QmXpRGnnMbktvSoHsRvS5rBzDbw8jE8iUmeGHGyjFuDH9T",
+            "description": "Emperor Charles Laser Eyes",
+            "properties": {
+                "rarity": "Epic",
+                "artist": "The Card Room",
+                "traits": [
+                    "King",
+                    "Diamonds",
+                    "Beard",
+                    "Sword",
+                    "Cigar",
+                    "Crown",
+                    "Skull Jade Ring",
+                    "Glasses",
+                    "Volcano",
+                    "Laser Eyes"
+                ],
+                "website": "http://thecardroom.io/",
+                "id": null,
+                "code": 0,
+                "word": "",
+                "copyright": "The Card Room 2021; all rights reserved"
+            }
+        }
+    ]
+}

@@ -1,0 +1,4235 @@
+{
+    "name": "layer_set_06_gene",
+    "layers": [
+        {
+            "name": "Standard",
+            "width": 1600,
+            "height": 2240,
+            "images": [
+                {
+                    "properties": {
+                        "website": "https://thecardroom.io/",
+                        "description": "Series 2 - Mutation",
+                        "artist": "The Card Room",
+                        "id": 0
+                    },
+                    "weight": 100,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": null
+                }
+            ]
+        },
+        {
+            "name": "Scene",
+            "width": 1600,
+            "height": 2240,
+            "images": [
+                {
+                    "properties": {
+                        "scene": "none"
+                    },
+                    "weight": 100,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": null
+                }
+            ]
+        },
+        {
+            "name": "Character",
+            "width": 1600,
+            "height": 2240,
+            "images": [
+                {
+                    "properties": {
+                        "character": "gene",
+                        "superpower": "bass"
+                    },
+                    "weight": 100,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/CHARACTER/GENE_SIMMONS.png"
+                }
+            ]
+        },
+        {
+            "name": "Teeth",
+            "width": 1600,
+            "height": 2240,
+            "images": [
+                {
+                    "properties": {
+                        "teeth": "normal"
+                    },
+                    "weight": 75,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": null
+                },
+                {
+                    "properties": {
+                        "teeth": "gold"
+                    },
+                    "weight": 12.5,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/TEETH/GENE_SIMMONS_TEETH_GOLD.png"
+                },
+                {
+                    "properties": {
+                        "teeth": "rainbow"
+                    },
+                    "weight": 12.5,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/TEETH/GENE_SIMMONS_TEETH_RBW.png"
+                }
+            ]
+        },
+        {
+            "name": "Saliva",
+            "width": 1600,
+            "height": 2240,
+            "images": [
+                {
+                    "properties": {
+                        "saliva": "none"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": null
+                },
+                {
+                    "properties": {
+                        "saliva": "rainbow"
+                    },
+                    "weight": 12.5,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SALIVA/GENE_SIMMONS_SALIVA_RNBW.png"
+                },
+                {
+                    "properties": {
+                        "saliva": "blood"
+                    },
+                    "weight": 12.5,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SALIVA/GENE_SIMMONS_SALIVA_BLOOD.png"
+                },
+                {
+                    "properties": {
+                        "saliva": "clear"
+                    },
+                    "weight": 25,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SALIVA/GENE_SIMMONS_SALIVA.png"
+                }
+            ]
+        },
+        {
+            "name": "Special",
+            "width": 1600,
+            "height": 2240,
+            "images": [
+                {
+                    "properties": {
+                        "special": ["none"]
+                    },
+                    "weight": 81,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": null
+                },
+                {
+                    "properties": {
+                        "special": ["black bats"]
+                    },
+                    "weight": 2,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SPECIAL/SPECIAL_BATS_BLACK.png"
+                },
+                {
+                    "properties": {
+                        "special": ["green bats"]
+                    },
+                    "weight": 2,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SPECIAL/SPECIAL_BATS_GREEN.png"
+                },
+                {
+                    "properties": {
+                        "special": ["red bats"]
+                    },
+                    "weight": 2,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SPECIAL/SPECIAL_BATS_RED.png"
+                },
+                {
+                    "properties": {
+                        "special": ["rainbow", "laser eyes", "blue laser"]
+                    },
+                    "weight": 1,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SPECIAL/GENE_SIMMONS_LAZER_EYES_RNBW.png"
+                },
+                {
+                    "properties": {
+                        "special": ["laser eyes", "blue laser"]
+                    },
+                    "weight": 3,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SPECIAL/GENE_SIMMONS_LAZER_EYES.png"
+                },
+                {
+                    "properties": {
+                        "special": ["piercing"]
+                    },
+                    "weight": 4,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SPECIAL/GENE_SIMMONS_PIERCING.png"
+                },
+                {
+                    "properties": {
+                        "special": ["rainbow"]
+                    },
+                    "weight": 5,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/GENE/SPECIAL/SPECIAL_RBW.png"
+                }
+            ]
+         },
+         {
+            "name": "Mutation",
+            "width": 1600,
+            "height": 2240,
+            "images": [
+                {
+                    "properties": {
+                        "flavor": "cherry",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "doge",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bat eyeball",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "heart",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "key",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "laser cat",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mask",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black panther",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "peace",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "acorn",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lizard king",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "star",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lips & tongue",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "eth",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "punisher",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dopey face",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "robot",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "galaxy",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "transcendent eye",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_022.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "alien",
+                        "mutation": "mother of mutation",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/ACID_023.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "zombie",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cafe racer",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "fries",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "reaper",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "squid",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chill",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brain",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "guitar",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "astronaut",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skater",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown tiger",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "grey tiger",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown leopard",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mermaid",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ship",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cross",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "koi fish",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dragon",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "popcorn",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/CAPSULE_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "overdose",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 37,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/COMBO_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "multi tabs",
+                        "mutation": "overdose",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 50,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/COMBO_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "shroom garden",
+                        "mutation": "overdose",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": -10,
+                    "offset-y": 120,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/COMBO_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bad dream",
+                        "mutation": "overdose",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 0,
+                    "offset-y": 170,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/COMBO_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "nightmare",
+                        "mutation": "overdose",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 0,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/COMBO_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "batman",
+                        "mutation": "overdose",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "apple",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "clubs",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "crown",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "diamonds",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "hearts",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "claws",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "money",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "rocket",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "spades",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "orange",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chocolate",
+                        "mutation": "chin swingers",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/PILL_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chicken",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mushroom",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skittles",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "raspberry",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cotton candy",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ice cream",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "snow codeine",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black truffle",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mad hatter",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "strawberry",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "tropical",
+                        "mutation": "psilocybin paranoia",
+                        "potency": "high"
+                    },
+                    "weight": 0.137986,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/RED/SHROOM_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cherry",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "doge",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bat eyeball",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "heart",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "key",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "laser cat",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mask",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black panther",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "peace",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "acorn",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lizard king",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "star",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lips & tongue",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "eth",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "punisher",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dopey face",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "robot",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "galaxy",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "transcendent eye",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_022.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "alien",
+                        "mutation": "purple haze",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/ACID_023.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "zombie",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cafe racer",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "fries",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "reaper",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "squid",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chill",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brain",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "guitar",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "astronaut",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skater",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown tiger",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "grey tiger",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown leopard",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mermaid",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ship",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cross",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "koi fish",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dragon",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "popcorn",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/CAPSULE_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "the pink panther",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 37,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/COMBO_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "multi tabs",
+                        "mutation": "the pink panther",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 50,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/COMBO_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "shroom garden",
+                        "mutation": "the pink panther",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": -10,
+                    "offset-y": 120,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/COMBO_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bad dream",
+                        "mutation": "the pink panther",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 0,
+                    "offset-y": 170,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/COMBO_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "nightmare",
+                        "mutation": "the pink panther",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 0,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/COMBO_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "batman",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "apple",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "clubs",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "crown",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "diamonds",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "hearts",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "claws",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "money",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "rocket",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "spades",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "orange",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chocolate",
+                        "mutation": "disco biscuit",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/PILL_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chicken",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mushroom",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skittles",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "raspberry",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cotton candy",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ice cream",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "snow codeine",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black truffle",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mad hatter",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "strawberry",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "tropical",
+                        "mutation": "purple passion",
+                        "potency": "medium-high"
+                    },
+                    "weight": 0.206343647,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/PINK/SHROOM_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cherry",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "doge",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bat eyeball",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "heart",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "key",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "laser cat",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mask",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black panther",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "peace",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "acorn",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lizard king",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "star",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lips & tongue",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "eth",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "punisher",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dopey face",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "robot",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "galaxy",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "transcendent eye",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_022.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "alien",
+                        "mutation": "acid rain",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/ACID_023.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "zombie",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cafe racer",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "fries",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "reaper",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "squid",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chill",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brain",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "guitar",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "astronaut",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skater",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown tiger",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "grey tiger",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown leopard",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mermaid",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ship",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cross",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "koi fish",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dragon",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "popcorn",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/CAPSULE_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "the hulk",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 37,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/COMBO_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "multi tabs",
+                        "mutation": "the hulk",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 50,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/COMBO_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "shroom garden",
+                        "mutation": "the hulk",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": -10,
+                    "offset-y": 120,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/COMBO_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bad dream",
+                        "mutation": "the hulk",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 0,
+                    "offset-y": 170,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/COMBO_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "nightmare",
+                        "mutation": "the hulk",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 0,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/COMBO_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "batman",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "apple",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "clubs",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "crown",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "diamonds",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "hearts",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "claws",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "money",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "rocket",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "spades",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "orange",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chocolate",
+                        "mutation": "cuddle puddle",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/PILL_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chicken",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mushroom",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skittles",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "raspberry",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cotton candy",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ice cream",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "snow codeine",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black truffle",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mad hatter",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "strawberry",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "tropical",
+                        "mutation": "crypto caps",
+                        "potency": "medium"
+                    },
+                    "weight": 0.273972,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/GREEN/SHROOM_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cherry",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "doge",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bat eyeball",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "heart",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "key",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "laser cat",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mask",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black panther",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "peace",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "acorn",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lizard king",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "star",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lips & tongue",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "eth",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "punisher",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dopey face",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "robot",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "galaxy",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "transcendent eye",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_022.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "alien",
+                        "mutation": "orange wedges",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/ACID_023.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "zombie",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cafe racer",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "fries",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "reaper",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "squid",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chill",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brain",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "guitar",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "astronaut",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skater",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown tiger",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "grey tiger",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown leopard",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mermaid",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ship",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cross",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "koi fish",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dragon",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "popcorn",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/CAPSULE_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "the trumps",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 37,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/COMBO_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "multi tabs",
+                        "mutation": "the trumps",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 50,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/COMBO_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "shroom garden",
+                        "mutation": "the trumps",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": -10,
+                    "offset-y": 120,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/COMBO_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bad dream",
+                        "mutation": "the trumps",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 0,
+                    "offset-y": 170,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/COMBO_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "nightmare",
+                        "mutation": "the trumps",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 0,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/COMBO_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "batman",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "apple",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "clubs",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "crown",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "diamonds",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "hearts",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "claws",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "money",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "rocket",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "spades",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "orange",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chocolate",
+                        "mutation": "molly mutant",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/PILL_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chicken",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mushroom",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skittles",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "raspberry",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cotton candy",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ice cream",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "snow codeine",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black truffle",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mad hatter",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "strawberry",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "tropical",
+                        "mutation": "mutant mushies",
+                        "potency": "medium-low"
+                    },
+                    "weight": 0.342466,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/BLUE/SHROOM_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cherry",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "doge",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bat eyeball",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "heart",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "key",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "laser cat",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mask",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black panther",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "peace",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "acorn",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lizard king",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "star",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "lips & tongue",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "eth",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "punisher",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dopey face",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "robot",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "galaxy",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "transcendent eye",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_022.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "alien",
+                        "mutation": "micro dosing",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/ACID_023.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "zombie",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cafe racer",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "fries",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "reaper",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "squid",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chill",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brain",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "guitar",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "astronaut",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skater",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown tiger",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "grey tiger",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "brown leopard",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mermaid",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ship",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_016.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cross",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_017.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "koi fish",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_018.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dragon",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_019.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "popcorn",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/CAPSULE_020.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "golden shower",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 37,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/COMBO_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "multi tabs",
+                        "mutation": "golden shower",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 50,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/COMBO_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "shroom garden",
+                        "mutation": "golden shower",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": -10,
+                    "offset-y": 120,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/COMBO_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "bad dream",
+                        "mutation": "golden shower",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 0,
+                    "offset-y": 170,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/COMBO_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "nightmare",
+                        "mutation": "golden shower",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 0,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/COMBO_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "batman",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "apple",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "clubs",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "crown",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "diamonds",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "dove",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "hearts",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "claws",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "money",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_009.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "rocket",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "candy hearts",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "happy face",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_012.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "spades",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_013.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "orange",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_014.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chocolate",
+                        "mutation": "vitamin e",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/PILL_015.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "chicken",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_001.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mushroom",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_002.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "skittles",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_003.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "raspberry",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_004.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "cotton candy",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_005.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "ice cream",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_006.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "snow codeine",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_007.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "black truffle",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_008.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "mad hatter",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_010.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "strawberry",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_011.png"
+                },
+                {
+                    "properties": {
+                        "flavor": "tropical",
+                        "mutation": "mellow yellow",
+                        "potency": "low"
+                    },
+                    "weight": 0.409095366,
+                    "offset-x": 17,
+                    "offset-y": 154,
+                    "image": "art/ARTWORKS/MUTATIONS/PNG/YELLOW/SHROOM_012.png"
+                }
+            ]
+        }
+   ]
+}

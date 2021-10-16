@@ -1,0 +1,72 @@
+{
+    "series": 2,
+    "drop-name": "tcr_series_2",
+    "init-nft-id": 501,
+    "token-name": "TCRx{:03}x{:04}x{}",
+    "nft-name": "Mutation {}.{} [{}/{}]",
+    "total": 10000,
+    "max_per_tx": 25,
+    "prices": {
+        "35000000": 1,
+        "70000000": 2,
+        "105000000": 3,
+        "130000000": 4,
+        "260000000": 8,
+        "300000000": 10,
+        "600000000": 20
+    },
+    "presale": {
+        "30000000": 1,
+        "60000000": 2,
+        "90000000": 3,
+        "110000000": 4,
+        "220000000": 8,
+        "250000000": 10,
+        "500000000": 20,
+        "245677689": 9
+    },
+    "layer-sets": [
+        {
+            "file": "art/layer_set_01_vampire_girl.json",
+            "weight": 8
+        },
+        {
+            "file": "art/layer_set_02_sexy_girl.json",
+            "weight": 16
+        },
+        {
+            "file": "art/layer_set_03_alien.json",
+            "weight": 12
+        },
+        {
+            "file": "art/layer_set_04_big_mouth.json",
+            "weight": 12
+        },
+        {
+            "file": "art/layer_set_05_dinosaur.json",
+            "weight": 8
+        },
+        {
+            "file": "art/layer_set_06_gene.json",
+            "weight": 4
+        },
+        {
+            "file": "art/layer_set_07_skull.json",
+            "weight": 12
+        },
+        {
+            "file": "art/layer_set_08_robot.json",
+            "weight": 12
+        },
+        {
+            "file": "art/layer_set_09_snake_eyes.json",
+            "weight": 8
+        },
+        {
+            "file": "art/layer_set_10_tree_beard.json",
+            "weight": 8
+        }
+    ],
+    "self": "nft/mainnet/tcr_series_2/tcr_series_2_metametadata.json",
+    "policy": "tcr_series_2"
+}
