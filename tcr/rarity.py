@@ -37,7 +37,9 @@ def main():
 
     properties = {}
 
-    for filename in os.listdir(directory):
+    filenames= os.listdir(directory)
+    filenames.sort()
+    for filename in filenames:
         f = os.path.join(directory, filename)
         if os.path.isfile(f) and f.endswith('.json'):
             with open(f, 'r') as file:
@@ -45,6 +47,12 @@ def main():
                 erc721 = md['721']
                 policy = erc721[list(erc721.keys())[0]]
                 token = policy[list(policy.keys())[0]]
+
+                # TODO, search feature would be nice
+                #character = 'x'
+                #mutation = 'x'
+                #if token['character'] == character and token['mutation'] == mutation:
+                #    print('{} {}: {}'.format(character, mutation, filename))
 
                 token['saliva+teeth'] = token['saliva'] + '+' + token['teeth']
                 token['saliva+scene'] = token['saliva'] + '+' + token['scene']
@@ -82,7 +90,7 @@ def main():
             print("ERROR, invalid id count: {}".format(properties['id'][id]))
 
     total = len(properties['name'])
-
+'''
     for key in properties:
         if key == 'name' or key == 'image' or key == 'publisher' or key == 'description' or key == 'artist' or key == 'id':
             continue
@@ -96,7 +104,7 @@ def main():
             i += 1
 
         print('')
-
+'''
 
 
 if __name__ == '__main__':

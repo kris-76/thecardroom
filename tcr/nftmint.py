@@ -83,7 +83,8 @@ def get_series_metadata_set_file(cardano: Cardano, policy_name: str, drop_name: 
 def create_series_metadata_set_file(cardano: Cardano,
                                     policy_name: str,
                                     drop_name: str,
-                                    rng: numpy.random.RandomState) -> str:
+                                    rng: numpy.random.RandomState,
+                                    test_combos: bool) -> str:
     metadata_set_file = 'nft/{}/{}/{}.json'.format(cardano.get_network(), drop_name, drop_name)
 
     if os.path.isfile(metadata_set_file):
@@ -98,7 +99,8 @@ def create_series_metadata_set_file(cardano: Cardano,
                                            cardano.get_policy_id(policy_name),
                                            series_metametadata,
                                            codewords,
-                                           rng)
+                                           rng,
+                                           test_combos)
     series_metametadata = set_metametadata(cardano, series_metametadata)
     metadata_set = {'files': files}
     with open(metadata_set_file, 'w') as file:
@@ -165,6 +167,10 @@ def main():
                                     type=int,
                                     default=0,
                                     help='Seed for RNG')
+    parser.add_argument('--test-combos', required=False,
+                                         action='store_true',
+                                         default=False,
+                                         help='Generate all combinations of two layers for --create-drop')
     parser.add_argument('--token',  required=False,
                                     action='store',
                                     metavar='NAME',
@@ -185,6 +191,7 @@ def main():
     token_name = args.token
     rng_seed = args.seed
     confirm = args.confirm
+    test_combos = args.test_combos
 
     setup_logging(network, 'nftmint')
     logger = logging.getLogger(network)
@@ -293,7 +300,7 @@ def main():
         logger.info('Create RNG with SEED: {}'.format(rng_seed))
 
         rng = numpy.random.default_rng(rng_seed)
-        metadata_set_file = create_series_metadata_set_file(cardano, policy_name, create_drop, rng)
+        metadata_set_file = create_series_metadata_set_file(cardano, policy_name, create_drop, rng, test_combos)
         logger.info('Successfully created new drop: {} '.format(metadata_set_file))
     elif create_drop_template != None:
         #

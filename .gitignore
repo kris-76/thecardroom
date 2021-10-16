@@ -1,4 +1,3 @@
-nft/*
 wallet/*
 transaction/*
 policy/*
@@ -10,3 +9,16 @@ tcr/__pycache__/*
 mainnet_protocol_parameters.json
 testnet_protocol_parameters.json
 build
+nft/mainnet/skk_series_2
+nft/mainnet/tcr_series_1_420pool/
+nft/mainnet/tcr_series_1_reserved/
+nft/mainnet/tcr_series_1_general/tcr_series_1_general.json
+nft/mainnet/tcr_series_1_general/sales.json
+nft/mainnet/tcr_series_1_general/TCR*_metadata.json
+nft/mainnet/tcr_series_1_general/nft_merged_metadata_*.json
+nft/mainnet/tcr_series_2/art/ARTWORKS
+nft/mainnet/tcr_series_2/art/ARTWORKS_OLD
+nft/mainnet/tcr_series_2/nft_img
+nft/mainnet/tcr_series_2/nft_metadata
+nft/mainnet/tcr_series_2/presale_whitelist.json
+nft/testnet
