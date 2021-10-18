@@ -282,7 +282,7 @@
                 },
                 {
                     "properties": {
-                        "special": ["lazer eyes", "red laser"]
+                        "special": ["laser eyes", "red laser"]
                     },
                     "weight": 3,
                     "offset-x": 0,

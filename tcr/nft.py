@@ -300,6 +300,7 @@ class Nft:
                                             '-geometry', character_geometry])
                             command.extend(['nft/{}/{}/{}'.format(network, drop_name, mutation_image),
                                             '-geometry', mutation_geometry, '-composite'])
+                            command.extend(['-resize', '1200x1680'])
                             command.append(result_name)
                             logger.info('Create: {}'.format(result_name))
                             Command.run_generic(command)
@@ -414,7 +415,10 @@ class Nft:
                 else:
                     command.extend(['nft/{}/{}/{}'.format(network, drop_name, image['image']), '-geometry', geometry, '-composite'])
 
-            # Create the file
+            # Reduce final output size.  TODO: Add setting to config file
+            command.extend(['-resize', '1200x1680'])
+
+            # Set output name and run the command
             command.append(result_name)
             Command.run_generic(command)
 

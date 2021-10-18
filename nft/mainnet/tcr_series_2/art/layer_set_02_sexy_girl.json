@@ -259,7 +259,7 @@
                     "properties": {
                         "special": ["none"]
                     },
-                    "weight": 89,
+                    "weight": 85,
                     "offset-x": 0,
                     "offset-y": 0,
                     "image": null
@@ -290,6 +290,15 @@
                     "offset-x": 0,
                     "offset-y": 0,
                     "image": "art/ARTWORKS/CHARACTERS/SEXY_GIRL/SPECIAL/SPECIAL_BATS_RED.png"
+                },
+                {
+                    "properties": {
+                        "special": ["piercing"]
+                    },
+                    "weight": 4,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/ARTWORKS/CHARACTERS/SEXY_GIRL/SPECIAL/SEXY_GIRL_PIERCING.png"
                 },
                 {
                     "properties": {
