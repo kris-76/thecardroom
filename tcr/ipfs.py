@@ -74,8 +74,8 @@ def ipfs_upload(projectid: str, projectsecret: str, filename: str) -> str:
                              auth=(projectid, projectsecret))
 
     if response.status_code != 200:
-        logger.error('Upload Status Code: {}'.format(response.status_code()))
-        raise Exception('Upload Status Code: {}'.format(response.status_code()))
+        logger.error('Upload Status Code: {}'.format(response.status_code))
+        raise Exception('Upload Status Code: {}'.format(response.status_code))
 
     upload_json = response.json()
     return upload_json['Hash']
@@ -89,8 +89,8 @@ def ipfs_pin(projectid: str, projectsecret: str, ipfs_hash: str) -> str:
                              auth=(projectid, projectsecret))
 
     if response.status_code != 200:
-        logger.error('Pin Status Code: {}'.format(response.status_code()))
-        raise Exception('Pin Status Code: {}'.format(response.status_code()))
+        logger.error('Pin Status Code: {}'.format(response.status_code))
+        raise Exception('Pin Status Code: {}'.format(response.status_code))
 
     pin_json = response.json()
     if ipfs_hash not in pin_json['Pins']:
