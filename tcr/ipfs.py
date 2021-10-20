@@ -35,6 +35,8 @@ import os
 import requests
 import tcr.command
 import tcr.nftmint
+import traceback
+
 
 logger = None
 
@@ -204,5 +206,8 @@ if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        print("Caught Exception!")
-        print(e)
+        print('')
+        print('')
+        print('EXCEPTION: {}'.format(e))
+        print('')
+        traceback.print_exc()
