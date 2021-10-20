@@ -137,15 +137,20 @@ def main():
     parser.add_argument('--mint',   required=False,
                                     action='store_true',
                                     default=False,
-                                    help='Process payments, mint NFTs.  Requires --wallet, --policy, --drop')
+                                    help='Process payments, mint NFTs.  Requires --drop, Optional: --whitelist')
+    parser.add_argument('--whitelist', required=False,
+                                    action='store',
+                                    metavar='NAME',
+                                    default=None,
+                                    help='Whitelist payments to process before general payments.')
     parser.add_argument('--burn',   required=False,
                                     action='store_true',
                                     default=False,
                                     help='Burn the token named at the policy.  Requires --wallet, --policy, --token')
-    parser.add_argument('--confirm', required=False,
-                                     action='store_true',
-                                     default=False,
-                                     help='Confirm burn all tokens in policy')
+    parser.add_argument('--confirm',required=False,
+                                    action='store_true',
+                                    default=False,
+                                    help='Confirm burn all tokens in policy')
     parser.add_argument('--policy', required=False,
                                     action='store',
                                     metavar='NAME',
@@ -192,6 +197,7 @@ def main():
     rng_seed = args.seed
     confirm = args.confirm
     test_combos = args.test_combos
+    whitelist = args.whitelist
 
     setup_logging(network, 'nftmint')
     logger = logging.getLogger(network)
@@ -223,7 +229,6 @@ def main():
         logger.info('Cardano Node Tip Slot: {}'.format(tip_slot))
         logger.info(' Database Latest Slot: {}'.format(latest_slot))
         logger.info('Sync Progress: {}'.format(sync_progress))
-
 
     if create_wallet != None:
         #
@@ -267,7 +272,7 @@ def main():
             logger.error('Wallet: <{}> does not exist'.format(wallet_name))
             raise Exception('Wallet: <{}> does not exist'.format(wallet_name))
 
-        cardano.create_new_policy_id(tip_slot+tcr.SECONDS_PER_MONTH * 6,
+        cardano.create_new_policy_id(tip_slot+tcr.tcr.SECONDS_PER_MONTH * 6,
                                      policy_wallet,
                                      create_policy)
 
@@ -276,7 +281,7 @@ def main():
             raise Exception('Failed to create policy: <{}>'.format(create_policy))
 
         logger.info('Successfully created new policy: {} / {}'.format(create_policy, cardano.get_policy_id(create_policy)))
-        logger.info('Expires at slot: {}'.format(tip_slot+(tcr.SECONDS_PER_MONTH * 6)))
+        logger.info('Expires at slot: {}'.format(tip_slot+(tcr.tcr.SECONDS_PER_MONTH * 6)))
     elif create_drop != None:
         #
         # Create a new drop, metadata and nft images
@@ -344,7 +349,7 @@ def main():
         metadata_set_file = get_series_metadata_set_file(cardano, policy_name, drop_name)
         logger.info('Metadata Set File: {}'.format(metadata_set_file))
 
-        # verify the metadata for each NFT
+        # verify the metadata for each NFT and uploaded to IPFS
         metadatalist = MetadataList(metadata_set_file)
         while metadatalist.get_remaining() > 0:
             nftmd = Nft.parse_metadata_file(metadatalist.peek_next_file())
@@ -372,17 +377,38 @@ def main():
 
         max_per_tx = metametadata['max_per_tx']
 
+        if whitelist != None:
+            logger.info('Process Presale Whitelist Payments: {}'.format(whitelist))
+            wl_payments = []
+            whitelist_path='nft/{}/{}/{}'.format(network, drop_name, whitelist)
+            with open(whitelist_path, 'r') as file:
+                wl_payments = json.load(file)['whitelist']
+
+            logger.info("Whitelist Contains {} UTXOs".format(len(wl_payments)))
+            tcr.tcr.process_whitelist(cardano,
+                                      database,
+                                      mint_wallet,
+                                      policy_name,
+                                      drop_name,
+                                      metadata_set_file,
+                                      wl_payments,
+                                      max_per_tx)
+            logger.info('Process Whitelist Complete')
+        else:
+            logger.info('Whitelist Not Given')
+
         try:
+            logger.info('Process General Sale Payments:')
             # Listen for incoming payments and mint NFTs when a UTXO matching a payment
             # value is found
-            tcr.process_incoming_payments(cardano,
-                                          database,
-                                          mint_wallet,
-                                          policy_name,
-                                          drop_name,
-                                          metadata_set_file,
-                                          prices,
-                                          max_per_tx)
+            tcr.tcr.process_incoming_payments(cardano,
+                                              database,
+                                              mint_wallet,
+                                              policy_name,
+                                              drop_name,
+                                              metadata_set_file,
+                                              prices,
+                                              max_per_tx)
         except Exception as e:
             logger.exception("Caught Exception")
     elif burn == True:
@@ -425,7 +451,7 @@ def main():
                                 input_utxos.append(utxo)
 
             if len(token_names) > 0:
-                tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
+                tcr.tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
                 while cardano.contains_txhash(burn_wallet, utxo_in['tx-hash']):
                     logger.info('wait')
                     time.sleep(10)
@@ -447,7 +473,7 @@ def main():
                         if not utxo in input_utxos:
                             input_utxos.append(utxo)
 
-            tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
+            tcr.tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
         else:
             logger.error('Nothing to do')
     else:
@@ -457,7 +483,8 @@ def main():
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-policy=<name> --wallet=<name>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-drop=<name> --policy=<name> --seed=<value>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --create-drop-template=<name>')
-        logger.info('\t$ nftmint --network=<testnet | mainnet> --mint --wallet=<name> --policy=<name> --drop=<name>')
+        logger.info('\t$ nftmint --network=<testnet | mainnet> --mint --drop=<name>')
+        logger.info('\t$ nftmint --network=<testnet | mainnet> --presale --drop=<name> --whitelist=<file>')
         logger.info('\t$ nftmint --network=<testnet | mainnet> --burn --wallet=<name> --policy=<name> [--confirm | --token=<name>]')
 
     database.close()

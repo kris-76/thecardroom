@@ -88,15 +88,22 @@ class Cardano:
                     wallet: Wallet,
                     addresses: List[str]=None) -> Tuple[List, int]:
         if addresses == None:
-            addresses = list(dict.fromkeys([wallet.get_payment_address(0, delegated=False),
-                                            wallet.get_payment_address(0, delegated=True),
-                                            wallet.get_payment_address(1, delegated=False),
-                                            wallet.get_payment_address(1, delegated=True)]))
+            # query all the known addresses.
+            addresses = [wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT, delegated=False),
+                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT, delegated=True),
+                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=False),
+                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=True),
+                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_PRESALE, delegated=False),
+                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_PRESALE, delegated=True)]
 
         total_lovelace = 0
         utxos = []
 
         for payment_address in addresses:
+            if payment_address == None:
+                # if the requested address is not setup for the wallet then skip it.
+                continue
+
             command = ['cardano-cli', 'query', 'utxo', '--address', payment_address]
             output = Command.run(command, self.network)
 
@@ -205,17 +212,24 @@ class Cardano:
         return output
 
     def calculate_min_required_utxo(self, address, amount, assets):
-        command = ['cardano-cli', 'transaction', 'calculate-min-required-utxo',
-                   '--alonzo-era', '--protocol-params-file', self.protocol_parameters_file,
-                   '--tx-out', '{}+{}{}'.format(address, amount, assets)]
+        minimum = 1000000
+        count = assets.count('+')
+        if count > 0:
+            minimum += 400000
+            minimum += (110000 * count)
 
-        output = Command.run(command, None)
-        cells = output.split()
-        if cells[0] != 'Lovelace':
-            logger.error('Expected \'Lovelace\'')
-            raise Exception('Expected \'Lovelace\'')
-
-        return int(cells[1])
+        return minimum
+#        command = ['cardano-cli', 'transaction', 'calculate-min-required-utxo',
+#                   '--alonzo-era', '--protocol-params-file', self.protocol_parameters_file,
+#                   '--tx-out', '{}+{}{}'.format(address, amount, assets)]
+#
+#        output = Command.run(command, None)
+#        cells = output.split()
+#        if cells[0] != 'Lovelace':
+#            logger.error('Expected \'Lovelace\'')
+#            raise Exception('Expected \'Lovelace\'')
+#
+#        return int(cells[1])
 
     def create_transfer_transaction_file(self,
                                          utxo_inputs,

@@ -134,7 +134,7 @@ def main():
     drop_name = args.drop
     filename = args.file
 
-    nftmint.setup_logging(network, 'ipfs')
+    tcr.nftmint.setup_logging(network, 'ipfs')
     logger = logging.getLogger(network)
 
     logger.info('{} IPFS Uploader / Metadata Generator'.format(network.upper()))
@@ -150,7 +150,7 @@ def main():
 
     if filename == None:
         # Upload and update content in a drop metametadata file
-        if not network in command.networks:
+        if not network in tcr.command.networks:
             logger.error('Invalid Network: {}'.format(network))
             raise Exception('Invalid Network: {}'.format(network))
 

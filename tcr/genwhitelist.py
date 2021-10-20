@@ -102,24 +102,26 @@ def main():
 
     logger.info("Wallet <{}>: Process whitelist on: {}".format(wallet.get_name(),
                                                                wallet.get_payment_address(address_index)))
-    stake_address = database.query_stake_address(wallet.get_payment_address())
+    stake_address = database.query_stake_address(wallet.get_payment_address(address_index))
     logger.info('      address = {}'.format(wallet.get_payment_address(address_index)))
     logger.info('Stake address = {}'.format(stake_address))
 
-    if cardano.get_policy_id('tcr_series_1') == None:
-        logger.error('Policy: <{}> does not exist'.format('tcr_series_1'))
-        raise Exception('Policy: <{}> does not exist'.format('tcr_series_1'))
-
-    tokens = database.query_current_owner(cardano.get_policy_id('tcr_series_1'))
     by_address = {}
-    for name in tokens:
-        address = tokens[name]['address']
-        slot = tokens[name]['slot']
+    # TODO: Generalize for any policy / token
+    if cardano.get_policy_id('tcr_series_1') != None:
+        tokens = database.query_current_owner(cardano.get_policy_id('tcr_series_1'))
+        for name in tokens:
+            address = tokens[name]['address']
+            slot = tokens[name]['slot']
 
-        if address in by_address:
-            by_address[address].append(name)
-        else:
-            by_address[address] = [name]
+            if address in by_address:
+                by_address[address].append(name)
+            else:
+                by_address[address] = [name]
+    else:
+        logger.error('WARNING - WARNING - WARNING')
+        logger.error('Policy: <{}> does not exist'.format('tcr_series_1'))
+        logger.error('WARNING - WARNING - WARNING')
 
     hodlers = list(by_address.items())
     def sort_by_length(item):

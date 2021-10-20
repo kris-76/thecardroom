@@ -205,7 +205,7 @@ class Wallet:
             self.create_verification_key_file(idx)
 
     def get_payment_address(self,
-                            idx: int=1,
+                            idx: int,
                             delegated: bool=True) -> str:
         """
         Get the payment address for the specified index, delegated or not.
@@ -387,8 +387,8 @@ class WalletExternal(Wallet):
     def get_verification_key_file(self):
         raise Exception("External wallet does not have verification key file")
 
-    def get_payment_address(self, idx: int = 1, delegated: bool=True):
+    def get_payment_address(self, idx: int, delegated: bool=True):
         return self.payment_address
 
-    def get_delegated_payment_address(self, idx: int = 1, delegated: bool=True):
+    def get_delegated_payment_address(self, idx: int, delegated: bool=True):
         return self.payment_address

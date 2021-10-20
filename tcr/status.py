@@ -28,6 +28,7 @@ import logging
 import argparse
 import tcr.command
 import tcr.nftmint
+import traceback
 
 def main():
     parser = argparse.ArgumentParser(add_help=False)
@@ -85,8 +86,8 @@ def main():
             logger.error('Wallet: <{}> does not exist'.format(wallet_name))
             raise Exception('Wallet: <{}> does not exist'.format(wallet_name))
 
-        stake_address = database.query_stake_address(wallet.get_payment_address())
-        logger.info('      address = {}'.format(wallet.get_payment_address()))
+        stake_address = database.query_stake_address(wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT))
+        logger.info('      address = {}'.format(wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT)))
         logger.info('Stake address = {}'.format(stake_address))
 
         cardano.dump_utxos_sorted(database, wallet)
@@ -128,5 +129,8 @@ if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        print("Caught Exception!")
-        print(e)
+        print('')
+        print('')
+        print('EXCEPTION: {}'.format(e))
+        print('')
+        traceback.print_exc()

@@ -284,11 +284,13 @@ class Nft:
                 layer_set_obj = json.load(ls_file)
                 layers = layer_set_obj['layers']
                 for layer in layers:
+                    # TODO: Generalize layer names as parameters
                     if layer['name'] == 'Character':
                         character_image = layer['images'][0]['image']
                         character_geometry = Nft.get_geometry(layer['images'][0]['offset-x'],
                                                               layer['images'][0]['offset-y'])
 
+                    # TODO: Generalize layer names as parameters
                     if layer['name'] == 'Mutation':
                         for image in layer['images']:
                             mutation_image = image['image']
@@ -400,23 +402,31 @@ class Nft:
             logger.info('Create: {}'.format(result_name))
             command = ['convert']
             for image in images:
-                if image['offset-x'] >= 0:
-                    geometry = '+{}'.format(image['offset-x'])
+                if 'offset-x' in image:
+                    if image['offset-x'] >= 0:
+                        geometry = '+{}'.format(image['offset-x'])
+                    else:
+                        geometry = '{}'.format(image['offset-x'])
                 else:
-                    geometry = '{}'.format(image['offset-x'])
+                    geometry = '+0'
 
-                if image['offset-y'] >= 0:
-                    geometry += '+{}'.format(image['offset-y'])
+                if 'offset-y' in image:
+                    if image['offset-y'] >= 0:
+                        geometry += '+{}'.format(image['offset-y'])
+                    else:
+                        geometry += '{}'.format(image['offset-y'])
                 else:
-                    geometry += '{}'.format(image['offset-y'])
+                    geometry += '+0'
 
                 if len(command) == 1:
                     command.extend(['nft/{}/{}/{}'.format(network, drop_name, image['image']), '-geometry', geometry])
                 else:
                     command.extend(['nft/{}/{}/{}'.format(network, drop_name, image['image']), '-geometry', geometry, '-composite'])
 
-            # Reduce final output size.  TODO: Add setting to config file
-            command.extend(['-resize', '1200x1680'])
+            # Resize if requested in the metametadata
+            if 'output-width' in metametadata and 'output-height' in metametadata:
+                command.extend(['-resize', '{}x{}'.format(metametadata['output-width'],
+                                                          metametadata['output-height'])])
 
             # Set output name and run the command
             command.append(result_name)

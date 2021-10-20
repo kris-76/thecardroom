@@ -91,12 +91,11 @@ def main():
     nft = args.nft
     repeat = args.repeat
 
-    if not network in command.networks:
+    if not network in tcr.command.networks:
         raise Exception('Invalid Network: {}'.format(network))
 
     tcr.nftmint.setup_logging(network, 'buybot')
     logger = logging.getLogger(network)
-
 
     # Setup connection to cardano node, cardano wallet, and cardano db sync
     cardano = Cardano(network, '{}_protocol_parameters.json'.format(network))
@@ -109,6 +108,7 @@ def main():
     tip_slot = tip['slot']
 
     database = Database('{}.ini'.format(network))
+    database.open()
     meta = database.query_chain_metadata()
     db_size = database.query_database_size()
     latest_slot = database.query_latest_slot()
@@ -120,16 +120,20 @@ def main():
     logger.info('Sync Progress: {}'.format(sync_progress))
 
     src_wallet = Wallet(src_name, cardano.get_network())
-    dst_wallet = Wallet(dst_name, cardano.get_network())
+
+    if dst_name.startswith('addr'):
+        dst_wallet = WalletExternal('External', cardano.get_network(), dst_name)
+    else:
+        dst_wallet = Wallet(dst_name, cardano.get_network())
 
     cardano.dump_utxos_sorted(database, src_wallet)
     if amount >= 0:
         send_payment = True
         while send_payment:
             if amount > 0:
-                tx_id = tcr.transfer_ada(cardano, src_wallet, amount, dst_wallet)
+                tx_id = tcr.tcr.transfer_ada(cardano, src_wallet, amount, dst_wallet)
             elif all == True:
-                tx_id = tcr.transfer_all_assets(cardano, src_wallet, dst_wallet)
+                tx_id = tcr.tcr.transfer_all_assets(cardano, src_wallet, dst_wallet)
             else:
                 logger.error("Nothing to Send")
                 break
@@ -142,7 +146,7 @@ def main():
 
             send_payment = repeat
     elif nft != None:
-        tx_id = tcr.transfer_nft(cardano, src_wallet, {nft: 1}, dst_wallet)
+        tx_id = tcr.tcr.transfer_nft(cardano, src_wallet, {nft: 1}, dst_wallet)
         while not cardano.contains_txhash(dst_wallet, tx_id):
             time.sleep(5)
 
