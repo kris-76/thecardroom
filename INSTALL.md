@@ -15,6 +15,7 @@ Windows 10 WSL2
   - sudo apt install multitail
   - sudo apt install python3-pip
   - sudo apt install libpq-dev
+  - sudo apt install imagemagick
   - pip install psycopg2
   - pip install numpy
   - pip install pillow
