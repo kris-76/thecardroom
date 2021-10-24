@@ -65,10 +65,17 @@ def main():
                                        action='store',
                                        metavar='LOCATION',
                                        help='Directory containing metadata and images')
+    parser.add_argument('--start', required=False,
+                                       action='store',
+                                       metavar='index',
+                                       type=int,
+                                       default=0,
+                                       help='Start index, default = 0')
 
     args = parser.parse_args()
     directory = args.directory
     network = args.network
+    start = args.start
 
     tcr.nftmint.setup_logging(network, 'ipfs_check')
     logger = logging.getLogger(network)
@@ -85,7 +92,8 @@ def main():
     if len(image_files) != len(metadata_files):
         logger.error('Length not equal, {} != {}'.format(len(image_files), len(metadata_files)))
 
-    for i in range(0, len(image_files)):
+    logger.info('Start at index = {}'.format(start))
+    for i in range(start, len(image_files)):
         with open(os.path.join(md_dir, metadata_files[i]), 'r') as file:
                 md = json.load(file)
                 erc721 = md['721']
