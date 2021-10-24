@@ -52,6 +52,10 @@ def calc_sha256(filepath: str) :
             buf = afile.read(BLOCKSIZE)
     return hasher.hexdigest()
 
+def sort_filename(value: str) -> int:
+    number = value.split('x')[2]
+    return int(number)
+
 def main():
     global logger
 
@@ -87,7 +91,7 @@ def main():
     metadata_files = os.listdir(md_dir)
 
     image_files.sort()
-    metadata_files.sort()
+    metadata_files.sort(key=sort_filename)
 
     if len(image_files) != len(metadata_files):
         logger.error('Length not equal, {} != {}'.format(len(image_files), len(metadata_files)))
@@ -116,9 +120,6 @@ def main():
                 if local_hash != ipfs_hash:
                     logger.error('HASH Not Equal!!')
                     raise Exception('HASH Not Equal!!')
-
-
-
 
 if __name__ == '__main__':
     try:
