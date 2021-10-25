@@ -498,7 +498,7 @@ class Cardano:
 
         # create signature hash from keys
         command = ['cardano-cli', 'address', 'key-hash',
-                   '--payment-verification-key-file', policy_wallet.get_verification_key_file(0)]
+                   '--payment-verification-key-file', policy_wallet.get_verification_key_file(Wallet.ADDRESS_INDEX_ROOT)]
         sig_key_hash = Command.run(command, None)
 
         # create script file requires sign by policy keys and only valid until specified slot

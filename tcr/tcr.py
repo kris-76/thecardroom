@@ -35,7 +35,7 @@ from tcr.wallet import WalletExternal
 from tcr.database import Database
 from tcr.metadata_list import MetadataList
 
-import json
+import os
 import time
 import logging
 from tcr.sales import Sales
@@ -87,10 +87,10 @@ def transfer_all_assets(cardano: Cardano,
     cardano.create_transfer_transaction_file(from_utxos,
                                              outputs,
                                              fee,
-                                             'transaction/transfer_all_assets_draft_tx')
+                                             'transaction/transfer_all_assets_draft_tx_{}'.format(os.getpid()))
 
     # Calculate fee & update values
-    fee = cardano.calculate_min_fee('transaction/transfer_all_assets_draft_tx',
+    fee = cardano.calculate_min_fee('transaction/transfer_all_assets_draft_tx_{}'.format(os.getpid()),
                                     len(from_utxos),
                                     len(outputs),
                                     1)
@@ -101,15 +101,15 @@ def transfer_all_assets(cardano: Cardano,
     cardano.create_transfer_transaction_file(from_utxos,
                                              outputs,
                                              fee,
-                                             'transaction/transfer_all_assets_unsigned_tx')
+                                             'transaction/transfer_all_assets_unsigned_tx_{}'.format(os.getpid()))
 
     # Sign the transaction
-    cardano.sign_transaction('transaction/transfer_all_assets_unsigned_tx',
+    cardano.sign_transaction('transaction/transfer_all_assets_unsigned_tx_{}'.format(os.getpid()),
                              [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
-                             'transaction/transfer_all_assets_signed_tx')
+                             'transaction/transfer_all_assets_signed_tx_{}'.format(os.getpid()))
 
     #submit
-    tx_id = cardano.submit_transaction('transaction/transfer_all_assets_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_all_assets_signed_tx_{}'.format(os.getpid()))
 
     return tx_id
 
@@ -135,10 +135,10 @@ def transfer_utxo_ada(cardano: Cardano,
     cardano.create_transfer_transaction_file([utxo],
                                              outputs,
                                              fee,
-                                             'transaction/transfer_utxo_ada_draft_tx')
+                                             'transaction/transfer_utxo_ada_draft_tx_{}'.format(os.getpid()))
 
     # Calculate fee & update values
-    fee = cardano.calculate_min_fee('transaction/transfer_utxo_ada_draft_tx',
+    fee = cardano.calculate_min_fee('transaction/transfer_utxo_ada_draft_tx_{}'.format(os.getpid()),
                                     1, len(outputs), 1)
     outputs[0]['amount'] = utxo['amount'] - fee
     logger.debug('Transfer UTXO ADA, Fee = {} lovelace'.format(fee))
@@ -148,15 +148,15 @@ def transfer_utxo_ada(cardano: Cardano,
     cardano.create_transfer_transaction_file([utxo],
                                              outputs,
                                              fee,
-                                             'transaction/transfer_utxo_ada_unsigned_tx')
+                                             'transaction/transfer_utxo_ada_unsigned_tx_{}'.format(os.getpid()))
 
     # Sign the transaction
-    cardano.sign_transaction('transaction/transfer_utxo_ada_unsigned_tx',
+    cardano.sign_transaction('transaction/transfer_utxo_ada_unsigned_tx_{}'.format(os.getpid()),
                              [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
-                             'transaction/transfer_utxo_ada_signed_tx')
+                             'transaction/transfer_utxo_ada_signed_tx_{}'.format(os.getpid()))
 
     # submit
-    tx_id = cardano.submit_transaction('transaction/transfer_utxo_ada_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_utxo_ada_signed_tx_{}'.format(os.getpid()))
 
     return (tx_id, fee, utxo['amount'] - fee)
 
@@ -191,10 +191,10 @@ def transfer_ada(cardano: Cardano,
     cardano.create_transfer_transaction_file(from_utxos,
                                              outputs,
                                              fee,
-                                             'transaction/transfer_ada_draft_tx')
+                                             'transaction/transfer_ada_draft_tx_{}'.format(os.getpid()))
 
     # Calculate fee & update values
-    fee = cardano.calculate_min_fee('transaction/transfer_ada_draft_tx',
+    fee = cardano.calculate_min_fee('transaction/transfer_ada_draft_tx_{}'.format(os.getpid()),
                                     len(from_utxos),
                                     len(outputs),
                                     1)
@@ -207,15 +207,15 @@ def transfer_ada(cardano: Cardano,
     cardano.create_transfer_transaction_file(from_utxos,
                                              outputs,
                                              fee,
-                                             'transaction/transfer_ada_unsigned_tx')
+                                             'transaction/transfer_ada_unsigned_tx_{}'.format(os.getpid()))
 
     # Sign the transaction
-    cardano.sign_transaction('transaction/transfer_ada_unsigned_tx',
+    cardano.sign_transaction('transaction/transfer_ada_unsigned_tx_{}'.format(os.getpid()),
                              [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
-                             'transaction/transfer_ada_signed_tx')
+                             'transaction/transfer_ada_signed_tx_{}'.format(os.getpid()))
 
     #submit
-    tx_id = cardano.submit_transaction('transaction/transfer_ada_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_ada_signed_tx_{}'.format(os.getpid()))
 
     return tx_id
 
@@ -262,7 +262,7 @@ def transfer_nft(cardano: Cardano,
     cardano.create_transfer_transaction_file(from_utxos,
                                              outputs,
                                              fee,
-                                             'transaction/transfer_nft_draft_tx')
+                                             'transaction/transfer_nft_draft_tx_{}'.format(os.getpid()))
 
     # https://github.com/input-output-hk/cardano-ledger-specs/blob/master/doc/explanations/min-utxo.rst
     # minUTxOValue is the minimum value if sending ADA only.  Since ADA plus a
@@ -271,7 +271,7 @@ def transfer_nft(cardano: Cardano,
     min_utxo_value = cardano.get_min_utxo_value() + 1000000
 
     # Calculate fee & update values
-    fee = cardano.calculate_min_fee('transaction/transfer_nft_draft_tx',
+    fee = cardano.calculate_min_fee('transaction/transfer_nft_draft_tx_{}'.format(os.getpid()),
                                     len(from_utxos),
                                     len(outputs),
                                     1)
@@ -289,15 +289,15 @@ def transfer_nft(cardano: Cardano,
     cardano.create_transfer_transaction_file(from_utxos,
                                              outputs,
                                              fee,
-                                             'transaction/transfer_nft_unsigned_tx')
+                                             'transaction/transfer_nft_unsigned_tx_{}'.format(os.getpid()))
 
     # Sign the transaction
-    cardano.sign_transaction('transaction/transfer_nft_unsigned_tx',
+    cardano.sign_transaction('transaction/transfer_nft_unsigned_tx_{}'.format(os.getpid()),
                              [from_wallet.get_signing_key_file(0), from_wallet.get_signing_key_file(1)],
-                             'transaction/transfer_nft_signed_tx')
+                             'transaction/transfer_nft_signed_tx_{}'.format(os.getpid()))
 
     #submit
-    tx_id = cardano.submit_transaction('transaction/transfer_nft_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/transfer_nft_signed_tx_{}'.format(os.getpid()))
 
     return tx_id
 
@@ -332,9 +332,9 @@ def burn_nft_internal(cardano: Cardano,
                                              policy_name,
                                              token_names,
                                              token_amount,
-                                             'transaction/burn_nft_internal_draft_tx')
+                                             'transaction/burn_nft_internal_draft_tx_{}'.format(os.getpid()))
     #fee
-    fee = cardano.calculate_min_fee('transaction/burn_nft_internal_draft_tx',
+    fee = cardano.calculate_min_fee('transaction/burn_nft_internal_draft_tx_{}'.format(os.getpid()),
                                     len(input_utxos),
                                     1,
                                     1)
@@ -346,14 +346,14 @@ def burn_nft_internal(cardano: Cardano,
                                              policy_name,
                                              token_names,
                                              token_amount,
-                                             'transaction/burn_nft_internal_unsigned_tx')
+                                             'transaction/burn_nft_internal_unsigned_tx_{}'.format(os.getpid()))
     #sign
-    cardano.sign_transaction('transaction/burn_nft_internal_unsigned_tx',
+    cardano.sign_transaction('transaction/burn_nft_internal_unsigned_tx_{}'.format(os.getpid()),
                              [burning_wallet.get_signing_key_file(0),
                               burning_wallet.get_signing_key_file(1)],
-                             'transaction/burn_nft_internal_signed_tx')
+                             'transaction/burn_nft_internal_signed_tx_{}'.format(os.getpid()))
     #submit
-    tx_id = cardano.submit_transaction('transaction/burn_nft_internal_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/burn_nft_internal_signed_tx_{}'.format(os.getpid()))
 
     return tx_id
 
@@ -442,7 +442,7 @@ def mint_nft_external(cardano: Cardano,
                                              fee,
                                              policy_name,
                                              nft_metadata_file,
-                                             'transaction/mint_nft_external_draft_tx')
+                                             'transaction/mint_nft_external_draft_tx_{}'.format(os.getpid()))
 
     # https://github.com/input-output-hk/cardano-ledger-specs/blob/master/doc/explanations/min-utxo.rst
     cardano.calculate_min_required_utxo_mint(input_utxos,
@@ -456,10 +456,10 @@ def mint_nft_external(cardano: Cardano,
     logger.debug("Mint NFT External, total payment received: {} ADA".format(total_input_lovelace / 1000000))
 
     #fee
-    fee = cardano.calculate_min_fee('transaction/mint_nft_external_draft_tx',
+    fee = cardano.calculate_min_fee('transaction/mint_nft_external_draft_tx_{}'.format(os.getpid()),
                                     len(input_utxos),
                                     len(address_outputs),
-                                    1)
+                                    3)
 
     # update output amounts
     address_outputs[0]['amount'] = total_input_lovelace - fee # the project keeps
@@ -499,20 +499,20 @@ def mint_nft_external(cardano: Cardano,
                                                                   fee,
                                                                   policy_name,
                                                                   nft_metadata_file,
-                                                                  'transaction/mint_nft_external_unsigned_tx')
+                                                                  'transaction/mint_nft_external_unsigned_tx_{}'.format(os.getpid()))
     for item in mint_map:
         hash = item.split('#')[0]
         ix = int(item.split('#')[1])
         sales.set_tokens_minted(hash, ix, mint_map[item]['tokens'])
 
     #sign
-    cardano.sign_transaction('transaction/mint_nft_external_unsigned_tx',
+    cardano.sign_transaction('transaction/mint_nft_external_unsigned_tx_{}'.format(os.getpid()),
                              [minting_wallet.get_signing_key_file(Wallet.ADDRESS_INDEX_ROOT),
                               minting_wallet.get_signing_key_file(Wallet.ADDRESS_INDEX_MINT),
                               minting_wallet.get_signing_key_file(Wallet.ADDRESS_INDEX_PRESALE)],
-                             'transaction/mint_nft_external_signed_tx')
+                             'transaction/mint_nft_external_signed_tx_{}'.format(os.getpid()))
     #submit
-    tx_id = cardano.submit_transaction('transaction/mint_nft_external_signed_tx')
+    tx_id = cardano.submit_transaction('transaction/mint_nft_external_signed_tx_{}'.format(os.getpid()))
 
     return tx_id
 
@@ -681,9 +681,9 @@ def process_whitelist(cardano: Cardano,
         #
         time.sleep(30)
 
-    logger.info('!!!!!!!!!!!!!!!!!!!!!!!!')
+    logger.info('!!!!!!!!!!!!!!!!!!!!!!!!!!')
     logger.info('!!! Whitelist COMPLETE !!!')
-    logger.info('!!!!!!!!!!!!!!!!!!!!!!!!')
+    logger.info('!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
 def process_incoming_payments(cardano: Cardano,
                               database: Database,
@@ -701,15 +701,18 @@ def process_incoming_payments(cardano: Cardano,
     @param prices A dictionary to define the price for a single item or a bundle.
     """
 
-    logger.info('Monitor Incoming Payments on: {}'.format(minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT)))
+    logger.info('Monitor Incoming Payments on   (delegated): {}'.format(minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=True)))
+    logger.info('Monitor Incoming Payments on (undelegated): {}'.format(minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=False)))
     sales = Sales(cardano.get_network(), drop_name)
 
     nft_metadata = MetadataList(metadata_set_file)
     logger.info('process_incoming_payments, NFTs Remaining: {}'.format(nft_metadata.get_remaining()))
 
     while True:
-        time.sleep(1)
-        (utxos, total_lovelace) = cardano.query_utxos(minting_wallet, [minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT)])
+        time.sleep(5)
+        (utxos, total_lovelace) = cardano.query_utxos(minting_wallet,
+                                                      [minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=True),
+                                                       minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=False)])
         utxos = cardano.query_utxos_time(database, utxos)
         utxos.sort(key=lambda item : item['slot-no'])
 
