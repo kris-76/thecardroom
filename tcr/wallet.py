@@ -234,13 +234,15 @@ class Wallet:
         Get the delegated payment address for the specified index.
 
         @param idx Index for the address to get.
-        @param delegated Default = True.  True = return a delegated address.
         """
 
         self.delegated_payment_address = None
         addr_file = self.delegated_payment_address_file_base.format(idx)
-        with open(addr_file, 'r') as file:
-            self.delegated_payment_address = file.read()
+        try:
+            with open(addr_file, 'r') as file:
+                self.delegated_payment_address = file.read()
+        except FileNotFoundError as e:
+            self.delegated_payment_address = None
 
         return self.delegated_payment_address
 

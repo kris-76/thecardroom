@@ -87,8 +87,10 @@ def main():
             raise Exception('Wallet: <{}> does not exist'.format(wallet_name))
 
         stake_address = database.query_stake_address(wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT))
-        logger.info('      address = {}'.format(wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT)))
-        logger.info('Stake address = {}'.format(stake_address))
+        logger.info('   Root address = {}'.format(wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT)))
+        logger.info('   Mint address = {}'.format(wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT)))
+        logger.info('Presale address = {}'.format(wallet.get_payment_address(Wallet.ADDRESS_INDEX_PRESALE)))
+        logger.info('  Stake address = {}'.format(stake_address))
 
         cardano.dump_utxos_sorted(database, wallet)
 
