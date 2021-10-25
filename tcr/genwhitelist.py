@@ -142,6 +142,8 @@ def main():
     print('')
     presale = {"whitelist": []}
     used_special = False
+    total_purchased = 0
+    total_bonus = 0
     for utxo in utxos:
         nfts_total = 0
         nfts_purchased = 0
@@ -186,6 +188,8 @@ def main():
                         nfts_bonus += token_bonus
 
         logger.info("TOTAL Bonus: {}".format(nfts_bonus))
+        total_purchased += nfts_purchased
+        total_bonus += nfts_bonus
         nfts_total = nfts_purchased + nfts_bonus
         if nfts_total > 0:
             presale['whitelist'].append({"utxo-txid": utxo['tx-hash'],
@@ -195,6 +199,8 @@ def main():
 
     with open('nft/{}/{}/{}'.format(network, drop_name, output), 'w') as file:
         file.write(json.dumps(presale, indent=4))
+
+    logger.info('Purchased = {}, Bonus = {}, Total = {}'.format(total_purchased, total_bonus, total_purchased + total_bonus))
 
 if __name__ == '__main__':
     try:
