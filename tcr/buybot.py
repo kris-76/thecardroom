@@ -153,8 +153,13 @@ def main():
             if tx_id == None:
                 repeat = False
             else:
-                while not cardano.contains_txhash(dst_wallet, tx_id):
+                # It could be possible for the destination wallet to remove the
+                # txid before we see it.  After 2 minutes, assume it's been received
+                # and move on
+                tries = 0
+                while tries < 24 and not cardano.contains_txhash(dst_wallet, tx_id):
                     time.sleep(5)
+                    tries += 1
 
             send_payment = repeat
     elif nft != None:

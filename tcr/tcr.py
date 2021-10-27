@@ -731,11 +731,11 @@ def process_incoming_payments(cardano: Cardano,
 
         matching_utxos = 0
         for utxo in utxos:
-            if utxo['amount'] in prices:
+            if utxo['amount'] in prices and not sales.contains(utxo['tx-hash'], utxo['tx-ix']):
                 matching_utxos += 1
 
         if matching_utxos == 0:
-            logger.debug('process_incoming_payments, Waiting for matching UTXO')
+            logger.debug('process_incoming_payments, Waiting for a new matching UTXO')
             time.sleep(30)
             continue
 
