@@ -202,6 +202,14 @@ def main():
 
     logger.info('Purchased = {}, Bonus = {}, Total = {}'.format(total_purchased, total_bonus, total_purchased + total_bonus))
 
+    print('Presale: ')
+    for item in presale['whitelist']:
+        print('{} = {}'.format(item['utxo-txid'], item['nfts']))
+
+    print('')
+    print('Transactions: {}'.format(len(presale['whitelist'])))
+    print('NFTs = {}, Bonus = {}, Total = {}'.format(total_purchased, total_bonus, total_purchased + total_bonus))
+
 if __name__ == '__main__':
     try:
         main()
