@@ -230,6 +230,10 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute(sql)
         row = cursor.fetchone()
+        if row == None:
+            logger.warning('Query TX Time: {} not found in database'.format(txhash))
+            return (None, None)
+
         return (row[0], row[1])
 
     def query_mint_transactions(self, policy_id: str) -> Dict:

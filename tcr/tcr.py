@@ -93,7 +93,7 @@ def transfer_all_assets(cardano: Cardano,
     fee = cardano.calculate_min_fee('transaction/transfer_all_assets_draft_tx_{}'.format(os.getpid()),
                                     len(from_utxos),
                                     len(outputs),
-                                    1)
+                                    2)
     outputs[0]['amount'] = from_total_lovelace - fee
     logger.debug('Transfer All Assets, Fee = {} lovelace'.format(fee))
 
@@ -139,7 +139,7 @@ def transfer_utxo_ada(cardano: Cardano,
 
     # Calculate fee & update values
     fee = cardano.calculate_min_fee('transaction/transfer_utxo_ada_draft_tx_{}'.format(os.getpid()),
-                                    1, len(outputs), 1)
+                                    1, len(outputs), 2)
     outputs[0]['amount'] = utxo['amount'] - fee
     logger.debug('Transfer UTXO ADA, Fee = {} lovelace'.format(fee))
     logger.debug('Transfer UTXO ADA, Lovelace = {} lovelace'.format(outputs[0]['amount']))
@@ -178,7 +178,7 @@ def transfer_ada(cardano: Cardano,
     for utxo in utxos:
         # add 2000000 lovelace to make sure there is enough for fees and min
         # ada change
-        if input_lovelace > lovelace_amount + 2000000:
+        if input_lovelace > lovelace_amount + 10000000:
             break
 
         input_utxos.append(utxo)
@@ -285,7 +285,7 @@ def transfer_nft(cardano: Cardano,
     fee = cardano.calculate_min_fee('transaction/transfer_nft_draft_tx_{}'.format(os.getpid()),
                                     len(from_utxos),
                                     len(outputs),
-                                    1)
+                                    2)
     if (incoming_lovelace - fee) < min_utxo_value:
         # hopefully still enough
         min_utxo_value = incoming_lovelace - fee
@@ -348,7 +348,7 @@ def burn_nft_internal(cardano: Cardano,
     fee = cardano.calculate_min_fee('transaction/burn_nft_internal_draft_tx_{}'.format(os.getpid()),
                                     len(input_utxos),
                                     1,
-                                    1)
+                                    2)
     address_outputs[0]['amount'] = input_total_lovelace - fee
     #final
     cardano.create_burn_nft_transaction_file(input_utxos,

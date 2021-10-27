@@ -41,6 +41,7 @@ from tcr.nft import Nft
 from tcr.wallet import Wallet
 import logging
 from tcr.database import Database
+import time
 
 logger = logging.getLogger('cardano')
 
@@ -129,9 +130,19 @@ class Cardano:
 
     def query_utxos_time(self, database: Database, utxos: List):
         for utxo in utxos:
-            (txtime, txslotno) = database.query_txhash_time(utxo['tx-hash'])
-            utxo['time'] = txtime
-            utxo['slot-no'] = txslotno
+            (txtime, txslotno) = (None, None)
+            tries = 0
+            while txtime == None and txslotno == None and tries < 10:
+                (txtime, txslotno) = database.query_txhash_time(utxo['tx-hash'])
+                if txtime == None and txslotno == None:
+                    logger.warning('time and slotno not found for tx {}, try again'.format(utxo['tx-hash']))
+                    time.sleep(1)
+                    tries += 1
+                    continue
+
+                utxo['time'] = txtime
+                utxo['slot-no'] = txslotno
+                break
 
         return utxos
 
