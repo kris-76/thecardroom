@@ -22,6 +22,7 @@
 # SOFTWARE.
 
 from tcr.wallet import Wallet
+from tcr.wallet import WalletExternal
 from tcr.cardano import Cardano
 from tcr.database import Database
 import logging
@@ -80,7 +81,10 @@ def main():
 
     wallet = None
     if wallet_name != None:
-        wallet = Wallet(wallet_name, cardano.get_network())
+        if wallet_name.startswith('addr'):
+            wallet = WalletExternal('external', cardano.get_network, wallet_name)
+        else:
+            wallet = Wallet(wallet_name, cardano.get_network())
 
         if not wallet.exists():
             logger.error('Wallet: <{}> does not exist'.format(wallet_name))

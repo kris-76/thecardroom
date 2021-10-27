@@ -333,8 +333,8 @@ def main():
         #
         if (create_wallet != None or create_policy != None or create_drop != None or
                 create_drop_template != None):
-            logger.error('--mint, Requires --drop')
-            raise Exception('--mint, Requires --drop')
+            logger.error('--mint, Requires --drop only')
+            raise Exception('--mint, Requires --drop only')
 
         if (drop_name == None):
             logger.error('--mint, Requires --drop')
@@ -431,6 +431,10 @@ def main():
         # Burn the tokens
         #
 
+        if (policy_name == None):
+            logger.error('--mint, Requires --policy')
+            raise Exception('--mint, Requires --policy')
+
         # Set the policy name
         policy_id = cardano.get_policy_id(policy_name)
         logger.info('Policy: {}'.format(policy_name))
@@ -447,31 +451,35 @@ def main():
             raise Exception('Wallet: {}, does not exist'.format(wallet_name))
 
         if token_name == None and confirm:
-            #burn all
-            token_names = []
-            (utxos, lovelace) = cardano.query_utxos(burn_wallet)
-            utxos = cardano.query_utxos_time(database, utxos)
-            utxos.sort(key=lambda item : item['slot-no'])
+            has_tokens = True
 
-            utxo_in = None
-            input_utxos = []
-            for utxo in utxos:
-                for a in utxo['assets']:
-                    if a.startswith('{}.'.format(policy_id)):
-                        if len(token_names) < 200:
-                            utxo_in = utxo
-                            token_name = a.split('.')[1]
-                            token_names.append(token_name)
-                            if not utxo in input_utxos:
-                                input_utxos.append(utxo)
+            while has_tokens:
+                #burn all
+                token_names = []
+                (utxos, lovelace) = cardano.query_utxos(burn_wallet)
+                utxos = cardano.query_utxos_time(database, utxos)
+                utxos.sort(key=lambda item : item['slot-no'])
 
-            if len(token_names) > 0:
-                tcr.tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
-                while cardano.contains_txhash(burn_wallet, utxo_in['tx-hash']):
-                    logger.info('wait')
-                    time.sleep(10)
-            else:
-                logger.error('No tokens found for policy')
+                utxo_in = None
+                input_utxos = []
+                for utxo in utxos:
+                    for a in utxo['assets']:
+                        if a.startswith('{}.'.format(policy_id)):
+                            if len(token_names) < 200:
+                                utxo_in = utxo
+                                token_name = a.split('.')[1]
+                                token_names.append(token_name)
+                                if not utxo in input_utxos:
+                                    input_utxos.append(utxo)
+
+                if len(token_names) > 0:
+                    tcr.tcr.burn_nft_internal(cardano, burn_wallet, policy_name, input_utxos, token_names, token_amount=1)
+                    while cardano.contains_txhash(burn_wallet, utxo_in['tx-hash']):
+                        logger.info('wait')
+                        time.sleep(10)
+                else:
+                    has_tokens = False
+                    logger.error('No tokens found for policy')
         elif token_name != None:
             # burn just the specified token in the specified policy
             token_names = []

@@ -88,14 +88,16 @@ class Cardano:
                     wallet: Wallet,
                     addresses: List[str]=None) -> Tuple[List, int]:
         if addresses == None:
-            # query all the known addresses.
-            addresses = [wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT, delegated=False),
-                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT, delegated=True),
-                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=False),
-                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=True),
-                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_PRESALE, delegated=False),
-                         wallet.get_payment_address(Wallet.ADDRESS_INDEX_PRESALE, delegated=True)]
+            # query all the known addresses and make sure the addresses are unique
+            # which they may not be if using an "external" wallet
+            addresses_set = set([wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT, delegated=False),
+                                 wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT, delegated=True),
+                                 wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=False),
+                                 wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=True),
+                                 wallet.get_payment_address(Wallet.ADDRESS_INDEX_PRESALE, delegated=False),
+                                 wallet.get_payment_address(Wallet.ADDRESS_INDEX_PRESALE, delegated=True)])
 
+            addresses = list(addresses_set)
         total_lovelace = 0
         utxos = []
 
@@ -496,9 +498,13 @@ class Cardano:
                    '--signing-key-file', 'policy/{}/{}.skey'.format(self.network, policy_name)]
         Command.run(command, None)
 
+        # TODO: Should use the policy vkey instead of wallet vkey
+        # TODO: Then sign transaction with policy skey instead of wallet root skey
+
         # create signature hash from keys
         command = ['cardano-cli', 'address', 'key-hash',
-                   '--payment-verification-key-file', policy_wallet.get_verification_key_file(Wallet.ADDRESS_INDEX_ROOT)]
+                   '--payment-verification-key-file',
+                   policy_wallet.get_verification_key_file(Wallet.ADDRESS_INDEX_ROOT)]
         sig_key_hash = Command.run(command, None)
 
         # create script file requires sign by policy keys and only valid until specified slot

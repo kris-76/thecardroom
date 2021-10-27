@@ -126,6 +126,18 @@ def main():
     else:
         dst_wallet = Wallet(dst_name, cardano.get_network())
 
+    if all == False and amount < 1000000:
+        logger.error("Amount too small: {}".format(amount))
+        raise Exception("Amount too small: {}".format(amount))
+
+    if not dst_wallet.exists():
+        logger.error("Destination wallet missing: {}".format(dst_wallet.get_name()))
+        raise Exception("Destination wallet missing: {}".format(dst_wallet.get_name()))
+
+    if not src_wallet.exists():
+        logger.error("Source wallet missing: {}".format(src_wallet.get_name()))
+        raise Exception("Source wallet missing: {}".format(src_wallet.get_name()))
+
     cardano.dump_utxos_sorted(database, src_wallet)
     if amount >= 0:
         send_payment = True

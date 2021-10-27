@@ -171,40 +171,51 @@ def transfer_ada(cardano: Cardano,
     logger.debug('Transfer ADA, lovelace: {} from: {}, to: {}'.format(lovelace_amount,
                                                                       from_wallet.get_name(),
                                                                       to_wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT)))
-    (from_utxos, from_total_lovelace) = cardano.query_utxos(from_wallet)
+    (utxos, total_lovelace) = cardano.query_utxos(from_wallet)
+
+    input_utxos = []
+    input_lovelace = 0
+    for utxo in utxos:
+        # add 2000000 lovelace to make sure there is enough for fees and min
+        # ada change
+        if input_lovelace > lovelace_amount + 2000000:
+            break
+
+        input_utxos.append(utxo)
+        input_lovelace += utxo['amount']
 
     # get all incoming assets from utxos
     incoming_assets = {}
-    for utxo in from_utxos:
+    for utxo in input_utxos:
         for a in utxo['assets']:
             if a in incoming_assets:
                 incoming_assets[a] += utxo['assets'][a]
             else:
                 incoming_assets[a] = utxo['assets'][a]
 
-    logger.debug('Transfer ADA, From Wallet({}) = {} lovelace'.format(from_wallet.get_name(), from_total_lovelace))
+    logger.debug('Transfer ADA, From Wallet({}) = {} lovelace'.format(from_wallet.get_name(), total_lovelace))
+    logger.debug('Transfer ADA, Selected UTXOs = {} lovelace'.format(input_lovelace))
 
     # Draft transaction for fee calculation
     outputs = [{'address': from_wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT), 'amount': 1, 'assets': incoming_assets},
                {'address': to_wallet.get_payment_address(Wallet.ADDRESS_INDEX_ROOT), 'amount': 1, 'assets': {}}]
     fee = 0
-    cardano.create_transfer_transaction_file(from_utxos,
+    cardano.create_transfer_transaction_file(input_utxos,
                                              outputs,
                                              fee,
                                              'transaction/transfer_ada_draft_tx_{}'.format(os.getpid()))
 
     # Calculate fee & update values
     fee = cardano.calculate_min_fee('transaction/transfer_ada_draft_tx_{}'.format(os.getpid()),
-                                    len(from_utxos),
+                                    len(input_utxos),
                                     len(outputs),
-                                    1)
+                                    2)
     logger.debug('Transfer ADA, Fee = {} lovelace'.format(fee))
-    outputs[0]['amount'] = from_total_lovelace - lovelace_amount - fee
+    outputs[0]['amount'] = input_lovelace - lovelace_amount - fee
     outputs[1]['amount'] = lovelace_amount
 
-
     # Final unsigned transaction
-    cardano.create_transfer_transaction_file(from_utxos,
+    cardano.create_transfer_transaction_file(input_utxos,
                                              outputs,
                                              fee,
                                              'transaction/transfer_ada_unsigned_tx_{}'.format(os.getpid()))
@@ -505,6 +516,8 @@ def mint_nft_external(cardano: Cardano,
         ix = int(item.split('#')[1])
         sales.set_tokens_minted(hash, ix, mint_map[item]['tokens'])
 
+    # TODO wallet root should be replaced with policy key after creating policy
+    # key is updated
     #sign
     cardano.sign_transaction('transaction/mint_nft_external_unsigned_tx_{}'.format(os.getpid()),
                              [minting_wallet.get_signing_key_file(Wallet.ADDRESS_INDEX_ROOT),
@@ -709,7 +722,7 @@ def process_incoming_payments(cardano: Cardano,
     logger.info('process_incoming_payments, NFTs Remaining: {}'.format(nft_metadata.get_remaining()))
 
     while True:
-        time.sleep(5)
+        #time.sleep(2)
         (utxos, total_lovelace) = cardano.query_utxos(minting_wallet,
                                                       [minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=True),
                                                        minting_wallet.get_payment_address(Wallet.ADDRESS_INDEX_MINT, delegated=False)])
@@ -739,18 +752,20 @@ def process_incoming_payments(cardano: Cardano,
                         # If already processed this UTXO then skip it.
                         continue
 
-                    logger.info('RX UTXO {}: {} lovelace'.format(utxo['tx-hash'], utxo['amount']))
                     if utxo['amount'] in prices:
                         num_nfts = prices[utxo['amount']]
-                        logger.info('Request {} NFTs'.format(num_nfts))
                         if num_nfts + nfts_to_mint <= nft_metadata.get_remaining() and num_nfts + nfts_to_mint <= max_per_tx:
+                            logger.info('RX UTXO {}: {} lovelace'.format(utxo['tx-hash'], utxo['amount']))
+                            logger.info('Request {} NFTs'.format(num_nfts))
                             input_utxos.append({'utxo': utxo, 'count': num_nfts, 'refund': 0})
                             logger.debug('Queue For Mint, UTXO {} = {} NFTs, refund: {}'.format(utxo['tx-hash'], num_nfts, 0))
                             nfts_to_mint += num_nfts
                         else:
-                            # reached the maximum amount that can be processed.  Check to see if
-                            # a partial amount can be granted
+                            # reached the maximum amount that can be processed
+                            # or that is available.  Check to see if a partial
+                            # amount can be granted
                             if nfts_to_mint == 0:
+                                # This could happen on the last mint transaction
                                 if num_nfts > nft_metadata.get_remaining():
                                     price_per_nft = utxo['amount'] / num_nfts
                                     refund_nfts = num_nfts - nft_metadata.get_remaining()
@@ -762,8 +777,10 @@ def process_incoming_payments(cardano: Cardano,
                                 else:
                                     logger.error("Configuration error: max_per_tx < num requested for price")
                                     raise Exception("Configuration error: max_per_tx < num requested for price")
-
                             break
+                    else :
+                        # Don't know what to do this this UTXO
+                        logger.warning('RX UTXO (Invalid Price) {}: {} lovelace'.format(utxo['tx-hash'], utxo['amount']))
 
                 # by now there should be something to mint.  If not then that means a
                 # UTXO was received that did not have a match to any payment price.
