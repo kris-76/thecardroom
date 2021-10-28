@@ -1,0 +1,23 @@
+{
+    "series": 3,
+    "drop-name": "skk_series_3",
+    "init-nft-id": 9,
+    "token-name": "SKKx{:03}x{:04}x{}",
+    "nft-name": "Shapes {}.{} [{}/{}]",
+    "total": 10,
+    "output-width": 400,
+    "output-height": 400,
+    "max_per_tx": 25,
+    "prices": {
+        "5000000": 1,
+        "7000000": 2
+    },
+    "layer-sets": [
+        {
+            "file": "art/shapes.json",
+            "weight": 100
+        }
+    ],
+    "self": "nft/mainnet/skk_series_3/skk_series_3_metametadata.json",
+    "policy": "skk_nft_policy"
+}

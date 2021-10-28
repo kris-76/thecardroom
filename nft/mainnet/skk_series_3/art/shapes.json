@@ -1,0 +1,224 @@
+{
+    "name": "layer_set_shapes",
+    "layers": [
+        {
+            "name": "Standard",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "website": "https://superkk.io/",
+                        "description": "Series 3 - Shapes",
+                        "artist": "SuperKK",
+                        "id": 0
+                    },
+                    "weight": 100,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": null
+                }
+            ]
+        },
+        {
+            "name": "background",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "background": "grey"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/grey.png"
+                },
+                {
+                    "properties": {
+                        "background": "none"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        },
+        {
+            "name": "circle",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "circle": "yes"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/circle.png"
+                },
+                {
+                    "properties": {
+                        "circle": "no"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        },
+        {
+            "name": "square",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "square": "yes"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/square.png"
+                },
+                {
+                    "properties": {
+                        "square": "no"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        },
+        {
+            "name": "triangle",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "triangle": "yes"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/triangle.png"
+                },
+                {
+                    "properties": {
+                        "triangle": "no"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        },
+        {
+            "name": "paralellogram",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "paralellogram": "yes"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/paralellogram.png"
+                },
+                {
+                    "properties": {
+                        "paralellogram": "no"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        },
+        {
+            "name": "oneline",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "oneline": "yes"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/one_line.png"
+                },
+                {
+                    "properties": {
+                        "oneline": "no"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        },
+        {
+            "name": "twolines",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "twolines": "yes"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/two_lines.png"
+                },
+                {
+                    "properties": {
+                        "twolines": "no"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        },
+        {
+            "name": "threelines",
+            "width": 400,
+            "height": 400,
+            "images": [
+                {
+                    "properties": {
+                        "threelines": "yes"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/three_lines.png"
+                },
+                {
+                    "properties": {
+                        "threelines": "no"
+                    },
+                    "weight": 50,
+                    "offset-x": 0,
+                    "offset-y": 0,
+                    "image": "art/blank.png"
+                }
+            ]
+        }
+    ]
+}
