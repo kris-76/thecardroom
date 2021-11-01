@@ -43,5 +43,11 @@ Updates metadata in series metametadata or nft metadata depending on "cards" or 
 10.  Transfer all tokens to another wallet:
     > python3 -m tcr.buybot --network=testnet --dst=testnet1 --src=testnet2 --all
 
-10.  Burn tokens held by the minting wallet:
+11.  Burn tokens held by the minting wallet:
     > python3 -m tcr.nftmint --network=testnet --burn --policy=tn_policy1 --confirm
+
+12.  Refund a payment:
+    > python3 -m tcr.refund --network=mainnet --src=tcr_mint --utxo=559b16940536fe9b91ab77b391afdb2ed576e3a17179a8cb7acde724e1dd835a
+
+13.  Refund another payment:
+    > python3 -m tcr.refund --network=mainnet --src=tcr_mint --utxo=6c869968950ee4e3469d744e8bd33d58f6c327b6430e11db4e2b42149ae57267

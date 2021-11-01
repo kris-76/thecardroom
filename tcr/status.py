@@ -99,25 +99,32 @@ def main():
         cardano.dump_utxos_sorted(database, wallet)
 
     if policy_name != None:
+        policies = policy_name.split(',')
         logger.info('')
 
-        if cardano.get_policy_id(policy_name) == None:
-            logger.error('Policy: <{}> does not exist'.format(policy_name))
-            raise Exception('Policy: <{}> does not exist'.format(policy_name))
-
-        tokens = database.query_current_owner(cardano.get_policy_id(policy_name))
-        logger.info("By Token: ")
-        logger.info('len = {}'.format(len(tokens)))
+        #logger.info("By Token: ")
         by_address = {}
-        for name in tokens:
-            address = tokens[name]['address']
-            slot = tokens[name]['slot']
-            logger.info('{} owned by {} at slot {}'.format(name, address, slot))
+        i = 1
+        for policy in policies:
+            if cardano.get_policy_id(policy) == None:
+                logger.error('Policy: <{}> does not exist'.format(policy))
+                raise Exception('Policy: <{}> does not exist'.format(policy))
 
-            if address in by_address:
-                by_address[address].append(name)
-            else:
-                by_address[address] = [name]
+            tokens = database.query_current_owner(cardano.get_policy_id(policy))
+            logger.info('{} = {} tokens'.format(policy, len(tokens)))
+
+            keys = list(tokens.keys())
+            keys.sort()
+            for name in keys:
+                address = tokens[name]['address']
+                slot = tokens[name]['slot']
+                logger.info('{}.  {} owned by {} at slot {}'.format(i, name, address, slot))
+                i += 1
+
+                if address in by_address:
+                    by_address[address].append(name)
+                else:
+                    by_address[address] = [name]
 
         holders = list(by_address.items())
         def sort_by_length(item):
@@ -127,8 +134,27 @@ def main():
         logger.info('')
         logger.info('By Owner:')
         logger.info('len = {}'.format(len(holders)))
+        i = 1
         for holder in holders:
-            logger.info('{}({})= {}'.format(holder[0], len(holder[1]), holder[1]))
+            logger.info('{: 4}.  {}({})'.format(i, holder[0], len(holder[1])))
+            tokens = holder[1]
+
+            token_str = ''
+            j = 0
+            for token in tokens:
+                if len(token_str) == 0:
+                    token_str += token
+                else:
+                    token_str += ', ' + token
+                j += 1
+                if j == 8:
+                    logger.info('       {}'.format(token_str))
+                    j = 0
+                    token_str = ''
+
+            if j > 0:
+                logger.info('       {}'.format(token_str))
+            i += 1
 
 
 if __name__ == '__main__':
