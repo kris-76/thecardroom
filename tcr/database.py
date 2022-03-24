@@ -236,6 +236,40 @@ class Database:
 
         return (row[0], row[1])
 
+    #Table: multi_asset
+    #   id	        integer (64)
+    #   policy	    hash28type	 The MultiAsset policy hash.
+    #   name	    asset32type	 The MultiAsset name.
+    #   fingerprint	string	     The CIP14 fingerprint for the MultiAsset.
+    #
+    #Table: ma_tx_mint
+    #   id	     integer (64)
+    #   ident	 integer (64)   The MultiAsset table index specifying the asset.
+    #   quantity int65type      The amount of the Multi Asset to mint (can be negative to "burn" assets).
+    #   tx_id	 integer (64)   The Tx table index for the transaction that contains this minting event.
+    #
+    # Table: tx_metadata
+    #   id	    integer (64)
+    #   key	    word64type	    The metadata key (a Word64/unsigned 64 bit number).
+    #   json	jsonb	        The JSON payload if it can be decoded as JSON.
+    #   bytes   bytea	        The raw bytes of the payload.
+    #   tx_id   integer (64)    The Tx table index of the transaction where this metadata was included.
+    def query_nft_metadata(self, fingerprint: str) -> str:
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
+        sql = ('select tx_metadata.tx_id, tx_metadata.json from tx_metadata '
+               'inner join ma_tx_mint on tx_metadata.tx_id = ma_tx_mint.tx_id '
+               'inner join multi_asset on ma_tx_mint.ident = multi_asset.id '
+               'where multi_asset.fingerprint = \'{}\''.format(fingerprint))
+        logger.debug('query_nft_metadata(), sql = {}'.format(sql))
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+
+        return rows[len(rows)-1][1]
+
     def query_mint_transactions(self, policy_id: str) -> Dict:
         if self.connection == None:
             raise Exception("Database Not Connected")
@@ -269,15 +303,16 @@ class Database:
         if self.connection == None:
             raise Exception("Database Not Connected")
 
-        def sort_by_time(item):
-            return item['time']
+#        def sort_by_time(item):
+#            return item['time']
 
-        sql = ('select ma_tx_out.name, stake_address.view, block.slot_no from ma_tx_out '
+        sql = ('select multi_asset.name, stake_address.view, block.slot_no from ma_tx_out '
                'inner join tx_out on ma_tx_out.tx_out_id = tx_out.id '
                'inner join tx on tx_out.tx_id = tx.id '
                'inner join block on tx.block_id = block.id '
                'inner join stake_address on tx_out.stake_address_id = stake_address.id '
-               'where ma_tx_out.policy=\'\\x{}\';'.format(policy_id))
+               'inner join multi_asset on ma_tx_out.ident = multi_asset.id '
+               'where multi_asset.policy=\'\\x{}\';'.format(policy_id))
         logger.debug('query_current_owner(), sql = {}'.format(sql))
 
         cursor = self.connection.cursor()
