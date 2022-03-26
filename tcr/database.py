@@ -258,7 +258,7 @@ class Database:
         if self.connection == None:
             raise Exception("Database Not Connected")
 
-        sql = ('select tx_metadata.tx_id, tx_metadata.json from tx_metadata '
+        sql = ('select tx_metadata.tx_id, tx_metadata.json, multi_asset.name, multi_asset.policy from tx_metadata '
                'inner join ma_tx_mint on tx_metadata.tx_id = ma_tx_mint.tx_id '
                'inner join multi_asset on ma_tx_mint.ident = multi_asset.id '
                'where multi_asset.fingerprint = \'{}\''.format(fingerprint))
@@ -268,7 +268,10 @@ class Database:
         cursor.execute(sql)
         rows = cursor.fetchall()
 
-        return rows[len(rows)-1][1]
+        index = len(rows) - 1
+        token_name = bytes(rows[index][2]).decode("utf-8")
+        token_policy = bytes(rows[index][3]).hex()
+        return (token_policy, rows[index][1][token_policy][token_name])
 
     def query_mint_transactions(self, policy_id: str) -> Dict:
         if self.connection == None:
@@ -303,9 +306,6 @@ class Database:
         if self.connection == None:
             raise Exception("Database Not Connected")
 
-#        def sort_by_time(item):
-#            return item['time']
-
         sql = ('select multi_asset.name, stake_address.view, block.slot_no from ma_tx_out '
                'inner join tx_out on ma_tx_out.tx_out_id = tx_out.id '
                'inner join tx on tx_out.tx_id = tx.id '
@@ -320,7 +320,7 @@ class Database:
         rows = cursor.fetchall()
         tokens = {}
         for row in rows:
-            name = binascii.unhexlify(bytes(row[0]).hex()).decode("utf-8")
+            name = bytes(row[0]).decode("utf-8")
             if name in tokens:
                 if tokens[name]['slot'] < row[2]:
                     tokens[name]['address'] = row[1]
@@ -329,3 +329,29 @@ class Database:
                 tokens[name] = {'address': row[1], 'slot': row[2]}
 
         return tokens
+
+    def query_owner_by_fingerprint(self, fingerprint: str):
+        if self.connection == None:
+            raise Exception("Database Not Connected")
+
+        sql = ('select multi_asset.name, stake_address.view, block.slot_no from ma_tx_out '
+               'inner join tx_out on ma_tx_out.tx_out_id = tx_out.id '
+               'inner join tx on tx_out.tx_id = tx.id '
+               'inner join block on tx.block_id = block.id '
+               'inner join stake_address on tx_out.stake_address_id = stake_address.id '
+               'inner join multi_asset on ma_tx_out.ident = multi_asset.id '
+               'where multi_asset.fingerprint=\'{}\';'.format(fingerprint))
+        logger.debug('query_owner_by_fingerprint(), sql = {}'.format(sql))
+
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        owner = ''
+        slot = 0
+
+        rows = cursor.fetchall()
+        for row in rows:
+            if slot < row[2]:
+                slot = row[2]
+                owner = row[1]
+
+        return owner
