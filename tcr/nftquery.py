@@ -35,8 +35,7 @@ import json
 # Simple application to query db-sync for the metadata associated with the NFT
 # in a mint transaction.  Note that it's possible for a NFT or token to have
 # multiple mint transactions.  In case of multiples, the newest metadata is
-# returned.  It's also likely multiple NFTs may be minted in the same
-# transaction.  The full metadata for all NFTs will be returned.
+# returned.
 def main():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--network', required=True,
@@ -75,7 +74,7 @@ def main():
     logger.info('Sync Progress: {}'.format(sync_progress))
 
     if fingerprint != None:
-        metadata = database.query_nft_metadata(fingerprint)
+        (policy, metadata) = database.query_nft_metadata(fingerprint)
         logger.info(json.dumps(metadata, indent=4))
 
 if __name__ == '__main__':

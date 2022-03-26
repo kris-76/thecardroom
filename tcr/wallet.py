@@ -44,6 +44,7 @@ class Wallet:
     ADDRESS_INDEX_ROOT = 0
     ADDRESS_INDEX_MINT = 1
     ADDRESS_INDEX_PRESALE = 2
+    ADDRESS_INDEX_MUTATE_REQUEST = 3
 
     def __init__(self,
                  name: str,
