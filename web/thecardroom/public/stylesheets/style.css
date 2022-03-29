@@ -1,0 +1,66 @@
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.color_red {
+  color: red;
+}
+
+.concrete_background {
+  background-image: url(/images/background_concrete.jpg);
+  background-repeat: repeat-y;
+  background-size: cover;
+}
+
+.black_background {
+  background-color: black;
+}
+
+.zero_padding {
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+}
+
+.side_padding {
+  padding-top: 0px;
+  padding-right: 10px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+}
+
+.main_content {
+  flex: 10 0 auto;
+}
+
+.fixed_header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.main {
+  padding-top: 120px;
+}
+
+.footer {
+  flex-shrink: 0;
+}

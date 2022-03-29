@@ -1,0 +1,16 @@
+doctype html
+html
+    head
+        title= title
+        script(src='/javascripts/my_script.js' type='module')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body(class='concrete_background zero_padding')
+        div(class='main_content')
+            header(class='fixed_header black_background')
+                img(src='/images/header_tcr_logo.png' class='side_padding')
+                button(onclick='connect_to_wallet()')
+                    | thetext
+            main(class='main side_padding')
+                block content
+        footer(class='footer')
+            p(class='color_red') Site Footer
