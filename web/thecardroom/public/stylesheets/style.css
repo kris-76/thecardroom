@@ -64,3 +64,11 @@ a {
 .footer {
   flex-shrink: 0;
 }
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+  background-color: #01FCD3 !important;
+}
+
+ul.nav li.dropdown:hover ul.dropdown-menu{ 
+  display: block; 
+}

@@ -21,7 +21,7 @@ module.exports = {
         publicPath: '/dist/'
     },
     experiments: {
-        syncWebAssembly: true,
+        asyncWebAssembly: true,
     },
     stats: {
         errorDetails: true
