@@ -5,14 +5,55 @@
 // https://stackoverflow.com/questions/27464168/how-to-include-scripts-located-inside-the-node-modules-folder
 // https://cardano.stackexchange.com/questions/4112/nami-wallet-showing-getbalance-returning-a-nan
 
-//import { Buffer } from "buffer";
-//import AssetFingerprint from '@emurgo/cip14-js';
-
 //https://webpack.js.org/guides/installation/
 
-import * as wasm from 'https://cdn.jsdelivr.net/npm/@emurgo/cardano-serialization-lib-asmjs@9.1.2/cardano_serialization_lib.min.js';
-import { Buffer } from 'buffer';
-//import * as wasm from '@emurgo/cardano-serialization-lib-browser';
+//import * as wasm from 'https://cdn.jsdelivr.net/npm/@emurgo/cardano-serialization-lib-asmjs@9.1.2/cardano_serialization_lib.min.js';
+
+import {
+    Address,
+    BaseAddress,
+    MultiAsset,
+    Assets,
+    ScriptHash,
+    Costmdls,
+    Language,
+    CostModel,
+    AssetName,
+    TransactionUnspentOutput,
+    TransactionUnspentOutputs,
+    TransactionOutput,
+    Value,
+    TransactionBuilder,
+    TransactionBuilderConfigBuilder,
+    TransactionOutputBuilder,
+    LinearFee,
+    BigNum,
+    BigInt,
+    TransactionHash,
+    TransactionInputs,
+    TransactionInput,
+    TransactionWitnessSet,
+    Transaction,
+    PlutusData,
+    PlutusScripts,
+    PlutusScript,
+    PlutusList,
+    Redeemers,
+    Redeemer,
+    RedeemerTag,
+    Ed25519KeyHashes,
+    ConstrPlutusData,
+    ExUnits,
+    Int,
+    NetworkInfo,
+    EnterpriseAddress,
+    TransactionOutputs,
+    hash_transaction,
+    hash_script_data,
+    hash_plutus_data,
+    ScriptDataHash, Ed25519KeyHash, NativeScript, StakeCredential
+} from "@emurgo/cardano-serialization-lib-asmjs"
+let Buffer = require('buffer/').Buffer
 
 function is_installed() {
     if (!window.cardano) {
@@ -43,7 +84,6 @@ window.connect_to_wallet = async function connect_to_wallet() {
     const balance_cbor = await nami_api.getBalance()
     console.log('balance_cbor = ' + balance_cbor);
 
-    const balance = wasm.Value.from_bytes(Buffer.from(balance_cbor, 'hex'));
-    const lovelaces = balance.coin().to_str();
-    console.log(lovelaces);
+    const balance = Value.from_bytes(Buffer.from(balance_cbor, "hex")).coin().to_str();
+    console.log('balance = ' + balance);
 }

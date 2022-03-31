@@ -16,14 +16,13 @@ module.exports = {
         extensions: ['*', '.js', '.jsx'],
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'my-first-webpack.bundle.js',
-        publicPath: '/'
+        path: path.resolve(__dirname, 'public/dist'),
+        filename: 'tcr-bundle.js',
+        publicPath: '/dist/'
     },
     experiments: {
         syncWebAssembly: true,
     },
-    plugins: [new webpack.HotModuleReplacementPlugin()],
     stats: {
         errorDetails: true
     },
