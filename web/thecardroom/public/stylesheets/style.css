@@ -98,6 +98,10 @@ a:hover, a:active {
   background-color: #01FCD3 !important;
 }
 
+.border-show {
+  border-style: solid;
+  border-color: black;
+}
 /* ============ only desktop view ============ */
 
 @media all and (min-width: 992px) {

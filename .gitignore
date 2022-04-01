@@ -12,6 +12,7 @@ tcr/__pycache__/*
 mainnet_protocol_parameters.json
 testnet_protocol_parameters.json
 build
+public/dist
 nft/mainnet/skk_series_2
 nft/mainnet/tcr_series_1_420pool/
 nft/mainnet/tcr_series_1_reserved/
