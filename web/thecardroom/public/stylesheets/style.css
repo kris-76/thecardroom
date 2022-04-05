@@ -3,6 +3,9 @@ html, body {
   height: 100%;
 }
 
+/*
+ * CSS to change fonts
+ */
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
@@ -13,11 +16,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p {
-  font-family: 'helvetica', Arial, sans-serif;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   color: white;
 }
 
-a:link, a:visited {
+/*
+ * CSS to change links
+ */
+ a:link, a:visited {
   color: #01FCD3;
   text-decoration: none;
 }
@@ -27,14 +33,9 @@ a:hover, a:active {
   text-decoration: none;
 }
 
-.color_red {
-  color: red;
-}
-
-.color_white {
-  color: white;
-}
-
+/*
+ * CSS to change backgrounds
+ */
 .background-concrete {
   background-image: url(/images/background_concrete.jpg);
   background-repeat: repeat-y;
@@ -46,30 +47,51 @@ a:hover, a:active {
   background-color: black;
 }
 
-main > .container {
-  padding-top: 70px;
-}
-main > .container-fluid {
-  padding-top: 70px;
-}
-
-a.start-offset {
-  display: block;
-  position: relative;
-  top: -70px;
-  visibility: hidden;
-}
-
-.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
-  background-color: #01FCD3 !important;
-}
-
+/*
+ * CSS mostly for debugging to show borders around an element.
+ */
 .border-show {
   border-style: solid;
   border-color: black;
 }
-/* ============ only desktop view ============ */
 
+/*
+ * CSS to pad the top of the main section so the navbar does not cover it up.
+ */
+main > .container {
+  padding-top: 80px;
+}
+main > .container-fluid {
+  padding-top: 80px;
+}
+
+/*
+ * CSS to move anchors up so the part that should be shown is not covered by
+ * the navbar.
+ */
+a.anchor-offset {
+  display: block;
+  position: relative;
+  top: -80px;
+  visibility: hidden;
+}
+
+/*
+ * CSS to change the hamburger menu to TCR green color.
+ */
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(1,252,211, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.custom-toggler.navbar-toggler {
+  border-color: #01FCD3;
+} 
+
+/*
+ * CSS to make the drop down menu items open automatically on mouse hover.  
+ * Only in desktop medium view or larger.  Smaller than this and the 
+ * hamburger icon is used.
+ */
 @media all and (min-width: 768px) {
 	.navbar .dropdown-menu-end{ right:0; left: auto;  }
 	.navbar .nav-item .dropdown-menu{  display:block; opacity: 0;  visibility: hidden; transition:.3s; margin-top:0;  }
@@ -90,5 +112,3 @@ a.start-offset {
   .navbar .nav-item:hover .dropdown-item{ background-color: #000000; }
   .navbar .nav-item .dropdown-menu { background-color: #000000; }
 }
-
-/* ============ desktop view .end// ============ */

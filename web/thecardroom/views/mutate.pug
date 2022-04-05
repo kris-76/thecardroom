@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    div(class="container-fluid")
+        div(class='row align-items-start justify-content-evenly')
+            div(class='col align-self-start px-0')
+                p 
+                    | To begin mutation, connect your wallet.
+            div(class='col align-self-end text-end')
+                button(type='button' class='btn btn-primary' id='button-wallet-connect' onclick='this.value=\'testing...\';connect_to_wallet(this)') Connect to Nami

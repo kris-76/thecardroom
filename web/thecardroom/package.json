@@ -13,6 +13,7 @@
     "license": "ISC",
     "dependencies": {
         "@emurgo/cardano-serialization-lib-browser": "^10.0.4",
+        "@emurgo/cip14-js": "^3.0.1",
         "buffer": "^6.0.3",
         "cookie-parser": "^1.4.6",
         "express": "^4.17.3",

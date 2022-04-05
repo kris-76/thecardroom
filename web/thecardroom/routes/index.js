@@ -11,4 +11,9 @@ router.get('/about', function(req, res, next) {
   res.render('about', { title: 'The Card Room | About' });
 });
 
+/* GET mutate page. */
+router.get('/mutate', function(req, res, next) {
+  res.render('mutate', { title: 'The Card Room | Mutate' });
+});
+
 module.exports = router;
