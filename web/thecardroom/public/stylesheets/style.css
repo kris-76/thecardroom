@@ -52,7 +52,7 @@ a:hover, a:active {
  */
 .border-show {
   border-style: solid;
-  border-color: black;
+  border-color: white;
 }
 
 /*
@@ -92,7 +92,7 @@ a.anchor-offset {
  * Only in desktop medium view or larger.  Smaller than this and the 
  * hamburger icon is used.
  */
-@media all and (min-width: 768px) {
+@media all and (min-width: 576px) {
 	.navbar .dropdown-menu-end{ right:0; left: auto;  }
 	.navbar .nav-item .dropdown-menu{  display:block; opacity: 0;  visibility: hidden; transition:.3s; margin-top:0;  }
 	.navbar .dropdown-menu.fade-down{ top:80%; transform: rotateX(-75deg); transform-origin: 0% 0%; }
@@ -111,4 +111,39 @@ a.anchor-offset {
 
   .navbar .nav-item:hover .dropdown-item{ background-color: #000000; }
   .navbar .nav-item .dropdown-menu { background-color: #000000; }
+}
+
+/*
+ * CSS for displaying and managing card layouts
+ */
+ .tcr-card-main {
+  --bs-gutter-x: 2rem;
+  --bs-gutter-y: 0;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.match-height > [class*='col'] {
+  display: flex;
+  flex-flow: column;
+}
+
+.match-height > [class*='col'] > .card {
+  flex: 1 1 auto;
+}
+
+.tcr-card {
+  width: 200px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.zoom {
+  transition: transform .15s;
+}
+
+.zoom:hover {
+  transform: scale(1.05);
 }

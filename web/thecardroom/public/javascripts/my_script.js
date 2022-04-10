@@ -32,7 +32,20 @@ async function get_network_id(nami_api) {
     return {
         id: network_id,
         network: network_id === 1 ? 'mainnet' : 'testnet'
+    };
+}
+
+async function get_address(nami_api, slib) {
+    try {
+        const addresses = await nami_api.getUsedAddresses();
+        const first_address = addresses[0]
+        const address = slib.Address.from_bytes(Buffer.from(first_address, "hex")).to_bech32()
+        return address;
+    } catch (err) {
+        console.log(err)
     }
+
+    return null;
 }
 
 async function update_wallet_contents(nami_api, slib) {
@@ -41,6 +54,8 @@ async function update_wallet_contents(nami_api, slib) {
     const balance_lovelace = slib.Value.from_bytes(Buffer.from(balance_cbor, "hex"));
 
     let mutation_assets = [];
+    let normie_assets = [];
+    let wallet_address = await get_address(nami_api, slib);
 
     const raw_utxos = await nami_api.getUtxos();
     for (const raw_utxo of raw_utxos) {
@@ -74,20 +89,43 @@ async function update_wallet_contents(nami_api, slib) {
                     );
 
                     const fingerprint_bech32 = asset_fingerprint.fingerprint();
-                    const mutation_object = {
+                    const asset_object = {
                         tx_id: tx_id,
                         tx_idx: tx_idx,
                         policy_id: policy_id_hex,
                         name: asset_name_str,
                         fingerprint: fingerprint_bech32
                     };
-                    mutation_assets.push(mutation_object);
+
+                    if (policy_id_hex === '3d6d8a031b309c0181be1c618a9762fee47bf1e28646bc7dab63ecdb') {
+                        mutation_assets.push(asset_object);
+                    } else {
+                        normie_assets.push(asset_object);
+                    }
                 }
             }
         }
     }
 
-    return mutation_assets;
+    return {
+        mutations: mutation_assets,
+        normies: normie_assets,
+        address: wallet_address
+    };
+}
+
+function remove_all_options(element) {
+    let count = element.options.length - 1;
+    for (let i = count; i >= 0; i--) {
+        element.remove(i);
+    }
+}
+
+function add_option(element, name, value) {
+    let opt = document.createElement('option');
+    opt.value = value;
+    opt.text = name;
+    element.appendChild(opt);
 }
 
 window.connect_to_wallet = async function connect_to_wallet(button) {
@@ -100,11 +138,30 @@ window.connect_to_wallet = async function connect_to_wallet(button) {
     const slib = await get_cardano_serialization_lib();
     window.cardano.nami.enable().then( nami_api => {
         button.innerText='Connected';
+        console.log(window.cardano.nami);
+        console.log(nami_api);
         return update_wallet_contents(nami_api, slib);
-    }).then( mutation_assets => {
-        for (const mutation of mutation_assets) {
-            console.log(`name: ${mutation.name}, fingerprint: ${mutation.fingerprint}`)
+    }).then( assets => {
+        // Build a list of mutations
+        let msel = document.getElementById('mutation-select');
+        remove_all_options(msel);
+        add_option(msel, 'Select a Mutation', '0');
+        for (const mutation of assets.mutations) {       
+            add_option(msel, mutation.name, mutation.fingerprint);
         }
+
+        // Build a list of normies
+        let nsel = document.getElementById('normie-select');
+        remove_all_options(nsel);
+        add_option(nsel, 'Select a Normie', '0');
+        for (const normie of assets.normies) {
+            add_option(nsel, normie.name, normie.fingerprint);
+        }
+
+        let from_field = document.getElementById('from');
+        from_field.value = assets.address;
+
+        document.getElementById('submit-button').disabled = false;
     }).catch( error => {
         console.error(error);
         console.error(`Request Denied`);

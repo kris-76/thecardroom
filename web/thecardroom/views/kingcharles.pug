@@ -1,0 +1,80 @@
+extends layout
+
+block content
+    div(class='content')
+        h2 Series 1 - King Charles
+        p 
+            | Welcome to the inaugural series of NFTs from The Card Room.  This unique set of
+            | NFTs pay homage to the King of Cardano, Mr. Charles Hoskinson. We had a lot of
+            | fun making these and we hope you enjoy them.
+
+    div(class='content')
+        div(class='row match-height')
+            div(class='tcr-card-main')
+                div(class='card tcr-card card-group bg-transparent')
+                    img(src='/images/KingCharles-card.png' class='card-img-top zoom' alt='King Charles')
+                    div(class='card-body')
+                        p(class='card-title center') King Charles
+                        a(href='/nft/kingcharles/charlesi' class='btn btn-primary') Details
+                div(class='card tcr-card card-group bg-transparent')
+                    img(src='/images/HulaHosky-card.png' class='card-img-top zoom' alt='Hula Hosky')
+                    div(class='card-body')
+                        p(class='card-title') Hula Hosky
+                        a(href='/nft/kingcharles/hula' class='btn btn-primary') Details
+                div(class='card tcr-card card-group bg-transparent')
+                    img(src='/images/KingOfRats-card.png' class='card-img-top zoom' alt='King Of Rats')
+                    div(class='card-body')
+                        p(class='card-title') King of Rats
+                        a(href='/nft/kingcharles/rats' class='btn btn-primary') Details
+                div(class='card tcr-card card-group bg-transparent')
+                    img(src='/images/EmperorCharles-card.png' class='card-img-top zoom' alt='Emperor Charles')
+                    div(class='card-body')
+                        p(class='card-title') Emperor Charles
+                        a(href='/nft/kingcharles/emperor' class='btn btn-primary') Details
+
+    div(class='content')
+        h2 Rarity
+        p 
+            | There are a total of 500 mints in Series 1 across various rarities.
+        table(class='table table-dark')
+            thead
+                tr
+                    th(scope='col') 
+                        | Card
+                    th(scope='col') 
+                        | Rarity Level
+                    th(scope='col') 
+                        | Total Minted
+                    th(scope='col') 
+                        | % of Total
+            tbody
+                tr
+                    th(scope='row') 
+                        | Laser Eyes 
+                    td 
+                        | Epic
+                    td 
+                        | 9 
+                    td 
+                        | 1.8 
+                tr
+                    th(scope='row') Emperor Charles 
+                    td Ultra Rare
+                    td 18
+                    td 3.6                 
+                tr
+                    th(scope='row') King of Rats 
+                    td Rare
+                    td 73
+                    td 14.5
+                tr
+                    th(scope='row') Hula Hosky 
+                    td Uncommon
+                    td 145
+                    td 29.1
+                tr
+                    th(scope='row') King Charles I 
+                    td Common
+                    td 255
+                    td 51.0
+                

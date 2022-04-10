@@ -8,3 +8,15 @@ block content
                     | To begin mutation, connect your wallet.
             div(class='col align-self-end text-end')
                 button(type='button' class='btn btn-primary' id='button-wallet-connect' onclick='this.value=\'testing...\';connect_to_wallet(this)') Connect to Nami
+        div(class='row align-items-start justify-content-evenly')
+            div(class='col align-self-start px-0')
+                form(method='POST' action='')
+                    select(class='form-select' name='normie_asset_id' id='normie-select')
+                        option(value='') Select a Normie
+                    select(class='form-select' name='mutation_asset_id' id='mutation-select')
+                        option(value='') Select a Mutation
+                    input(type='hidden' name='from' value='' id='from')
+                    button(type='submit' class='btn btn-primary' id='submit-button' disabled) Mutate!
+            div(class='col align-self-end text-end')
+                p
+                    | .
