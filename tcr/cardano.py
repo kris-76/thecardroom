@@ -125,7 +125,7 @@ class Cardano:
         for utxo in utxos:
             (txtime, txslotno) = (None, None)
             tries = 0
-            while txtime == None and txslotno == None and tries < 10:
+            while txtime == None and txslotno == None and tries < 5:
                 (txtime, txslotno) = database.query_txhash_time(utxo['tx-hash'])
                 if txtime == None and txslotno == None:
                     logger.warning('time and slotno not found for tx {}, try again'.format(utxo['tx-hash']))
@@ -136,6 +136,10 @@ class Cardano:
                 utxo['time'] = txtime
                 utxo['slot-no'] = txslotno
                 break
+
+            if not 'time' in utxo:
+                utxo['time'] = 0
+                utxo['slot-no'] = 0
 
         return utxos
 
